@@ -39,10 +39,9 @@ public class MailServiceImpl implements MailService {
     @Autowired
     HelpRecordRepository helpRecordRepository;
     @Autowired
-    private FreeMarkerConfigurer freeMarkerConfigurer;
-
-    @Autowired
     MailServerApi mailServerApi;
+    @Autowired
+    private FreeMarkerConfigurer freeMarkerConfigurer;
 
     @Async
     @Override
@@ -58,7 +57,7 @@ public class MailServiceImpl implements MailService {
             mailMessage.setTos(helpRecord.getHelperEmail());
             // 防止重复发送
             String businessId = SecureUtil.md5(helpRecord.toString());
-            ResponseModel responseModel = mailServerApi.send(global.getBusiness(),businessId, mailMessage);
+            ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
             if (responseModel.isError()) {
                 helpRecord.setSend(false);
                 log.error(responseModel.getMessage());

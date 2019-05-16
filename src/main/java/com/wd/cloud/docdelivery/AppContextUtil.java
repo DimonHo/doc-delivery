@@ -15,11 +15,6 @@ public class AppContextUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        AppContextUtil.applicationContext = applicationContext;
-    }
-
     /**
      * 获取applicationContext
      *
@@ -27,6 +22,11 @@ public class AppContextUtil implements ApplicationContextAware {
      */
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        AppContextUtil.applicationContext = applicationContext;
     }
 
     /**

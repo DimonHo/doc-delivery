@@ -38,7 +38,6 @@
 -- insert into channel (id,name,url,template) values (1,"QQ","http://paper.hnlat.com","qq/%s.ftl"),(2,"Spischolar学术资源在线","http://www.spischolar.com","spis/%s.ftl"),(3,"智汇云","http://www.yunscholar.com","zhy/%s.ftl"),(4,"crscholar核心论文库","http://www.crscholar.com","crs/%s.ftl"),(0,"paper","http://paper.hnlat.com","paper/%s.ftl");
 
 
-
 -- CREATE
 -- 	OR REPLACE VIEW v_help_record (
 -- 		`id`,

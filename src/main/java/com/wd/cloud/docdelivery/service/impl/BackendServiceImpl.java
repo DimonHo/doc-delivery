@@ -228,7 +228,7 @@ public class BackendServiceImpl implements BackendService {
     @Override
     public HelpRecord getWaitOrThirdHelpRecord(Long id) {
         return helpRecordRepository.findByIdAndStatusIn(id,
-                new int[]{HelpStatusEnum.WAIT_HELP.value(), HelpStatusEnum.HELP_THIRD.value(),HelpStatusEnum.HELP_FAILED.value()});
+                new int[]{HelpStatusEnum.WAIT_HELP.value(), HelpStatusEnum.HELP_THIRD.value(), HelpStatusEnum.HELP_FAILED.value()});
     }
 
     @Override

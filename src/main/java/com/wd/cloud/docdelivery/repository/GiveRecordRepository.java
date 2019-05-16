@@ -101,7 +101,7 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long>, J
      * @param status
      * @return
      */
-    Optional<List<GiveRecord>> findByHelpRecordIdAndStatus(Long helpRecordId,Integer status);
+    Optional<List<GiveRecord>> findByHelpRecordIdAndStatus(Long helpRecordId, Integer status);
 
     List<GiveRecord> findByHelpRecordId(Long helpRecordId);
 

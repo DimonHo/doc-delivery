@@ -5,7 +5,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.commons.util.HttpUtil;
 import com.wd.cloud.commons.util.StrUtil;
 import com.wd.cloud.docdelivery.feign.UoServerApi;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,7 @@ public class AllRequestAspect {
         if (principal != null) {
             String casUsername = principal.getPrincipal().getName();
             JSONObject sessionUser = JSONUtil.parseObj(request.getSession().getAttribute(SessionConstant.LOGIN_USER));
-            String sessionUsername = sessionUser.isEmpty()? null:sessionUser.getStr("username");
+            String sessionUsername = sessionUser.isEmpty() ? null : sessionUser.getStr("username");
             JSONObject sessionOrg = JSONUtil.parseObj(request.getSession().getAttribute(SessionConstant.ORG));
             // session中已存在用户信息，则跳过
             if (casUsername.equals(sessionUsername) && !sessionOrg.isEmpty()) {

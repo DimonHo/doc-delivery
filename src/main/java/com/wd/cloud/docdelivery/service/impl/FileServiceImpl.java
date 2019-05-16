@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author He Zhigang
@@ -66,12 +65,12 @@ public class FileServiceImpl implements FileService {
     public DownloadFileModel getDownloadFile(Long helpRecordId) {
         DownloadFileModel downloadFileModel = null;
         Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(helpRecordId);
-        if (optionalHelpRecord.isPresent()){
+        if (optionalHelpRecord.isPresent()) {
             HelpRecord helpRecord = optionalHelpRecord.get();
             if (checkTimeOut(helpRecord.getGmtModified())) {
                 throw new ExpException("文件已过期");
             }
-            GiveRecord giveRecord = giveService.getGiveRecord(helpRecordId,GiveStatusEnum.SUCCESS).orElseThrow(NotFoundException::new);
+            GiveRecord giveRecord = giveService.getGiveRecord(helpRecordId, GiveStatusEnum.SUCCESS).orElseThrow(NotFoundException::new);
             downloadFileModel = buildDownloadModel(helpRecord, giveRecord);
         }
         return downloadFileModel;
@@ -80,7 +79,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public DownloadFileModel getWaitAuditFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
-        Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(helpRecordId,GiveStatusEnum.WAIT_AUDIT);
+        Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(helpRecordId, GiveStatusEnum.WAIT_AUDIT);
         if (optionalGiveRecord.isPresent()) {
             DownloadFileModel downloadFileModel = buildDownloadModel(helpRecord, optionalGiveRecord.get());
             return downloadFileModel;

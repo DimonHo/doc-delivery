@@ -42,7 +42,7 @@ public class TjDTO {
 
 
     public String getSuccessRate() {
-        return this.total != null && this.total > 0? NumberUtil.formatPercent((double) this.successTotal / (double) this.total, 2) : "100%";
+        return this.total != null && this.total > 0 ? NumberUtil.formatPercent((double) this.successTotal / (double) this.total, 2) : "100%";
     }
 
     public String getTodaySuccessRate() {

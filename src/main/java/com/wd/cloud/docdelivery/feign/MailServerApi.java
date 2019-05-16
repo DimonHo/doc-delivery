@@ -18,15 +18,16 @@ public interface MailServerApi {
 
     /**
      * 发送邮件
+     *
      * @param business
      * @param mailMessage
      * @return
      */
     @PostMapping("/send/{business}/{businessId}")
-    ResponseModel send(@PathVariable String business,@PathVariable String businessId, @RequestBody MailMessage mailMessage);
+    ResponseModel send(@PathVariable String business, @PathVariable String businessId, @RequestBody MailMessage mailMessage);
 
     @Component("mailServerApi")
-    class Fallback implements MailServerApi{
+    class Fallback implements MailServerApi {
 
         @Override
         public ResponseModel send(String business, String businessId, MailMessage mailMessage) {

@@ -347,7 +347,7 @@ public class FrontServiceImpl implements FrontService {
             optionalLiterature.ifPresent(literature -> helpRecordDTO.setDocTitle(literature.getDocTitle()).setDocHref(literature.getDocHref()));
             //如果有用户正在应助
             if (vHelpRecord.getStatus() == HelpStatusEnum.HELPING.value()) {
-                Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(vHelpRecord.getId(),GiveStatusEnum.WAIT_UPLOAD);
+                Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(vHelpRecord.getId(), GiveStatusEnum.WAIT_UPLOAD);
                 optionalGiveRecord.ifPresent(helpRecordDTO::setGiving);
             }
             return helpRecordDTO;
@@ -372,6 +372,7 @@ public class FrontServiceImpl implements FrontService {
 
     /**
      * 匿名和邮箱隐藏处理
+     *
      * @param vHelpRecord
      * @return
      */
