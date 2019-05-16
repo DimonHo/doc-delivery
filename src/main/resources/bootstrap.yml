@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: doc-delivery
+  profiles:
+    active: test
+  cloud:
+    config:
+      uri: http://config.hnlat.cc
+      enabled: true
+      fail-fast: true  #失败快速响应
+
+
+

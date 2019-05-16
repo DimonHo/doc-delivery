@@ -1,0 +1,131 @@
+#server:
+#  tomcat:
+#    basedir: /home/cloud/spring-tomcat/${spring.application.name}
+#  port: 10012
+#  servlet:
+#    context-path: /
+#swagger:
+#  title: 文献传递服务-测试环境
+#  description: 文献传递服务API
+#  version: 2.0
+#  enabled: true
+#  contact:
+#    name: hezhigang
+#    email: hezhigang@hnwdkj.com
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+#    status-page-url: http://${spring.cloud.client.ip-address}:${server.port}/swagger-ui.html
+#    health-check-url-path: /actuator/health
+#  client:
+#    healthcheck:
+#      enabled: true
+#    registry-fetch-interval-seconds: 5
+#    serviceUrl:
+#      defaultZone: http://192.168.1.104:8761/eureka/
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+#  security:
+#    enabled: false
+#feign:
+#  hystrix:
+#    enabled: true
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 180000
+#######################################################################
+#ribbon:
+#  ReadTimeout: 60000  #请求处理的超时时间
+#  SocketTimeout: 60000
+#  ConnectTimeout: 60000  #ribbon请求连接的超时时间
+#  OkToRetryOnAllOperations: false
+#  MaxAutoRetries: 1
+#  MaxAutoRetriesNextServer: 2
+#
+#spring:
+#  # zipkin:
+#  #   baseUrl: http://192.168.1.104:10003
+#  # sleuth:
+#  #   sampler:
+#  #     probability: 1
+#  redis:
+#    host: 192.168.1.95
+#    port: 6379
+#    database: 14
+#  servlet:
+#    multipart:
+#      max-file-size: 1000MB
+#      max-request-size: 1000MB
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+#    default-property-inclusion: non_null
+#  jpa:
+#    database: MYSQL
+#    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#  datasource:
+#    url: jdbc:mysql://192.168.1.36:3306/${spring.application.name}-test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+#    username: test
+#    password: test123
+#    druid:
+#      # 配置初始化大小、最小、最大
+#      initial-size: 1
+#      max-active: 20
+#      min-idle: 1
+#      max-open-prepared-statements: 20
+#      pool-prepared-statements: true
+#      test-on-borrow: false
+#      test-on-return: false
+#      test-while-idle: true
+#      validation-query: "select 1"
+#      # 配置一个连接在池中最小生存的时间，单位是毫秒
+#      min-evictable-idle-time-millis: 300000
+#      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+#      time-between-eviction-runs-millis: 60000
+#      # 配置获取连接等待超时的时间
+#      max-wait: 60000
+#      async-init: true
+#      filters: stat,wall,slf4j
+#      aop-patterns:
+#        - com.wd.cloud.docdelivery.service.*
+#        - com.wd.cloud.docdelivery.repository.*
+#      web-stat-filter:
+#        enabled: true
+#      stat-view-servlet:
+#        enabled: true
+#        allow: "*"
+#        url-pattern: "/druid/*"
+#        login-username: admin
+#        login-password: admin@123
+#  freemarker:
+#    template-loader-path: ["file:/home/cloud/doc-delivery/templates/","classpath:/templates"]
+#    settings:
+#      classic_compatible: true
+#help:
+#  global:
+#    cloud-domain: http://cloud.hnlat.cc
+#    hbase-table-name: literature
+#    file-types: [pdf,txt,doc,docx,zip,rar,caj]
+#    business: doc-delivery:result
+#cas:
+#  server-url-prefix: http://sso.hnlat.cc
+#  server-login-url: http://sso.hnlat.cc/login
+#  client-host-url: http://cloud.hnlat.cc/doc-delivery
+#  authentication-url-patterns: /*
+#  logout-url-patterns: /*
+#  validation-url-patterns: /*
+#  request-wrapper-url-patterns: /*
