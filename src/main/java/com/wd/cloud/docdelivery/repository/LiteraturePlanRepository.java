@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface LiteraturePlanRepository extends JpaRepository<LiteraturePlan, Long> {
 
-    @Query(value = "select * from literature_plan where date_format(starttime,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d') order by orderlist", nativeQuery = true)
+    @Query(value = "select * from literature_plan where date_format(start_time,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d') order by orderlist", nativeQuery = true)
     List<LiteraturePlan> findByDate();
 
 }
