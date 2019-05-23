@@ -53,7 +53,7 @@ public class MailServiceImpl implements MailService {
         Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(vHelpRecord.getId());
         if (optionalHelpRecord.isPresent()) {
             HelpRecord helpRecord = optionalHelpRecord.get();
-            MailMessage mailMessage = new MailMessage().setTitle(mailTitle).setContent(mailContent).setHtml(true);
+            MailMessage mailMessage = new MailMessage().setTitle(mailTitle).setContent(mailContent).setHtml(true).setBccs(vHelpRecord.getBccs());
             mailMessage.setTos(helpRecord.getHelperEmail());
             // 防止重复发送
             String businessId = SecureUtil.md5(helpRecord.toString());
