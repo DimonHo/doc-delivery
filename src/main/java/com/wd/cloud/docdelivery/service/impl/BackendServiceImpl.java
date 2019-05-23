@@ -80,7 +80,9 @@ public class BackendServiceImpl implements BackendService {
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;
         String beginTime = (String) param.get("beginTime");
         String endTime = param.get("endTime") + " 23:59:59";
-        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword, beginTime, endTime), pageable);
+        String watchName = (String) param.get("watchName");
+        //根据条件查询视图
+        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword, beginTime, endTime, watchName), pageable);
 
         Page<HelpRecordDTO> helpRecordDTOS = result.map(vHelpRecord -> {
             HelpRecordDTO helpRecordDTO = BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class);

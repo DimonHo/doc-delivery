@@ -58,4 +58,6 @@ public class HelpRecordDTO {
      * 正在被其它用户应助
      */
     private GiveRecord giving;
+
+    private String watchName;
 }

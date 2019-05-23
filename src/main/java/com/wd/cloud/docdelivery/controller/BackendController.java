@@ -54,6 +54,7 @@ public class BackendController {
             @ApiImplicitParam(name = "status", value = "状态", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "orgFlag", value = "学校falg", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "搜索关键词", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "watchName", value = "值班人员", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "beginTime", value = "开始时间", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "String", paramType = "query")
     })
@@ -61,6 +62,7 @@ public class BackendController {
     public ResponseModel helpList(@RequestParam(required = false) Integer status,
                                   @RequestParam(required = false) String orgFlag,
                                   @RequestParam(required = false) String keyword,
+                                  @RequestParam(required = false) String watchName,
                                   @RequestParam(required = false) String beginTime,
                                   @RequestParam(required = false) String endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -68,6 +70,7 @@ public class BackendController {
         param.put("orgFlag", orgFlag);
         param.put("status", status);
         param.put("keyword", keyword);
+        param.put("watchName", watchName);
         param.put("beginTime", beginTime);
         param.put("endTime", endTime);
         Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(pageable, param);

@@ -9,10 +9,12 @@ import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
 import com.wd.cloud.docdelivery.pojo.entity.DocFile;
 import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
+import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
+import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,11 +51,24 @@ public class AutoGiveTask implements Runnable {
 
         helpRecordRepository.findByIdAndStatusNot(helpRecordId, HelpStatusEnum.HELP_SUCCESSED.value()).ifPresent(helpRecord -> {
             DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
+            boolean flag = false;
             if (null != reusingDocFile) {
                 reusingGive(reusingDocFile, helpRecord);
+                flag = true;
             } else {
-                bigDbGive(helpRecord);
+                flag = bigDbGive(helpRecord);
             }
+            //如果求助不成功,则对求助请求进行排班记录分配
+            if (flag == false) {
+                //查询排班人员
+                LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
+                if (literaturePlan != null) {
+                    helpRecord.setWatchName(literaturePlan.getUsername());
+                    //修改求助记录表的状态
+                    helpRecordRepository.save(helpRecord);
+                }
+            }
+
         });
     }
 
@@ -62,29 +77,39 @@ public class AutoGiveTask implements Runnable {
      *
      * @param helpRecord
      */
-    public void bigDbGive(HelpRecord helpRecord) {
+    public boolean bigDbGive(HelpRecord helpRecord) {
+        boolean[] flag = {true};
+        try {
+            literatureRepository.findById(helpRecord.getLiteratureId()).ifPresent(literature -> {
+                ResponseModel<String> pdfResponse = pdfSearchServerApi.search(literature);
+                if (!pdfResponse.isError()) {
+                    String fileId = pdfResponse.getBody();
 
-        literatureRepository.findById(helpRecord.getLiteratureId()).ifPresent(literature -> {
-            ResponseModel<String> pdfResponse = pdfSearchServerApi.search(literature);
-            if (!pdfResponse.isError()) {
-                String fileId = pdfResponse.getBody();
+                    DocFile docFile = docFileRepository.findByFileIdAndLiteratureId(fileId, literature.getId()).orElse(new DocFile());
+                    docFile.setFileId(fileId).setLiteratureId(literature.getId()).setBigDb(true);
 
-                DocFile docFile = docFileRepository.findByFileIdAndLiteratureId(fileId, literature.getId()).orElse(new DocFile());
-                docFile.setFileId(fileId).setLiteratureId(literature.getId()).setBigDb(true);
+                    GiveRecord giveRecord = new GiveRecord();
+                    giveRecord.setFileId(fileId)
+                            .setType(GiveTypeEnum.BIG_DB.value())
+                            .setGiverName(GiveTypeEnum.BIG_DB.name())
+                            .setStatus(GiveStatusEnum.SUCCESS.value());
+                    giveRecord.setHelpRecordId(helpRecord.getId());
 
-                GiveRecord giveRecord = new GiveRecord();
-                giveRecord.setFileId(fileId)
-                        .setType(GiveTypeEnum.BIG_DB.value())
-                        .setGiverName(GiveTypeEnum.BIG_DB.name())
-                        .setStatus(GiveStatusEnum.SUCCESS.value());
-                giveRecord.setHelpRecordId(helpRecord.getId());
 
-                helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
-                docFileRepository.save(docFile);
-                giveRecordRepository.save(giveRecord);
-                helpRecordRepository.save(helpRecord);
-            }
-        });
+                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+                    docFileRepository.save(docFile);
+                    giveRecordRepository.save(giveRecord);
+                    helpRecordRepository.save(helpRecord);
+                } else {
+                    flag[0] = false;
+                }
+            });
+        } catch (Exception e) {
+            log.info("pdf 服务平台正在调试");
+            flag[0] = false;
+            return flag[0];
+        }
+        return flag[0];
     }
 
     /**

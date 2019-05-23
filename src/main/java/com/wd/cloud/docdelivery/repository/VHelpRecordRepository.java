@@ -17,11 +17,13 @@ import java.util.List;
 
 public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>, JpaSpecificationExecutor<VHelpRecord> {
 
+    List<VHelpRecord> findBySend(boolean isSend);
+
     Page<VHelpRecord> findBySend(boolean isSend, Pageable pageable);
 
     class SpecBuilder {
 
-        public static Specification<VHelpRecord> buildBackendList(String orgFlag, Integer status, String keyword, String beginTime, String endTime) {
+        public static Specification<VHelpRecord> buildBackendList(String orgFlag, Integer status, String keyword, String beginTime, String endTime, String watchName) {
             return (Specification<VHelpRecord>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StrUtil.isNotBlank(orgFlag)) {
@@ -42,6 +44,10 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                             )
                     );
                 }
+                if (StrUtil.isNotBlank(watchName)) {
+                    list.add(cb.equal(root.get("watchName"), watchName));
+                }
+
                 if (StrUtil.isNotBlank(beginTime)) {
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));
                 }

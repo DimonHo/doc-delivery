@@ -99,6 +99,12 @@ public class HelpRecord extends AbstractEntity {
      */
     private String handlerName;
 
+    /**
+     * 值班人员
+     */
+    @Column(name = "watch_name", nullable = false, columnDefinition = "值班人员")
+    private String watchName;
+
 
     @Column(unique = true)
     private String unid;

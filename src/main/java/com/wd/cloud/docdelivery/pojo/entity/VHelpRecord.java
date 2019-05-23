@@ -47,6 +47,8 @@ public class VHelpRecord {
 
     private String helperName;
 
+    private String watchName;
+
     private String orgFlag;
 
     private String orgName;
