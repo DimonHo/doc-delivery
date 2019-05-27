@@ -4,6 +4,7 @@ import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,7 +14,8 @@ import java.util.List;
  */
 public interface LiteraturePlanRepository extends JpaRepository<LiteraturePlan, Long> {
 
-    @Query(value = "select * from literature_plan where date_format(start_time,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d') order by order_list", nativeQuery = true)
-    List<LiteraturePlan> findByDate();
+    @Query(value = "select * from literature_plan where date_format(start_time,'%Y-%m-%d') = date_format(?1,'%Y-%m-%d') order by endt_ime,order_list", nativeQuery = true)
+    List<LiteraturePlan> findByDate(Date time);
+
 
 }

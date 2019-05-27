@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -19,9 +20,10 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
     LiteraturePlanRepository literaturePlanRepository;
 
     @Override
-    public List<LiteraturePlan> findByDate() {
-        return literaturePlanRepository.findByDate();
+    public List<LiteraturePlan> findByDate(Date date) {
+        return literaturePlanRepository.findByDate(date);
     }
+
 
 
     @Override

@@ -52,7 +52,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      * @param literatureId
      * @return
      */
-    @Query(value = "select * FROM Help_record where helper_email = ?1 AND literature_id = ?2 AND 15 > TIMESTAMPDIFF(DAY, gmt_create, now())", nativeQuery = true)
+    @Query(value = "select * FROM help_record where helper_email = ?1 AND literature_id = ?2 AND 15 > TIMESTAMPDIFF(DAY, gmt_create, now())", nativeQuery = true)
     Optional<HelpRecord> findByHelperEmailAndLiteratureId(String helperEmail, Long literatureId);
 
 

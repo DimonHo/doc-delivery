@@ -1,7 +1,6 @@
-package com.wd.cloud.docdelivery.task;
+package com.wd.cloud.docdelivery.service.impl;
 
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.AppContextUtil;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
@@ -14,62 +13,63 @@ import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
+import com.wd.cloud.docdelivery.service.AsyncService;
 import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 /**
  * @Author: He Zhigang
- * @Date: 2019/4/17 15:04
+ * @Date: 2019/5/24 15:22
  * @Description:
  */
 @Slf4j
-@Transactional(rollbackFor = Exception.class)
-public class AutoGiveTask implements Runnable {
+@Service("asyncService")
+public class AsyncServiceImpl implements AsyncService {
 
-    private GiveRecordRepository giveRecordRepository;
-    private HelpRecordRepository helpRecordRepository;
-    private LiteratureRepository literatureRepository;
-    private DocFileRepository docFileRepository;
-    private PdfSearchServerApi pdfSearchServerApi;
-    private Long helpRecordId;
+    @Autowired
+    HelpRecordRepository helpRecordRepository;
 
-    public AutoGiveTask(Long helpRecordId) {
-        this.giveRecordRepository = AppContextUtil.getBean(GiveRecordRepository.class);
-        this.helpRecordRepository = AppContextUtil.getBean(HelpRecordRepository.class);
-        this.literatureRepository = AppContextUtil.getBean(LiteratureRepository.class);
-        this.docFileRepository = AppContextUtil.getBean(DocFileRepository.class);
-        this.pdfSearchServerApi = AppContextUtil.getBean(PdfSearchServerApi.class);
-        this.helpRecordId = helpRecordId;
-    }
+    @Autowired
+    LiteratureRepository literatureRepository;
+
+    @Autowired
+    GiveRecordRepository giveRecordRepository;
+
+    @Autowired
+    DocFileRepository docFileRepository;
+
+    @Autowired
+    PdfSearchServerApi pdfSearchServerApi;
 
     /**
      * 执行自动应助
      */
+    @Async
     @Override
-    public void run() {
+    public void autoGive(HelpRecord helpRecord) {
 
-        helpRecordRepository.findByIdAndStatusNot(helpRecordId, HelpStatusEnum.HELP_SUCCESSED.value()).ifPresent(helpRecord -> {
-            DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
-            boolean flag = false;
-            if (null != reusingDocFile) {
-                reusingGive(reusingDocFile, helpRecord);
-                flag = true;
-            } else {
-                flag = bigDbGive(helpRecord);
+        DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
+        boolean flag = false;
+        if (null != reusingDocFile) {
+            reusingGive(reusingDocFile, helpRecord);
+            flag = true;
+        } else {
+            flag = bigDbGive(helpRecord);
+        }
+        //如果求助不成功,则对求助请求进行排班记录分配
+        if (flag == false) {
+            //查询排班人员
+            LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
+            if (literaturePlan != null) {
+                helpRecord.setWatchName(literaturePlan.getUsername());
+                //修改求助记录表的状态
+                helpRecordRepository.save(helpRecord);
             }
-            //如果求助不成功,则对求助请求进行排班记录分配
-            if (flag == false) {
-                //查询排班人员
-                LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
-                if (literaturePlan != null) {
-                    helpRecord.setWatchName(literaturePlan.getUsername());
-                    //修改求助记录表的状态
-                    helpRecordRepository.save(helpRecord);
-                }
-            }
+        }
 
-        });
     }
 
     /**
@@ -129,6 +129,4 @@ public class AutoGiveTask implements Runnable {
         helpRecordRepository.save(helpRecord);
         return true;
     }
-
-
 }

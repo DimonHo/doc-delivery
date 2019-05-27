@@ -2,16 +2,25 @@ package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.thread.ThreadUtil;
+import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
+import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.exception.RepeatHelpRequestException;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
-import com.wd.cloud.docdelivery.pojo.entity.Literature;
+import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
+import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
+import com.wd.cloud.docdelivery.service.AsyncService;
 import com.wd.cloud.docdelivery.service.HelpRequestService;
+import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -32,10 +41,7 @@ public class HelpRequestServiceImpl implements HelpRequestService {
     LiteratureRepository literatureRepository;
 
     @Autowired
-    DocFileRepository docFileRepository;
-
-    @Autowired
-    GiveRecordRepository giveRecordRepository;
+    AsyncService asyncService;
 
     @Override
     public void helpRequest(Literature literature, HelpRecord helpRecord) {
@@ -54,8 +60,8 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         }
         Literature literatureEntity = literatureRepository.save(literature);
         helpRecord.setLiteratureId(literatureEntity.getId());
-        helpRecordRepository.save(helpRecord);
+        helpRecord = helpRecordRepository.save(helpRecord);
+        asyncService.autoGive(helpRecord);
     }
-
 
 }

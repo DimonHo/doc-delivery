@@ -102,7 +102,7 @@ public class HelpRecord extends AbstractEntity {
     /**
      * 值班人员
      */
-    @Column(name = "watch_name", nullable = false, columnDefinition = "值班人员")
+    @Column(name = "watch_name", columnDefinition = "varchar(255) COMMENT '值班人员'")
     private String watchName;
 
 

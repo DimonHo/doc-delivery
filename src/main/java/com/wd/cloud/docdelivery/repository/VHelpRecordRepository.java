@@ -47,10 +47,14 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 if (StrUtil.isNotBlank(watchName)) {
                     list.add(cb.equal(root.get("watchName"), watchName));
                 }
-
                 if (StrUtil.isNotBlank(beginTime)) {
-                    list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));
+                    list.add(cb.greaterThanOrEqualTo(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime)));
+
                 }
+                // 默认最新返回10秒之前的求助，防止自动应助任务还未跑完，被文献传递人员抢先处理
+                Date end = StrUtil.isNotBlank(endTime)?DateUtil.parse(endTime):DateUtil.offsetSecond(new Date(),-10);
+                list.add(cb.lessThanOrEqualTo(root.get("gmtCreate").as(Date.class), end));
+
                 Predicate[] p = new Predicate[list.size()];
                 return cb.and(list.toArray(p));
             };

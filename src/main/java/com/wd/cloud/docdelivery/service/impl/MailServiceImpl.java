@@ -56,7 +56,7 @@ public class MailServiceImpl implements MailService {
             MailMessage mailMessage = new MailMessage().setTitle(mailTitle).setContent(mailContent).setHtml(true).setBccs(vHelpRecord.getBccs());
             mailMessage.setTos(helpRecord.getHelperEmail());
             // 防止重复发送
-            String businessId = SecureUtil.md5(helpRecord.toString());
+            String businessId = helpRecord.getId() + "-" + helpRecord.getStatus();
             ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
             if (responseModel.isError()) {
                 helpRecord.setSend(false);

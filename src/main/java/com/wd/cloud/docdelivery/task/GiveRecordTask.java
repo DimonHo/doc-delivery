@@ -29,8 +29,6 @@ public class GiveRecordTask {
     ThreadPoolTaskScheduler threadPoolTaskScheduler;
     @Autowired
     GiveRecordRepository giveRecordRepository;
-    @Autowired
-    HelpRecordRepository helpRecordRepository;
 
     @Scheduled(fixedRate = 1000 * 60 * 15)
     public void deleteGiveRecord() {
@@ -41,6 +39,6 @@ public class GiveRecordTask {
     private void updateHelpStatus(GiveRecord giveRecord) {
         Date startTime = DateUtil.offsetMinute(giveRecord.getGmtCreate(), 15);
         log.info("执行时间:{}", startTime);
-        threadPoolTaskScheduler.schedule(new GiveTimeOutTask(giveRecordRepository, helpRecordRepository), startTime);
+        threadPoolTaskScheduler.schedule(new GiveTimeOutTask(), startTime);
     }
 }

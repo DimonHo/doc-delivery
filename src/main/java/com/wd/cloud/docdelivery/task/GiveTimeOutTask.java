@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.task;
 
+import com.wd.cloud.docdelivery.AppContextUtil;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
@@ -18,9 +19,9 @@ public class GiveTimeOutTask implements Runnable {
     private GiveRecordRepository giveRecordRepository;
     private HelpRecordRepository helpRecordRepository;
 
-    public GiveTimeOutTask(GiveRecordRepository giveRecordRepository, HelpRecordRepository helpRecordRepository) {
-        this.giveRecordRepository = giveRecordRepository;
-        this.helpRecordRepository = helpRecordRepository;
+    public GiveTimeOutTask() {
+        this.giveRecordRepository = AppContextUtil.getBean(GiveRecordRepository.class);
+        this.helpRecordRepository = AppContextUtil.getBean(HelpRecordRepository.class);
     }
 
     @Override

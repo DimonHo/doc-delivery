@@ -15,6 +15,8 @@ public interface HelpRequestService {
      *
      * @param literatureVo
      * @param helpRecord
+     * @return
      */
     void helpRequest(Literature literatureVo, HelpRecord helpRecord);
+
 }
