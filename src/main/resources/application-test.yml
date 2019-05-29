@@ -47,7 +47,7 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://${db.host:192.168.1.36}:${db.port:3306}/${spring.application.name}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://${db.host:192.168.1.36}:${db.port:3306}/${spring.application.name}-test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: ${db.user:test}
     password: ${db.pass:test123}
     druid:
