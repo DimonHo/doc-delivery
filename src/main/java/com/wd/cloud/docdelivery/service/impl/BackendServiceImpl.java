@@ -72,15 +72,11 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public Page<HelpRecordDTO> getHelpList(Pageable pageable, Map<String, Object> param) {
-        String orgFlag = (String) param.get("orgFlag");
-        Integer status = (Integer) param.get("status");
+    public Page<HelpRecordDTO> getHelpList(Integer status,String orgFlag,String keyword,String watchName,String beginTime,String endTime,Pageable pageable) {
+
         //  https://www.tapd.cn/33969136/bugtrace/bugs/view?bug_id=1133969136001000485
-        String keyword = ((String) param.get("keyword"));
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;
-        String beginTime = (String) param.get("beginTime");
-        String endTime = param.get("endTime") + " 23:59:59";
-        String watchName = (String) param.get("watchName");
+
         //根据条件查询视图
         Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword, beginTime, endTime, watchName), pageable);
 

@@ -73,7 +73,7 @@ public class BackendController {
         param.put("watchName", watchName);
         param.put("beginTime", beginTime);
         param.put("endTime", endTime);
-        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(pageable, param);
+        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, orgFlag, keyword,watchName,beginTime,endTime,pageable);
         return ResponseModel.ok().setBody(helpRecordDTOPage);
     }
 

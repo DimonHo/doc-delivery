@@ -24,7 +24,7 @@ public interface BackendService {
      *
      * @return
      */
-    Page<HelpRecordDTO> getHelpList(Pageable pageable, Map<String, Object> param);
+    Page<HelpRecordDTO> getHelpList(Integer status,String orgFlag,String keyword,String watchName,String beginTime,String endTime,Pageable pageable);
 
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
 

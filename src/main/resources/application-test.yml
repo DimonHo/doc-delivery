@@ -22,7 +22,7 @@ feign:
   url:
     mail-server: ${mail-server:http://wdapi.hnlat.cc/mail-server}
     fs-server: ${fs-server:http://cloud.hnlat.cc/fs-server}
-    uo-server: ${uo-server:http://cloud.hnlat.cc/uo-server}
+    uo-server: ${uo-server:http://192.168.1.104:10021}
     pdfsearch-server: ${pdfsearch-server:http://cloud.hnlat.cc/pdfsearch-server}
 ######################################################################
 
@@ -37,7 +37,7 @@ spring:
   jpa:
     database: MYSQL
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         # 格式化sql日志

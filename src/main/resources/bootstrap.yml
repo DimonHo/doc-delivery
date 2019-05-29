@@ -2,7 +2,7 @@ spring:
   application:
     name: doc-delivery
   profiles:
-    active:
+    active: test
   cloud:
     config:
       enabled: false
