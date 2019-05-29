@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @date 2019/1/17
  * @Description:
  */
-@FeignClient(value = "pdfsearch-server", fallback = PdfSearchServerApi.Fallback.class)
+@FeignClient(value = "pdfsearch-server",url="${feign.url.pdfsearch-server}", fallback = PdfSearchServerApi.Fallback.class)
 public interface PdfSearchServerApi {
 
     @PostMapping("/searchpdf")

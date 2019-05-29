@@ -1,7 +1,7 @@
 server:
   tomcat:
     basedir: ${basedir:/home/cloud/spring-tomcat/${spring.application.name}}
-  port: ${app.port:10012}
+  port: ${port:10012}
   servlet:
     context-path: /
 swagger:
@@ -20,7 +20,7 @@ management:
         include: "*"
 feign:
   url:
-    mail-server: ${mail-server:http://wdapi.hnlat.com/mail-server}
+    mail-server: ${mail-server:http://wdapi.hnlat.cc/mail-server}
     fs-server: ${fs-server:http://cloud.hnlat.cc/fs-server}
     uo-server: ${uo-server:http://cloud.hnlat.cc/uo-server}
     pdfsearch-server: ${pdfsearch-server:http://cloud.hnlat.cc/pdfsearch-server}
@@ -91,9 +91,9 @@ help:
     file-types: [pdf,txt,doc,docx,zip,rar,caj]
     business: doc-delivery:result
 cas:
-  server-url-prefix: ${cas.server.url.prefix:http://sso.hnlat.cc}
-  server-login-url: ${cas.server.login.url:http://sso.hnlat.cc/login}
-  client-host-url: ${cas.client.host.url:http://cloud.hnlat.cc/doc-delivery}
+  server-url-prefix: http://sso.hnlat.cc
+  server-login-url: http://sso.hnlat.cc/login
+  client-host-url: http://cloud.hnlat.cc/doc-delivery
   authentication-url-patterns: /*
   logout-url-patterns: /*
   validation-url-patterns: /*

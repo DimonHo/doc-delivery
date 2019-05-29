@@ -26,7 +26,7 @@ import java.util.List;
  * @date 2018/11/22
  * @Description:
  */
-@FeignClient(value = "fs-server",
+@FeignClient(value = "fs-server", url="${feign.url.fs-server}",
         configuration = FsServerApi.MultipartSupportConfig.class,
         fallback = FsServerApi.Fallback.class)
 public interface FsServerApi {
