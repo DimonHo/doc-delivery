@@ -47,9 +47,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://${db.host:mysql-dev.database}:${db.port:3306}/${spring.application.name}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
-    username: ${db.user:root}
-    password: ${db.pass:wdkj@123#}
+    url: jdbc:mysql://${db.host:192.168.1.36}:${db.port:3306}/${spring.application.name}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: ${db.user:test}
+    password: ${db.pass:test123}
     druid:
       # 配置初始化大小、最小、最大
       initial-size: 1
