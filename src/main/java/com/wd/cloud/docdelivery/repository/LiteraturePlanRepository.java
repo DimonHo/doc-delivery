@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface LiteraturePlanRepository extends JpaRepository<LiteraturePlan, Long> {
 
-    @Query(value = "select * from literature_plan where date_format(start_time,'%Y-%m-%d') = date_format(?1,'%Y-%m-%d') order by endt_ime,order_list", nativeQuery = true)
+    @Query(value = "select * from literature_plan where date_format(start_time,'%Y-%m-%d') = date_format(?1,'%Y-%m-%d') order by end_time,order_list", nativeQuery = true)
     List<LiteraturePlan> findByDate(Date time);
 
 
