@@ -5,9 +5,9 @@ spring:
     active: test
   cloud:
     config:
-      enabled: false
-#      uri: http://config.hnlat.cc
-#      fail-fast: true  #失败快速响应
+      enabled: true
+      uri: http://config.hnlat.cc
+      fail-fast: true  #失败快速响应
 
 
 
