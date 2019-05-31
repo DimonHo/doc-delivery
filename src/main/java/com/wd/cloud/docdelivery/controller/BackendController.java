@@ -66,13 +66,7 @@ public class BackendController {
                                   @RequestParam(required = false) String beginTime,
                                   @RequestParam(required = false) String endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("orgFlag", orgFlag);
-        param.put("status", status);
-        param.put("keyword", keyword);
-        param.put("watchName", watchName);
-        param.put("beginTime", beginTime);
-        param.put("endTime", endTime);
+
         Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, orgFlag, keyword,watchName,beginTime,endTime,pageable);
         return ResponseModel.ok().setBody(helpRecordDTOPage);
     }
