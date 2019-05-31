@@ -64,4 +64,5 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         asyncService.autoGive(helpRecord);
     }
 
+
 }

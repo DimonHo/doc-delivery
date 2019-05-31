@@ -14,6 +14,7 @@ import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.AsyncService;
+import com.wd.cloud.docdelivery.service.HelpRequestService;
 import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class AsyncServiceImpl implements AsyncService {
     @Autowired
     PdfSearchServerApi pdfSearchServerApi;
 
+    @Autowired
+    HelpRequestService helpRequestService;
+
     /**
      * 执行自动应助
      */
@@ -64,9 +68,8 @@ public class AsyncServiceImpl implements AsyncService {
             //查询排班人员
             LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
             if (literaturePlan != null) {
-                helpRecord.setWatchName(literaturePlan.getUsername());
-                //修改求助记录表的状态
-                helpRecordRepository.save(helpRecord);
+                //helpRecord.setWatchName(literaturePlan.getUsername());
+                helpRecordRepository.updateWatchName(helpRecord.getId(),literaturePlan.getUsername());
             }
         }
 
@@ -99,7 +102,7 @@ public class AsyncServiceImpl implements AsyncService {
                     helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
                     docFileRepository.save(docFile);
                     giveRecordRepository.save(giveRecord);
-                    helpRecordRepository.save(helpRecord);
+                    helpRecordRepository.updateStatus(helpRecord.getId(),HelpStatusEnum.HELP_SUCCESSED.value());
                 } else {
                     flag[0] = false;
                 }
@@ -125,8 +128,8 @@ public class AsyncServiceImpl implements AsyncService {
                 .setStatus(GiveStatusEnum.SUCCESS.value())
                 .setHelpRecordId(helpRecord.getId());
         giveRecordRepository.save(giveRecord);
-        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
-        helpRecordRepository.save(helpRecord);
+        helpRecordRepository.updateStatus(helpRecord.getId(),HelpStatusEnum.HELP_SUCCESSED.value());
+
         return true;
     }
 }

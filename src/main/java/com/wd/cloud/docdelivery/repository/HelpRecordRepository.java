@@ -3,7 +3,9 @@ package com.wd.cloud.docdelivery.repository;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,18 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
     HelpRecord findByIdAndStatus(long id, int status);
 
     Optional<HelpRecord> findByIdAndStatusNot(long id, int status);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update help_record set watch_name = ?2 where id = ?1" ,nativeQuery = true)
+    int updateWatchName(Long id,String watchName);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "update help_record set status = ?2 where id = ?1" ,nativeQuery = true)
+    int updateStatus(Long id,Integer status);
+
 
     HelpRecord findByIdAndStatusIn(long id, int[] status);
 
