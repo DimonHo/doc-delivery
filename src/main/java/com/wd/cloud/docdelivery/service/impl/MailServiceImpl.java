@@ -57,12 +57,17 @@ public class MailServiceImpl implements MailService {
             mailMessage.setTos(helpRecord.getHelperEmail());
             // 防止重复发送
             String businessId = helpRecord.getId() + "-" + helpRecord.getStatus();
-            ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
-            if (responseModel.isError()) {
+            try{
+                ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
+                if (responseModel.isError()) {
+                    helpRecord.setSend(false);
+                    log.error(responseModel.getMessage());
+                } else {
+                    helpRecord.setSend(true);
+                }
+            }catch (Exception e){
                 helpRecord.setSend(false);
-                log.error(responseModel.getMessage());
-            } else {
-                helpRecord.setSend(true);
+                log.error("邮件服务调用失败",e);
             }
             helpRecordRepository.save(helpRecord);
         }

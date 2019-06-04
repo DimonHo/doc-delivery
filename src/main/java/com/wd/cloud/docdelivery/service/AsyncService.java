@@ -9,5 +9,5 @@ import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
  */
 public interface AsyncService {
 
-    void autoGive(HelpRecord helpRecord);
+    void autoGive(Long helpRecordId);
 }

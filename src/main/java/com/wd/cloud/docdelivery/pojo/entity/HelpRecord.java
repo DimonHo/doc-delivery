@@ -20,7 +20,6 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @DynamicInsert
-@DynamicUpdate
 @Table(name = "help_record")
 public class HelpRecord extends AbstractEntity {
 

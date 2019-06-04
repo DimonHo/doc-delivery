@@ -45,34 +45,32 @@ public class AsyncServiceImpl implements AsyncService {
     @Autowired
     PdfSearchServerApi pdfSearchServerApi;
 
-    @Autowired
-    HelpRequestService helpRequestService;
-
     /**
      * 执行自动应助
      */
     @Async
     @Override
-    public void autoGive(HelpRecord helpRecord) {
+    public void autoGive(Long helpRecordId) {
 
-        DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
-        boolean flag = false;
-        if (null != reusingDocFile) {
-            reusingGive(reusingDocFile, helpRecord);
-            flag = true;
-        } else {
-            flag = bigDbGive(helpRecord);
-        }
-        //如果求助不成功,则对求助请求进行排班记录分配
-        if (flag == false) {
-            //查询排班人员
-            LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
-            if (literaturePlan != null) {
-                //helpRecord.setWatchName(literaturePlan.getUsername());
-                helpRecordRepository.updateWatchName(helpRecord.getId(),literaturePlan.getUsername());
+        helpRecordRepository.findById(helpRecordId).ifPresent(helpRecord -> {
+            DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
+            boolean flag = false;
+            if (null != reusingDocFile) {
+                reusingGive(reusingDocFile, helpRecord);
+                flag = true;
+            } else {
+                flag = bigDbGive(helpRecord);
             }
-        }
-
+            //如果求助不成功,则对求助请求进行排班记录分配
+            if (flag == false) {
+                //查询排班人员
+                LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
+                if (literaturePlan != null) {
+                    helpRecord.setWatchName(literaturePlan.getUsername());
+                    helpRecordRepository.save(helpRecord);
+                }
+            }
+        });
     }
 
     /**
@@ -98,11 +96,10 @@ public class AsyncServiceImpl implements AsyncService {
                             .setStatus(GiveStatusEnum.SUCCESS.value());
                     giveRecord.setHelpRecordId(helpRecord.getId());
 
-
-                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
                     docFileRepository.save(docFile);
                     giveRecordRepository.save(giveRecord);
-                    helpRecordRepository.updateStatus(helpRecord.getId(),HelpStatusEnum.HELP_SUCCESSED.value());
+                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+                    helpRecordRepository.save(helpRecord);
                 } else {
                     flag[0] = false;
                 }
@@ -128,8 +125,8 @@ public class AsyncServiceImpl implements AsyncService {
                 .setStatus(GiveStatusEnum.SUCCESS.value())
                 .setHelpRecordId(helpRecord.getId());
         giveRecordRepository.save(giveRecord);
-        helpRecordRepository.updateStatus(helpRecord.getId(),HelpStatusEnum.HELP_SUCCESSED.value());
-
+        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+        helpRecordRepository.save(helpRecord);
         return true;
     }
 }

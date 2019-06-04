@@ -61,7 +61,7 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         Literature literatureEntity = literatureRepository.save(literature);
         helpRecord.setLiteratureId(literatureEntity.getId());
         helpRecord = helpRecordRepository.save(helpRecord);
-        asyncService.autoGive(helpRecord);
+        asyncService.autoGive(helpRecord.getId());
     }
 
 
