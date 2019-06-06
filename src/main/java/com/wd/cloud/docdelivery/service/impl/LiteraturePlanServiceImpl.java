@@ -20,8 +20,8 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
     LiteraturePlanRepository literaturePlanRepository;
 
     @Override
-    public List<LiteraturePlan> findByDate(Date date) {
-        return literaturePlanRepository.findByDate(date);
+    public List<LiteraturePlan> findByDate() {
+        return literaturePlanRepository.findByDate();
     }
 
 
