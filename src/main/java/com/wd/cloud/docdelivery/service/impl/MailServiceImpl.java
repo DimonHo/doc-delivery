@@ -95,16 +95,16 @@ public class MailServiceImpl implements MailService {
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-notify"));
                     break;
                 case HELP_THIRD:
-                    mailTemplateModel.setMailTitle(String.format("[文献互助•疑难文献]-%s", vHelpRecord.getDocTitle()))
+                    mailTemplateModel.setMailTitle(String.format("回复: [文献互助•疑难文献]-%s", vHelpRecord.getDocTitle()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-third"));
                     break;
                 case HELP_SUCCESSED:
-                    mailTemplateModel.setMailTitle(String.format("[文献互助•成功]-%s", vHelpRecord.getDocTitle()))
+                    mailTemplateModel.setMailTitle(String.format("回复: [文献互助•成功]-%s", vHelpRecord.getDocTitle()))
                             .setDownloadUrl(buildDownloadUrl(vHelpRecord.getId()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-success"));
                     break;
                 case HELP_FAILED:
-                    mailTemplateModel.setMailTitle(String.format("[文献互助•失败]-%s", vHelpRecord.getDocTitle()))
+                    mailTemplateModel.setMailTitle(String.format("回复: [文献互助•失败]-%s", vHelpRecord.getDocTitle()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-failed"));
                     break;
                 default:
