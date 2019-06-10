@@ -3,16 +3,11 @@ package com.wd.cloud.docdelivery.util;
 import cn.hutool.core.collection.CollectionUtil;
 import com.wd.cloud.commons.util.DateUtil;
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
-import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.helper.DataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -58,7 +53,7 @@ public class DocDeliveryArrangeUtils {
             // 如果当天时间为空的,则获取当天列表
             if (endTime == null) {
                 log.info("查询排版人员的时间：{}", DateUtil.formatDateTime(now));
-                userNames = literaturePlanService.findByDate();
+                userNames = literaturePlanService.findNowDaysLiteraturePlans();
             }
             // 判断当前时间是否大于当天最晚时间
             if (CollectionUtil.isNotEmpty(userNames)) {
@@ -66,9 +61,8 @@ public class DocDeliveryArrangeUtils {
                 endTime = userNames.get(userNames.size() - 1).getEndTime();
                 // 判断当前时间是否大于今天最晚值班人员下班时间
                 if (now.after(endTime)) {
-                    now = DateUtil.offsetDay(now,1);
                     //获取明天的值班人员
-                    userNames = literaturePlanService.findByDate();
+                    userNames = literaturePlanService.findNextLiteraturePlans();
                     log.info("查询排版人员的时间：{}", userNames.get(0).getEndTime());
                 }
             }
@@ -133,6 +127,7 @@ public class DocDeliveryArrangeUtils {
     public  void setLiteraturePlanService(LiteraturePlanService literaturePlanService) {
         DocDeliveryArrangeUtils.literaturePlanService = literaturePlanService;
     }
+
 
     private static List<LiteraturePlan> sort(List<LiteraturePlan> array) {
         //外层循环控制排序趟数
