@@ -12,8 +12,9 @@ import java.util.List;
  */
 public interface LiteraturePlanService {
 
-    List<LiteraturePlan> findByDate(Date date);
+    List<LiteraturePlan> findNextLiteraturePlans();
 
+    List<LiteraturePlan> findNowDaysLiteraturePlans();
 
     void arrangePerson(LiteraturePlan literaturePlan, String arrange);
 

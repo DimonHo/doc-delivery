@@ -3,16 +3,11 @@ package com.wd.cloud.docdelivery.util;
 import cn.hutool.core.collection.CollectionUtil;
 import com.wd.cloud.commons.util.DateUtil;
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
-import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.helper.DataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -58,22 +53,21 @@ public class DocDeliveryArrangeUtils {
             // 如果当天时间为空的,则获取当天列表
             if (endTime == null) {
                 log.info("查询排版人员的时间：{}", DateUtil.formatDateTime(now));
-                userNames = literaturePlanService.findByDate(now);
+                userNames = literaturePlanService.findNowDaysLiteraturePlans();
             }
             // 判断当前时间是否大于当天最晚时间
-            if (userNames.size() > 0) {
+            if (CollectionUtil.isNotEmpty(userNames)) {
                 // 初始化最晚时间
                 endTime = userNames.get(userNames.size() - 1).getEndTime();
                 // 判断当前时间是否大于今天最晚值班人员下班时间
                 if (now.after(endTime)) {
-                    now = DateUtil.offsetDay(now,1);
                     //获取明天的值班人员
-                    log.info("查询排版人员的时间：{}", DateUtil.formatDateTime(now));
-                    userNames = literaturePlanService.findByDate(now);
+                    userNames = literaturePlanService.findNextLiteraturePlans();
+                    log.info("查询排版人员的时间：{}", userNames.get(0).getEndTime());
                 }
             }
             // 对时间进行初始化
-            if (userNames.size() > 0) {
+            if (CollectionUtil.isNotEmpty(userNames)) {
                 endTime = userNames.get(userNames.size() - 1).getEndTime();
                 // 排序获取最早时间
                 userNames = sort(userNames);
@@ -83,19 +77,17 @@ public class DocDeliveryArrangeUtils {
         }
         //定义封装符合条件的容器
         List<LiteraturePlan> matchTimeUserNames = new ArrayList<>(10);
-        //这里可以默认条件,如果目前时间大于最后一个,直接
-        if(now.before(endTime) && now.after(startTime)) {
-            //首先查询符合条件的人
-            for (LiteraturePlan literaturePlan : userNames) {
-                if (literaturePlan.getStartTime().compareTo(now) <= 0
-                        && literaturePlan.getEndTime().compareTo(now) > 0) {
-                    matchTimeUserNames.add(literaturePlan);
+        if (CollectionUtil.isNotEmpty(userNames)) {
+            //这里可以默认条件,如果目前时间大于最后一个,直接
+            if (now.before(endTime) && now.after(startTime)) {
+                //首先查询符合条件的人
+                for (LiteraturePlan literaturePlan : userNames) {
+                    if (literaturePlan.getStartTime().compareTo(now) <= 0
+                            && literaturePlan.getEndTime().compareTo(now) >= 0) {
+                        matchTimeUserNames.add(literaturePlan);
+                    }
                 }
             }
-        }
-        // 如果不符合条件,则判断时间进行排班
-
-        if (CollectionUtil.isNotEmpty(userNames) && matchTimeUserNames.size() == 0) {
             // 如果值班人员下班,默认将任务分配最早值班的人
             if (now.compareTo(startTime) < 0) {
                 // 获取符合条件的排班人
@@ -108,7 +100,6 @@ public class DocDeliveryArrangeUtils {
                     }
                 }
             }
-
         }
         // 查询排班人员
         for (int i = 0; i < matchTimeUserNames.size(); i++) {
@@ -136,6 +127,7 @@ public class DocDeliveryArrangeUtils {
     public  void setLiteraturePlanService(LiteraturePlanService literaturePlanService) {
         DocDeliveryArrangeUtils.literaturePlanService = literaturePlanService;
     }
+
 
     private static List<LiteraturePlan> sort(List<LiteraturePlan> array) {
         //外层循环控制排序趟数
