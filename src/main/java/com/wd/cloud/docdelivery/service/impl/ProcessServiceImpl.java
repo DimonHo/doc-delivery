@@ -239,7 +239,7 @@ public class ProcessServiceImpl implements ProcessService {
 
         Page<HelpRecordDTO> helpRecordDTOS = result.map(vHelpRecord -> {
             HelpRecordDTO helpRecordDTO = BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class);
-            helpRecordDTO.setGiveRecords(giveRecordRepository.findByHelpRecordId(vHelpRecord.getId()));
+            helpRecordDTO.setGiveRecords(giveRecordRepository.findByHelpRecordIdOrderByGmtModifiedDesc(vHelpRecord.getId()));
             return helpRecordDTO;
         });
         return helpRecordDTOS;
