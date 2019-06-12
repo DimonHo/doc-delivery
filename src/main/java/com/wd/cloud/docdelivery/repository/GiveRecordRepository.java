@@ -103,7 +103,7 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long>, J
      */
     Optional<List<GiveRecord>> findByHelpRecordIdAndStatus(Long helpRecordId, Integer status);
 
-    List<GiveRecord> findByHelpRecordId(Long helpRecordId);
+    List<GiveRecord> findByHelpRecordIdOrderByGmtModifiedDesc(Long helpRecordId);
 
     /**
      * 查询
