@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "uo-server",fallback = UoServerApi.Fallback.class)
+@FeignClient(value = "uo-server", url = "${feign.url.uo-server}", fallback = UoServerApi.Fallback.class)
 public interface UoServerApi {
 
     @GetMapping("/org")
