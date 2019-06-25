@@ -46,7 +46,7 @@ spec:
         - name: feignUrlUoServer
           value: http://cloud.hnlat.local/uo-server
         - name: feignUrlPdfsearchServer
-          value: http://cloud.hnlat.local/pdfsearch-server
+          value: http://cloud.hnlat.com/pdfsearch-server
         - name: casServerUrlPrefix
           value: http://sso.hnlat.local
         - name: casServerLoginUrl
