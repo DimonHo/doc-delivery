@@ -28,7 +28,7 @@ docker-build:
     - test ! -z "${CI_COMMIT_TAG}" && docker push "${CI_REGISTRY_IMAGE}:latest"
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
 
-k8s-dev-deploy:
+k8s-deploy:
   image: cnych/kubectl
   stage: deploy
   environment:
@@ -49,48 +49,3 @@ k8s-dev-deploy:
     - kubectl apply -f service.yaml -n dev || true
     - kubectl rollout status -f deployment.yaml -n dev
     - kubectl get all -l ref=${CI_ENVIRONMENT_SLUG} -n dev
-
-
-k8s-test-deploy:
-  image: cnych/kubectl
-  stage: deploy
-  environment:
-    name: test
-  when: manual
-  script:
-    - kubectl version
-    - cd manifests/
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment-test.yaml service.yaml
-    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment-test.yaml service.yaml
-    - |
-      if kubectl apply -f deployment-test.yaml  -n test | grep -q unchanged; then
-          echo "=> Patching deployment-test to force image update."
-          kubectl patch -f deployment-test.yaml -n test -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
-      else
-          echo "=> Deployment apply has changed the object, no need to force image update."
-      fi
-    - kubectl apply -f service.yaml -n test || true
-    - kubectl rollout status -f deployment-test.yaml -n test
-    - kubectl get all -l ref=${CI_ENVIRONMENT_SLUG} -n test
-
-k8s-prod-deploy:
-  image: cnych/kubectl
-  stage: deploy
-  environment:
-    name: prod
-  when: manual
-  script:
-    - kubectl version
-    - cd manifests/
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment-prod.yaml service.yaml
-    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment-prod.yaml service.yaml
-    - |
-      if kubectl apply -f deployment-prod.yaml  -n prod | grep -q unchanged; then
-          echo "=> Patching deployment-prod to force image update."
-          kubectl patch -f deployment-prod.yaml -n prod -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
-      else
-          echo "=> Deployment apply has changed the object, no need to force image update."
-      fi
-    - kubectl apply -f service.yaml -n prod || true
-    - kubectl rollout status -f deployment-prod.yaml -n prod
-    - kubectl get all -l ref=${CI_ENVIRONMENT_SLUG} -n prod

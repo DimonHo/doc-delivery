@@ -37,19 +37,19 @@ spec:
         - name: db.pass
           value: wdkj@123#
         - name: mail-server
-          value: http://wdapi.hnlat.com/mail-server
+          value: http://cloud.hnlat.local/mail-server
         - name: fs-server
           value: http://cloud.hnlat.com/fs-server
         - name: uo-server
-          value: http://cloud.hnlat.com/uo-server
+          value: http://cloud.hnlat.local/uo-server
         - name: pdfsearch-server
-          value: http://cloud.hnlat.com/pdfsearch-server
+          value: http://cloud.hnlat.local/pdfsearch-server
         - name: cas.server.url.prefix
-          value: http://sso.hnlat.com
+          value: http://sso.hnlat.local
         - name: cas.server.login.url
-          value: http://sso.hnlat.com/login
+          value: http://sso.hnlat.local/login
         - name: cas.client.host.url
-          value: http://wdapi.hnlat.com/doc-delivery
+          value: http://cloud.hnlat.local/doc-delivery
         ports:
         - containerPort: 80
         livenessProbe:
