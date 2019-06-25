@@ -4,11 +4,9 @@ metadata:
   name: doc-delivery
   labels:
     app: doc-delivery
-    ref: __CI_ENVIRONMENT_SLUG__
 spec:
   selector:
     app: doc-delivery
-    ref: __CI_ENVIRONMENT_SLUG__
   ports:
   - protocol: TCP
     port: 80

@@ -26,7 +26,7 @@ spec:
         - name: swaggerEnable
           value: "true"
         - name: swaggerHost
-          value: cloud.hnlat.cc/doc-delivery
+          value: cloud.hnlat.local/doc-delivery
         - name: springJpaShowSql
           value: "false"
         - name: springJpaHibernateDDLAuto
@@ -40,19 +40,19 @@ spec:
         - name: dbPass
           value: wdkj@123#
         - name: feignUrlMaiServer
-          value: http://cloud.hnlat.com/mail-server
+          value: http://cloud.hnlat.local/mail-server
         - name: feignUrlFsServer
           value: http://cloud.hnlat.com/fs-server
         - name: feignUrlUoServer
-          value: http://cloud.hnlat.com/uo-server
+          value: http://cloud.hnlat.local/uo-server
         - name: feignUrlPdfsearchServer
-          value: http://cloud.hnlat.com/pdfsearch-server
+          value: http://cloud.hnlat.local/pdfsearch-server
         - name: casServerUrlPrefix
-          value: http://sso.hnlat.com
+          value: http://sso.hnlat.local
         - name: casServerLoginUrl
-          value: http://sso.hnlat.com/login
+          value: http://sso.hnlat.local/login
         - name: casClientHostUrl
-          value: http://wdapi.hnlat.com/doc-delivery
+          value: http://cloud.hnlat.local/doc-delivery
         ports:
         - containerPort: 80
         livenessProbe:
