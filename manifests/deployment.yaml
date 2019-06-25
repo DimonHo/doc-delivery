@@ -4,19 +4,16 @@ metadata:
   name: doc-delivery
   labels:
     app: doc-delivery
-    ref: __CI_ENVIRONMENT_SLUG__
     track: stable
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: doc-delivery
-      ref: __CI_ENVIRONMENT_SLUG__
   template:
     metadata:
       labels:
         app: doc-delivery
-        ref: __CI_ENVIRONMENT_SLUG__
     spec:
       containers:
       - name: doc-delivery
