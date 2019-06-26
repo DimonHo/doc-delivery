@@ -39,7 +39,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL57Dialect
   datasource:
-    url: jdbc:mysql://${dbHost:mysql-prod.database}:${dbPort:3306}/${dbName:${spring.application.name}}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://${dbUrl:mysql-dev.database:3306}/${dbName:${spring.application.name}}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: ${dbUser:root}
     password: ${dbPass:wdkj@123#}
     druid:
@@ -75,16 +75,16 @@ spring:
     template-loader-path: ["file:/app/templates/","classpath:/templates"]
     settings:
       classic_compatible: true
-help:
-  global:
-    cloud-domain: http://cloud.hnlat.cc
-    hbase-table-name: literature
-    file-types: [pdf,txt,doc,docx,zip,rar,caj]
-    business: doc-delivery:result
+global:
+  cloud-host: http://cloud.hnlat.local
+  hbase-table-name: literature
+  file-types: [pdf,txt,doc,docx,zip,rar,caj]
+  business: doc-delivery:result
 cas:
-  server-url-prefix: ${casServerUrlPrefix:http://sso.hnlat.cc}
-  server-login-url: ${casServerLoginUrl:http://sso.hnlat.cc/login}
-  client-host-url: ${casClientHostUrl:http://cloud.hnlat.cc/doc-delivery}
+  server-url-prefix: ${casServerUrlPrefix:http://sso.hnlat.local}
+  server-login-url: ${casServerLoginUrl:http://sso.hnlat.local/login}
+  server-validation-url: ${casServerValidationUrl:http://sso}
+  client-host-url: ${casClientHostUrl:http://cloud.hnlat.local/doc-delivery}
   authentication-url-patterns: /*
   logout-url-patterns: /*
   validation-url-patterns: /*

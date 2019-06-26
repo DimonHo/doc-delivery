@@ -113,7 +113,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String getDownloadUrl(Long helpRecordId) {
-        return global.getCloudDomain() + "/doc-delivery/file/download/" + helpRecordId;
+        return global.getCloudHost() + "/doc-delivery/file/download/" + helpRecordId;
     }
 
 }

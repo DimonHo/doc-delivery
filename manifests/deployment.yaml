@@ -22,37 +22,37 @@ spec:
         - name: serverPort
           value: "80"
         - name: serverTomcatBasedir
-          value: /app/spring-tomcat
+          value: "/app/spring-tomcat"
         - name: swaggerEnable
           value: "true"
         - name: swaggerHost
-          value: cloud.hnlat.local/doc-delivery
+          value: "cloud.hnlat.local/doc-delivery"
         - name: springJpaShowSql
           value: "false"
         - name: springJpaHibernateDDLAuto
           value: update
-        - name: dbHost
-          value: mysql-dev.database
-        - name: dbPort
-          value: "3306"
+        - name: dbUrl
+          value: "mysql-dev.database:3306"
         - name: dbUser
-          value: root
+          value: "root"
         - name: dbPass
-          value: wdkj@123#
+          value: "wdkj@123#"
         - name: feignUrlMaiServer
-          value: http://cloud.hnlat.local/mail-server
+          value: "http://mail-server"
         - name: feignUrlFsServer
-          value: http://cloud.hnlat.com/fs-server
+          value: "http://cloud.hnlat.com/fs-server"
         - name: feignUrlUoServer
-          value: http://cloud.hnlat.local/uo-server
+          value: "http://uo-server"
         - name: feignUrlPdfsearchServer
-          value: http://cloud.hnlat.com/pdfsearch-server
+          value: "http://cloud.hnlat.com/pdfsearch-server"
         - name: casServerUrlPrefix
-          value: http://sso.hnlat.local
+          value: "http://sso.hnlat.local"
         - name: casServerLoginUrl
-          value: http://sso.hnlat.local/login
+          value: "http://sso.hnlat.local/login"
+        - name: casServerValidationUrl
+          value: "http://sso"
         - name: casClientHostUrl
-          value: http://cloud.hnlat.local/doc-delivery
+          value: "http://cloud.hnlat.local/doc-delivery"
         ports:
         - containerPort: 80
         livenessProbe:

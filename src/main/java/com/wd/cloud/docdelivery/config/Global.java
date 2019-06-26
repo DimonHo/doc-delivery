@@ -16,10 +16,10 @@ import java.util.List;
 @Accessors(chain = true)
 @RefreshScope
 @Component
-@ConfigurationProperties(value = "help.global")
+@ConfigurationProperties(value = "global")
 public class Global {
 
-    private String cloudDomain;
+    private String cloudHost;
 
     /**
      * 文件在hbase的位置

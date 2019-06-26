@@ -1,7 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
 import cn.hutool.extra.mail.MailException;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
@@ -148,6 +147,6 @@ public class MailServiceImpl implements MailService {
      * @return
      */
     private String buildDownloadUrl(Long helpRecordId) {
-        return global.getCloudDomain() + "/doc-delivery/file/download/" + helpRecordId;
+        return global.getCloudHost() + "/doc-delivery/file/download/" + helpRecordId;
     }
 }
