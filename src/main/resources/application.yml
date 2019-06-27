@@ -76,7 +76,7 @@ spring:
     settings:
       classic_compatible: true
 global:
-  cloud-host: http://cloud.hnlat.local
+  cloud-host: ${globalCloudHost:http://cloud.hnlat.local}
   hbase-table-name: literature
   file-types: [pdf,txt,doc,docx,zip,rar,caj]
   business: doc-delivery:result
