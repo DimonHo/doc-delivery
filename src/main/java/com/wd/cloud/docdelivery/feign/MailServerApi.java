@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Date: 2019/5/14 15:25
  * @Description:
  */
-@FeignClient(value = "mail-server", fallback = MailServerApi.Fallback.class)
+@FeignClient(value = "mail-server", url= "http://cloud.hnlat.com/mail-server", fallback = MailServerApi.Fallback.class)
 public interface MailServerApi {
 
     /**
