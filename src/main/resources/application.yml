@@ -15,10 +15,10 @@ management:
 
 feign:
   url:
-    mail-server: ${feignUrlMaiServer:http://wdapi.hnlat.com/mail-server}
-    fs-server: ${feignUrlFsServer:http://cloud.hnlat.cc/fs-server}
-    uo-server: ${feignUrlUoServer:http://cloud.hnlat.cc/uo-server}
-    pdfsearch-server: ${feignUrlPdfsearchServer:http://cloud.hnlat.cc/pdfsearch-server}
+    mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
+    fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
+    uo-server: ${feignUrlUoServer:http://cloud.hnlat.local/uo-server}
+    pdfsearch-server: ${feignUrlPdfsearchServer:http://cloud.hnlat.local/pdfsearch-server}
 ######################################################################
 
 spring:
