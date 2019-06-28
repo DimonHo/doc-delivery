@@ -16,9 +16,9 @@ management:
 feign:
   client:
     config:
-      fs-server:
+      default:
         read-timeout: 120000
-        logger-level: ${feignClientConfigFsServerLoggerLevel:debug}
+        logger-level: ${feignClientConfigFsServerLoggerLevel:FULL}
   url:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
     fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
@@ -88,8 +88,8 @@ global:
 cas:
   server-url-prefix: ${casServerUrlPrefix:http://sso.hnlat.local}
   server-login-url: ${casServerLoginUrl:http://sso.hnlat.local/login}
-  server-validation-url: ${casServerValidationUrl:http://sso}
-  client-host-url: ${casClientHostUrl:http://cloud.hnlat.local/doc-delivery}
+  server-validation-url: ${casServerValidationUrl:http://sso.hnlat.local}
+  client-host-url: ${casClientHostUrl:http://localhost:${server.port}}
   authentication-url-patterns: /*
   logout-url-patterns: /*
   validation-url-patterns: /*
