@@ -14,6 +14,10 @@ management:
         include: "*"
 
 feign:
+  client:
+    config:
+      read-timeout: 120000
+      logger-level: ${feignClientConfigLoggerLevel:debug}
   url:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
     fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
