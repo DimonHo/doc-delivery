@@ -16,8 +16,9 @@ management:
 feign:
   client:
     config:
-      readTimeout: 120000
-      loggerLevel: ${feignClientConfigLoggerLevel:debug}
+      fs-server:
+        read-timeout: 120000
+        logger-level: ${feignClientConfigFsServerLoggerLevel:debug}
   url:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
     fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
