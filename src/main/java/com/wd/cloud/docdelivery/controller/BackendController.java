@@ -250,7 +250,7 @@ public class BackendController {
         return ResponseModel.ok().setMessage("添加成功");
     }
 
-    @DeleteMapping("/plan/${id}")
+    @DeleteMapping("/plan/{id}")
     public ResponseModel delPlan(@PathVariable Long id){
         literaturePlanService.delPlan(id);
         return ResponseModel.ok().setMessage("删除成功");
