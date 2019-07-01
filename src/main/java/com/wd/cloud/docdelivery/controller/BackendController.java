@@ -3,8 +3,10 @@ package com.wd.cloud.docdelivery.controller;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
 import com.wd.cloud.docdelivery.service.BackendService;
 import com.wd.cloud.docdelivery.service.FileService;
+import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +42,9 @@ public class BackendController {
 
     @Autowired
     MailService mailService;
+
+    @Autowired
+    LiteraturePlanService literaturePlanService;
 
     @Autowired
     Global global;
@@ -237,4 +243,16 @@ public class BackendController {
     }
 
 
+    @ApiOperation(value = "添加排班计划")
+    @PostMapping("/plan")
+    public ResponseModel addPlan(@RequestBody List<PlanVO> PlanVOs) {
+        literaturePlanService.addPlan(PlanVOs);
+        return ResponseModel.ok().setMessage("添加成功");
+    }
+
+    @DeleteMapping("/plan/${id}")
+    public ResponseModel delPlan(@PathVariable Long id){
+        literaturePlanService.delPlan(id);
+        return ResponseModel.ok().setMessage("删除成功");
+    }
 }
