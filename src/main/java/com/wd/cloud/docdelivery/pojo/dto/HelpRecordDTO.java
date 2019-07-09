@@ -52,8 +52,6 @@ public class HelpRecordDTO {
 
     private String remark;
 
-    private List<GiveRecord> giveRecords;
-
     private String giverName;
 
     private Integer giveType;

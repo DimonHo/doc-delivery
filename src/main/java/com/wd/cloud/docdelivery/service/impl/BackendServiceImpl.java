@@ -81,12 +81,7 @@ public class BackendServiceImpl implements BackendService {
         //根据条件查询视图
         Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword,giveType, beginTime, endTime, watchName), pageable);
 
-        Page<HelpRecordDTO> helpRecordDTOS = result.map(vHelpRecord -> {
-            HelpRecordDTO helpRecordDTO = BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class);
-            helpRecordDTO.setGiveRecords(giveRecordRepository.findByHelpRecordIdOrderByGmtModifiedDesc(vHelpRecord.getId()));
-            return helpRecordDTO;
-        });
-        return helpRecordDTOS;
+        return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class));
     }
 
     @Override
