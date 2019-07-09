@@ -69,6 +69,10 @@ public class VHelpRecord {
 
     private Integer status;
 
+    private Integer giveType;
+
+    private String giverName;
+
     @Column(name = "is_send")
     private Boolean send;
 

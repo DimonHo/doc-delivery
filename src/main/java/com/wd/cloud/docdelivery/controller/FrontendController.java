@@ -232,11 +232,8 @@ public class FrontendController {
     public ResponseModel cancelGiving(@PathVariable Long helpRecordId) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        if (frontService.cancelGivingHelp(helpRecordId, username)) {
-            return ResponseModel.ok();
-        } else {
-            return ResponseModel.fail(StatusEnum.NOT_FOUND);
-        }
+        frontService.cancelGivingHelp(helpRecordId, username);
+        return ResponseModel.ok();
     }
 
 

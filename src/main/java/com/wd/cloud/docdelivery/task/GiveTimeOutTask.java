@@ -32,11 +32,9 @@ public class GiveTimeOutTask implements Runnable {
 
     private void updateHelpStatus(GiveRecord giveRecord) {
         giveRecord.setStatus(GiveStatusEnum.TIME_OUT.value());
-        giveRecordRepository.save(giveRecord);
         Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(giveRecord.getHelpRecordId());
         optionalHelpRecord.ifPresent(helpRecord -> {
-            helpRecord.setStatus(0);
-            helpRecordRepository.save(helpRecord);
+            helpRecord.setStatus(0).setGiverName(null).setGiveType(null);
         });
     }
 

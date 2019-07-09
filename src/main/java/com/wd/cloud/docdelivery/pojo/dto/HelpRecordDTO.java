@@ -54,10 +54,9 @@ public class HelpRecordDTO {
 
     private List<GiveRecord> giveRecords;
 
-    /**
-     * 正在被其它用户应助
-     */
-    private GiveRecord giving;
+    private String giverName;
+
+    private Integer giveType;
 
     private String watchName;
 }

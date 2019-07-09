@@ -15,27 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @date 2019/1/17
  * @Description:
  */
-@FeignClient(value = "pdfsearch-server", url = "${feign.url.pdfsearch-server}", fallback = PdfSearchServerApi.Fallback.class)
+@FeignClient(value = "pdfsearch-server", url = "${feign.url.pdfsearch-server}")
 public interface PdfSearchServerApi {
 
     @PostMapping("/searchpdf")
-    public ResponseModel<String> search(@RequestBody Literature literature);
+    ResponseModel<String> search(@RequestBody Literature literature);
 
     @GetMapping("/search/{rowkey}")
-    public ResponseModel<byte[]> getFileByte(@PathVariable(value = "rowkey") String rowkey);
+    ResponseModel<byte[]> getFileByte(@PathVariable(value = "rowkey") String rowkey);
 
-    @Component("pdfSearchServerApi")
-    class Fallback implements PdfSearchServerApi {
-
-
-        @Override
-        public ResponseModel<String> search(Literature literature) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseModel<byte[]> getFileByte(String fileId) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-    }
 }

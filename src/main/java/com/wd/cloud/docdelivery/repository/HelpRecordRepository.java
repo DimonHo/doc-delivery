@@ -26,9 +26,19 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      * @param status
      * @return
      */
-    HelpRecord findByIdAndStatus(long id, int status);
+    Optional<HelpRecord> findByIdAndStatus(long id, int status);
 
     Optional<HelpRecord> findByIdAndStatusNot(long id, int status);
+
+    /**
+     * 我正在应助的
+     * @param giverName
+     * @param status
+     * @return
+     */
+    Optional<HelpRecord> findByGiverNameAndStatus(String giverName,Integer status);
+
+    Optional<HelpRecord> findByIdAndGiverNameAndStatus(Long id,String giverName,Integer status);
 
     @Modifying
     @Transactional

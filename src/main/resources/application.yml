@@ -89,7 +89,7 @@ cas:
   server-url-prefix: ${casServerUrlPrefix:http://sso.hnlat.local}
   server-login-url: ${casServerLoginUrl:http://sso.hnlat.local/login}
   server-validation-url: ${casServerValidationUrl:http://sso.hnlat.local}
-  client-host-url: ${casClientHostUrl:http://localhost:${server.port}}
+  client-host-url: ${casClientHostUrl:http://localhost.hnlat.local:${server.port}}
   authentication-url-patterns: /*
   logout-url-patterns: /*
   validation-url-patterns: /*

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Date: 2019/5/14 15:25
  * @Description:
  */
-@FeignClient(value = "mail-server", url = "${feign.url.mail-server}", fallback = MailServerApi.Fallback.class)
+@FeignClient(value = "mail-server", url = "${feign.url.mail-server}")
 public interface MailServerApi {
 
     /**
@@ -26,12 +26,4 @@ public interface MailServerApi {
     @PostMapping("/send/{business}/{businessId}")
     ResponseModel send(@PathVariable String business, @PathVariable String businessId, @RequestBody MailMessage mailMessage);
 
-    @Component("mailServerApi")
-    class Fallback implements MailServerApi {
-
-        @Override
-        public ResponseModel send(String business, String businessId, MailMessage mailMessage) {
-            return ResponseModel.fail().setMessage("邮件服务异常");
-        }
-    }
 }

@@ -22,6 +22,15 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long>, J
 
     GiveRecord deleteByHelpRecordId(Long helpRecordId);
 
+    /**
+     * 删除用户应助记录
+     * @param giverName
+     * @param helpRecordId
+     * @param status
+     * @return
+     */
+    GiveRecord deleteByGiverNameAndHelpRecordIdAndStatus(String giverName,Long helpRecordId,Integer status);
+
     List<GiveRecord> findByHelpRecordIdAndStatusNot(Long helpRecordId, Integer auditStatus);
 
     /**

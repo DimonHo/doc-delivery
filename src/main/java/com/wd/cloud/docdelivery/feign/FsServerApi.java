@@ -28,8 +28,7 @@ import java.util.List;
  */
 @FeignClient(value = "fs-server",
         url = "${feign.url.fs-server}",
-        configuration = FsServerApi.MultipartSupportConfig.class,
-        fallback = FsServerApi.Fallback.class)
+        configuration = FsServerApi.MultipartSupportConfig.class)
 public interface FsServerApi {
 
     @GetMapping("/check/{dir}/{fileMd5}")
@@ -86,42 +85,4 @@ public interface FsServerApi {
         }
     }
 
-    @Component("fsServerApi")
-    class Fallback implements FsServerApi {
-
-        @Override
-        public ResponseModel<JSONObject> checkFile(String dir, String fileMd5) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseModel<JSONObject> uploadFile(String dir, MultipartFile file) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseModel<JSONObject> uploadFiles(String dir, MultipartFile[] files) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseEntity downloadFile(String unid) {
-            return ResponseEntity.status(2).build();
-        }
-
-        @Override
-        public ResponseModel<byte[]> getFileByte(String unid) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseModel hfToUploadRecord(String tableName) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-
-        @Override
-        public ResponseModel<String> getunid(String tableName, String fileName) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK);
-        }
-    }
 }
