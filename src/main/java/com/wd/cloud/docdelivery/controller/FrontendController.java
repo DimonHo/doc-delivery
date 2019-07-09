@@ -30,12 +30,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,16 +170,19 @@ public class FrontendController {
     @ApiOperation(value = "疑难文献列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query")
+            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/failed")
     public ResponseModel helpFailedList(@RequestParam(required = false) List<Long> channel,
-                                        @RequestParam(required = false) List<Integer> status,
                                         @RequestParam(required = false, defaultValue = "false") boolean isOrg,
+                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                         @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> finishHelpRecords = frontService.getFailedHelpRecords(channel, status, orgFlag, pageable);
+        Page<HelpRecordDTO> finishHelpRecords = frontService.getDifficultHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
 
         return ResponseModel.ok().setBody(finishHelpRecords);
     }

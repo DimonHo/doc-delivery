@@ -2,13 +2,13 @@ package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.DocFile;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -89,13 +89,13 @@ public interface FrontService {
     Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Pageable pageable);
 
     /**
-     * 疑难文献（无结果，求助失败）列表
+     * 疑难文献列表
      *
      * @param helpChannel
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getFailedHelpRecords(List<Long> helpChannel, List<Integer> status, String orgFlag, Pageable pageable);
+    Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     Permission getPermission(String orgFlag, Integer level);
 

@@ -249,14 +249,14 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public Page<HelpRecordDTO> getFailedHelpRecords(List<Long> channel, List<Integer> status, String orgFlag, Pageable pageable) {
+    public Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> channel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         // start 需求(【互助大厅-疑难文献取值范围修改】
         //https://www.tapd.cn/47850539/prong/stories/view/1147850539001000859)
-        Date endDate = new Date();
-        // 一个月间隔
-        Date beginDate = DateUtil.offsetMonth(endDate, -1);
+        Date endDate = endTime != null ? endTime : new Date();
+        // 默认一个月间隔
+        Date beginDate = beginTime != null ? beginTime : DateUtil.offsetMonth(endDate, -1);
         // end
-        Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, true, orgFlag, beginDate, endDate), pageable);
+        Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, null, null, null, null, true, orgFlag, beginDate, endDate), pageable);
         return coversHelpRecordDTO(finishHelpRecords);
     }
 

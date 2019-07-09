@@ -167,6 +167,7 @@ public class BackendServiceImpl implements BackendService {
         HelpRecord helpRecord = helpRecordRepository.findById(helpRecordId).orElseThrow(NotFoundException::new);
         //标记为疑难文献
         helpRecord.setDifficult(true)
+                // 状态回到待应助的状态
                 .setStatus(HelpStatusEnum.WAIT_HELP.value())
                 .setHandlerName(handlerName)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
