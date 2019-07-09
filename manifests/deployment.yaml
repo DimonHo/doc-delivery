@@ -50,7 +50,7 @@ spec:
             value: "http://sso.hnlat.com"
           - name: casServerLoginUrl
             value: "http://sso.hnlat.com/login"
-          - name: server-validation-url
+          - name: serverValidationUrl
             value: "http://sso"
           - name: casClientHostUrl
             value: "http://cloud.hnlat.com/doc-delivery"
