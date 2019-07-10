@@ -1,7 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.exception.FeignException;
 import com.wd.cloud.commons.exception.NotFoundException;
@@ -73,7 +72,7 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName,Integer giveType, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
 
         //  https://www.tapd.cn/33969136/bugtrace/bugs/view?bug_id=1133969136001000485
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;

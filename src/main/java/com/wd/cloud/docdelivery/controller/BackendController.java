@@ -71,7 +71,7 @@ public class BackendController {
                                   @RequestParam(required = false) String orgFlag,
                                   @RequestParam(required = false) String keyword,
                                   @RequestParam(required = false) String watchName,
-                                  @RequestParam(required = false) Integer giveType,
+                                  @RequestParam(required = false) List<Integer> giveType,
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {

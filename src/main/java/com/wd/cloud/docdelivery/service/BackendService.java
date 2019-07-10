@@ -2,7 +2,6 @@ package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.DocFile;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Literature;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,7 @@ public interface BackendService {
      *
      * @return
      */
-    Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName,Integer giveType, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable);
 
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
 
