@@ -1,8 +1,8 @@
 package com.wd.cloud.docdelivery;
 
 
-import com.spring4all.swagger.EnableSwagger2Doc;
 import com.wd.cloud.casspringbootstarter.EnableCasClient;
+import com.wd.starter.swaggerspringbootstarter.EnableSwagger2Doc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
