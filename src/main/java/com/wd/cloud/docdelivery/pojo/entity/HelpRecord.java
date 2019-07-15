@@ -66,10 +66,9 @@ public class HelpRecord extends AbstractEntity {
      * 1：应助中（用户已认领，15分钟内上传文件），
      * 2: 待审核（用户已应助），
      * 3：求助第三方（第三方应助），
-     * 4：应助成功（审核通过或管理员应助），
-     * 5：应助失败（超过15天无结果）
+     * 4：应助成功（审核通过或管理员应助）
      */
-    @Column(name = "status", nullable = false, columnDefinition = "tinyint default 0 COMMENT '0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）'")
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint default 0 COMMENT '0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）'")
     private Integer status;
 
     /**
@@ -77,6 +76,20 @@ public class HelpRecord extends AbstractEntity {
      */
     @Column(name = "is_difficult", nullable = false, columnDefinition = "bit(1) default 0 COMMENT '1：疑难文献'")
     private Boolean difficult;
+    /**
+     * 应助类型
+     * 0：系统自动复用应助，
+     * 1：管理员应助
+     * 2：用户应助
+     * 3：平台数据库应助
+     */
+    private Integer giveType;
+
+    /**
+     * 应助用户
+     */
+    private String giverName;
+
 
     /**
      * 是否成功发送邮件
@@ -85,15 +98,15 @@ public class HelpRecord extends AbstractEntity {
     private Boolean send;
 
     /**
-     * 是否匿名
+     * 是否匿名求助
      */
     @Column(name = "is_anonymous", nullable = false, columnDefinition = "bit(1) default 0 COMMENT '0：未匿名， 1：已匿名'")
     private Boolean anonymous;
 
     /**
-     * 文件资源路径：http://cloud.hnlat.com/fs-server/load/123aasdf12312
+     * 文件Id 123aasdf12312
      */
-    private String file;
+    private String fileId;
 
     /**
      * 最后处理人

@@ -16,49 +16,56 @@ spec:
         app: doc-delivery
     spec:
       containers:
-      - name: doc-delivery
-        image: harbor.hnwd.com/library/doc-delivery:__VERSION__
-        env:
-        - name: app.port
-          value: "80"
-        - name: basedir
-          value: /app/basedir
-        - name: show-sql
-          value: "false"
-        - name: db.host
-          value: mysql-dev.database
-        - name: db.port
-          value: "3306"
-        - name: db.user
-          value: root
-        - name: db.pass
-          value: wdkj@123#
-        - name: mail-server
-          value: http://cloud.hnlat.local/mail-server
-        - name: fs-server
-          value: http://cloud.hnlat.com/fs-server
-        - name: uo-server
-          value: http://cloud.hnlat.local/uo-server
-        - name: pdfsearch-server
-          value: http://cloud.hnlat.local/pdfsearch-server
-        - name: cas.server.url.prefix
-          value: http://sso.hnlat.local
-        - name: cas.server.login.url
-          value: http://sso.hnlat.local/login
-        - name: cas.client.host.url
-          value: http://cloud.hnlat.local/doc-delivery
-        ports:
-        - containerPort: 80
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 80
-          initialDelaySeconds: 10
-          timeoutSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 80
-          initialDelaySeconds: 10
-          timeoutSeconds: 10
+        - name: doc-delivery
+          image: harbor.hnwd.com/library/doc-delivery:__VERSION__
+          imagePullPolicy: Always
+          env:
+          - name: serverPort
+            value: "80"
+          - name: serverTomcatBasedir
+            value: "/app/spring-tomcat"
+          - name: swaggerEnable
+            value: "true"
+          - name: swaggerHost
+            value: "cloud.hnlat.local/doc-delivery"
+          - name: springJpaShowSql
+            value: "false"
+          - name: springJpaHibernateDDLAuto
+            value: "update"
+          - name: dbUrl
+            value: "mysql-dev.database:3306"
+          - name: dbUser
+            value: "root"
+          - name: dbPass
+            value: "wdkj@123#"
+          - name: feignUrlMaiServer
+            value: "http://mail-server"
+          - name: feignUrlFsServer
+            value: "http://cloud.hnlat.local/fs-server"
+          - name: feignUrlUoServer
+            value: "http://uo-server"
+          - name: feignUrlPdfsearchServer
+            value: "http://cloud.hnlat.local/pdfsearch-server"
+          - name: casServerUrlPrefix
+            value: "http://sso.hnlat.com"
+          - name: casServerLoginUrl
+            value: "http://sso.hnlat.com/login"
+          - name: casServerValidationUrl
+            value: "http://sso"
+          - name: casClientHostUrl
+            value: "http://cloud.hnlat.com/doc-delivery"
+          ports:
+          - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
 

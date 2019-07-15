@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "uo-server",fallback = UoServerApi.Fallback.class)
+@FeignClient(value = "uo-server", url = "${feign.url.uo-server}")
 public interface UoServerApi {
 
     @GetMapping("/org")
@@ -26,17 +26,4 @@ public interface UoServerApi {
     @GetMapping("/user")
     ResponseModel<JSONObject> user(@RequestParam(value = "id") String id);
 
-    @Component("uoServerApi")
-    class Fallback implements UoServerApi {
-
-        @Override
-        public ResponseModel<JSONObject> org(String name, String flag, String ip) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK).setMessage("[fallback]:uo-server调用失败！");
-        }
-
-        @Override
-        public ResponseModel<JSONObject> user(String id) {
-            return ResponseModel.fail(StatusEnum.FALL_BACK).setMessage("[fallback]:uo-server调用失败！");
-        }
-    }
 }

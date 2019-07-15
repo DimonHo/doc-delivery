@@ -10,6 +10,7 @@ import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
 import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
 import com.wd.cloud.docdelivery.model.DownloadFileModel;
@@ -64,37 +65,31 @@ public class FileServiceImpl implements FileService {
     @Override
     public DownloadFileModel getDownloadFile(Long helpRecordId) {
         DownloadFileModel downloadFileModel = null;
-        Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(helpRecordId);
+        Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELP_SUCCESSED.value());
         if (optionalHelpRecord.isPresent()) {
             HelpRecord helpRecord = optionalHelpRecord.get();
             if (checkTimeOut(helpRecord.getGmtModified())) {
                 throw new ExpException("文件已过期");
             }
-            GiveRecord giveRecord = giveService.getGiveRecord(helpRecordId, GiveStatusEnum.SUCCESS).orElseThrow(NotFoundException::new);
-            downloadFileModel = buildDownloadModel(helpRecord, giveRecord);
+            downloadFileModel = buildDownloadModel(helpRecord);
         }
         return downloadFileModel;
     }
 
     @Override
     public DownloadFileModel getWaitAuditFile(Long helpRecordId) {
-        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
-        Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(helpRecordId, GiveStatusEnum.WAIT_AUDIT);
-        if (optionalGiveRecord.isPresent()) {
-            DownloadFileModel downloadFileModel = buildDownloadModel(helpRecord, optionalGiveRecord.get());
-            return downloadFileModel;
-        }
-        return null;
+        Optional<HelpRecord> helpRecordRow = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.WAIT_AUDIT.value());
+        return helpRecordRow.map(this::buildDownloadModel).orElse(null);
     }
 
-    private DownloadFileModel buildDownloadModel(HelpRecord helpRecord, GiveRecord giveRecord) {
-        String fileId = giveRecord.getFileId();
+    private DownloadFileModel buildDownloadModel(HelpRecord helpRecord) {
+        String fileId = helpRecord.getFileId();
         Literature literature = literatureRepository.findById(helpRecord.getLiteratureId()).orElse(null);
         String docTitle = literature != null ? literature.getDocTitle() : null;
         //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
         docTitle = FileUtil.cleanInvalid(docTitle);
         DownloadFileModel downloadFileModel = new DownloadFileModel();
-        ResponseModel<byte[]> responseModel = giveRecord.getType() == GiveTypeEnum.BIG_DB.value() ?
+        ResponseModel<byte[]> responseModel = helpRecord.getGiveType() == GiveTypeEnum.BIG_DB.value() ?
                 pdfSearchServerApi.getFileByte(fileId) : fsServerApi.getFileByte(fileId);
         if (responseModel.isError()) {
             log.error("文件服务调用失败：{}", responseModel.getMessage());
@@ -113,7 +108,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String getDownloadUrl(Long helpRecordId) {
-        return global.getCloudDomain() + "/doc-delivery/file/download/" + helpRecordId;
+        return global.getCloudHost() + "/doc-delivery/file/download/" + helpRecordId;
     }
 
 }

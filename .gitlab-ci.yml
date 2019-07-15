@@ -6,6 +6,8 @@ stages:
 maven-build:
   image: harbor.hnwd.com/library/maven:3.6.1
   stage: build
+  only:
+    - branches
   script: "mvn package -Dmaven.test.skip=true -B"
   artifacts:
     paths:
@@ -14,6 +16,8 @@ maven-build:
 docker-build:
   stage: package
   image: docker:latest
+  only:
+    - branches
   variables:
     DOCKER_DRIVER: overlay
     DOCKER_HOST: tcp://localhost:2375
@@ -31,13 +35,14 @@ docker-build:
 k8s-deploy:
   image: cnych/kubectl
   stage: deploy
+  only:
+    - branches
   environment:
     name: dev
   when: manual
   script:
     - kubectl version
     - cd manifests/
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml service.yaml
     - |
       if kubectl apply -f deployment.yaml  -n dev | grep -q unchanged; then
@@ -48,4 +53,4 @@ k8s-deploy:
       fi
     - kubectl apply -f service.yaml -n dev || true
     - kubectl rollout status -f deployment.yaml -n dev
-    - kubectl get all -l ref=${CI_ENVIRONMENT_SLUG} -n dev
+    - kubectl get all -l app=doc-delivery -n dev

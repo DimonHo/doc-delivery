@@ -1,8 +1,8 @@
 package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,10 +12,11 @@ import java.util.List;
  */
 public interface LiteraturePlanService {
 
+    void addPlan(List<PlanVO> PlanVOs);
+
+    void delPlan(Long id);
+
     List<LiteraturePlan> findNextLiteraturePlans();
 
     List<LiteraturePlan> findNowDaysLiteraturePlans();
-
-    void arrangePerson(LiteraturePlan literaturePlan, String arrange);
-
 }

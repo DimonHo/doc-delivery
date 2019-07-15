@@ -49,7 +49,7 @@ public class FileController {
     public void download(@PathVariable Long helpRecodeId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         DownloadFileModel downloadFileModel = fileService.getDownloadFile(helpRecodeId);
         if (downloadFileModel == null) {
-            response.sendRedirect(global.getCloudDomain() + "/doc-delivery/fileNotFind.html");
+            response.sendRedirect(global.getCloudHost() + "/doc-delivery/fileNotFind.html");
             return;
         }
         String filename = null;

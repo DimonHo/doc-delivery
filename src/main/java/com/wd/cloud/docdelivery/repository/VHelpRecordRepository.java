@@ -14,6 +14,7 @@ import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>, JpaSpecificationExecutor<VHelpRecord> {
 
@@ -21,9 +22,17 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
 
     Page<VHelpRecord> findBySend(boolean isSend, Pageable pageable);
 
+    /**
+     * 查询用户正在应助的文献
+     * @param giverName
+     * @param status
+     * @return
+     */
+    Optional<VHelpRecord> findByGiverNameAndStatus(String giverName, Integer status);
+
     class SpecBuilder {
 
-        public static Specification<VHelpRecord> buildBackendList(String orgFlag, Integer status, String keyword, String beginTime, String endTime, String watchName) {
+        public static Specification<VHelpRecord> buildBackendList(String orgFlag, Integer status, String keyword, List<Integer> giveType, Date beginTime, Date endTime, String watchName) {
             return (Specification<VHelpRecord>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StrUtil.isNotBlank(orgFlag)) {
@@ -37,6 +46,9 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                         list.add(cb.equal(root.get("status").as(Integer.class), status));
                     }
                 }
+                if (CollectionUtil.isNotEmpty(giveType)) {
+                    list.add(cb.in(root.get("giveType")).value(giveType));
+                }
                 if (StrUtil.isNotBlank(keyword)) {
                     list.add(cb.or(
                             cb.like(root.get("docTitle").as(String.class), "%" + keyword.trim() + "%"),
@@ -47,12 +59,12 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 if (StrUtil.isNotBlank(watchName)) {
                     list.add(cb.equal(root.get("watchName"), watchName));
                 }
-                if (StrUtil.isNotBlank(beginTime)) {
-                    list.add(cb.greaterThanOrEqualTo(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime)));
+                if (beginTime != null) {
+                    list.add(cb.greaterThanOrEqualTo(root.get("gmtCreate").as(Date.class), beginTime));
 
                 }
                 // 默认最新返回10秒之前的求助，防止自动应助任务还未跑完，被文献传递人员抢先处理
-                Date end = StrUtil.isNotBlank(endTime)?DateUtil.parse(endTime):DateUtil.offsetSecond(new Date(),-10);
+                Date end = endTime != null ? endTime : DateUtil.offsetSecond(new Date(),-10);
                 list.add(cb.lessThanOrEqualTo(root.get("gmtCreate").as(Date.class), end));
 
                 Predicate[] p = new Predicate[list.size()];

@@ -3,8 +3,10 @@ package com.wd.cloud.docdelivery.controller;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
 import com.wd.cloud.docdelivery.service.BackendService;
 import com.wd.cloud.docdelivery.service.FileService;
+import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -15,11 +17,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +44,9 @@ public class BackendController {
 
     @Autowired
     MailService mailService;
+
+    @Autowired
+    LiteraturePlanService literaturePlanService;
 
     @Autowired
     Global global;
@@ -63,11 +71,12 @@ public class BackendController {
                                   @RequestParam(required = false) String orgFlag,
                                   @RequestParam(required = false) String keyword,
                                   @RequestParam(required = false) String watchName,
-                                  @RequestParam(required = false) String beginTime,
-                                  @RequestParam(required = false) String endTime,
+                                  @RequestParam(required = false) List<Integer> giveType,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, orgFlag, keyword,watchName,beginTime,endTime,pageable);
+        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, orgFlag, keyword,watchName,giveType,beginTime,endTime,pageable);
         return ResponseModel.ok().setBody(helpRecordDTOPage);
     }
 
@@ -85,7 +94,7 @@ public class BackendController {
     @GetMapping("/literature/list")
     public ResponseModel literatureList(@RequestParam(required = false) Boolean reusing, @RequestParam(required = false) String keyword,
                                         @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Map<String, Object> param = new HashMap<String, Object>();
+        Map<String, Object> param = new HashMap<>(2);
         param.put("reusing", reusing);
         param.put("keyword", keyword);
         return ResponseModel.ok().setBody(backendService.getLiteratureList(pageable, param));
@@ -101,10 +110,9 @@ public class BackendController {
             @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query")
     })
     @GetMapping("/docFile/list")
-    public ResponseModel getDocFileList(@RequestParam Long literatureId,
-                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel getDocFileList(@RequestParam Long literatureId) {
 
-        return ResponseModel.ok().setBody(backendService.getDocFileList(pageable, literatureId));
+        return ResponseModel.ok().setBody(backendService.getDocFileList(literatureId));
     }
 
     /**
@@ -157,7 +165,7 @@ public class BackendController {
     })
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam String username) {
-        backendService.failed(id, username);
+        backendService.difficult(id, username);
         return ResponseModel.ok().setMessage("处理成功");
     }
 
@@ -173,7 +181,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam String username) {
-        backendService.auditPass(id, username);
+        backendService.audit(id, username,true);
         return ResponseModel.ok();
     }
 
@@ -189,7 +197,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam String username) {
-        backendService.auditNoPass(id, username);
+        backendService.audit(id, username,false);
         return ResponseModel.ok();
     }
 
@@ -237,4 +245,16 @@ public class BackendController {
     }
 
 
+    @ApiOperation(value = "添加排班计划")
+    @PostMapping("/plan")
+    public ResponseModel addPlan(@RequestBody List<PlanVO> PlanVOs) {
+        literaturePlanService.addPlan(PlanVOs);
+        return ResponseModel.ok().setMessage("添加成功");
+    }
+
+    @DeleteMapping("/plan/{id}")
+    public ResponseModel delPlan(@PathVariable Long id){
+        literaturePlanService.delPlan(id);
+        return ResponseModel.ok().setMessage("删除成功");
+    }
 }

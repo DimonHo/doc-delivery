@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM harbor.hnwd.com/library/openjdk:8-jdk-alpine
 
 RUN mkdir /app && mkdir /app/catche
 WORKDIR /app
