@@ -136,11 +136,11 @@ public class BackendServiceImpl implements BackendService {
             log.info("文件{}上传成功!", file.getOriginalFilename());
             fileId = uploadResult.getBody().getStr("fileId");
         }
-        DocFile docFile = saveDocFile(helpRecord.getLiteratureId(), fileId);
+        saveDocFile(helpRecord.getLiteratureId(), fileId);
 
         //修改求助状态为应助成功
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
-                .setFileId(docFile.getFileId())
+                .setFileId(fileId)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
                 .setGiverName(null)
                 .setHandlerName(handlerName);
