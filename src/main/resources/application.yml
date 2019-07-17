@@ -94,3 +94,5 @@ cas:
   logout-url-patterns: /*
   validation-url-patterns: /*
   request-wrapper-url-patterns: /*
+  filter:
+    authentication-enable: false

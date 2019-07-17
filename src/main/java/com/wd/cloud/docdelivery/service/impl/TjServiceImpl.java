@@ -14,6 +14,7 @@ import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.PermissionRepository;
+import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.TjService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author He Zhigang
@@ -41,6 +39,9 @@ public class TjServiceImpl implements TjService {
 
     @Autowired
     HelpRecordRepository helpRecordRepository;
+
+    @Autowired
+    VHelpRecordRepository vHelpRecordRepository;
 
     @Autowired
     GiveRecordRepository giveRecordRepository;
@@ -183,5 +184,12 @@ public class TjServiceImpl implements TjService {
                 .setTodayRestTotal(todayRestTotal)
                 .setSuccessHelpCount(successHelpCount);
         return myTjDTO;
+    }
+
+    @Override
+    public List<Map<String, Object>> orgTj(String orgFlag, Integer type, Date begin, Date end) {
+        String dateFormat = DateUtil.formatMysqlStr2(type);
+        List<Map<String, Object>> res = vHelpRecordRepository.orgTj(orgFlag, dateFormat, begin, end);
+        return res;
     }
 }

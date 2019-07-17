@@ -4,6 +4,8 @@ import com.wd.cloud.docdelivery.pojo.dto.MyTjDTO;
 import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
 
 import java.math.BigInteger;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,5 +67,7 @@ public interface TjService {
      */
     MyTjDTO tjEmail(String email, String ip);
 
+
+    List<Map<String, Object>> orgTj(String orgFlag, Integer type, Date begin, Date end);
 
 }

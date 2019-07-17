@@ -4,23 +4,21 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>, JpaSpecificationExecutor<VHelpRecord> {
 
     List<VHelpRecord> findBySend(boolean isSend);
 
-    Page<VHelpRecord> findBySend(boolean isSend, Pageable pageable);
+    //@Query(value = "SELECT t1.help_date AS help_date,IFNULL(t2.total,0) AS total FROM (SELECT @s :=@s+1 AS _index,DATE_FORMAT(DATE_SUB(?4,INTERVAL @s HOUR),?2) AS help_date FROM mysql.help_topic,(SELECT @s :=-1) temp WHERE DATE(DATE_SUB(?4,INTERVAL @s HOUR))>=?3) AS t1 LEFT JOIN (SELECT count(id) AS total,date_format(gmt_create,?2) help_date FROM v_help_record WHERE org_flag=?1 AND gmt_create BETWEEN ?3 AND ?4 GROUP BY help_date) AS t2 ON t1.help_date=t2.help_date ORDER BY t1.help_date",nativeQuery = true)
+    @Query(value = "select gmt_create from v_help_record group by gmt_create", nativeQuery = true)
+    List<Map<String, Object>> orgTj(String orgFlag, String dateFormat, Date begin, Date end);
 
     /**
      * 查询用户正在应助的文献
@@ -64,7 +62,7 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
 
                 }
                 // 默认最新返回10秒之前的求助，防止自动应助任务还未跑完，被文献传递人员抢先处理
-                Date end = endTime != null ? endTime : DateUtil.offsetSecond(new Date(),-10);
+                Date end = endTime != null ? endTime : DateUtil.offsetSecond(new Date(), -10).toJdkDate();
                 list.add(cb.lessThanOrEqualTo(root.get("gmtCreate").as(Date.class), end));
 
                 Predicate[] p = new Predicate[list.size()];
@@ -104,7 +102,7 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (beginDate != null || endDate != null) {
                     Date end = endDate == null ? new Date() : endDate;
-                    Date begin = beginDate == null ? DateUtil.offsetMonth(end, -1) : beginDate;
+                    Date begin = beginDate == null ? DateUtil.offsetMonth(end, -1).toJdkDate() : beginDate;
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
 
