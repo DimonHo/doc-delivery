@@ -32,7 +32,6 @@ import java.util.Optional;
  */
 @Slf4j
 @Service("mailService")
-@Transactional(rollbackFor = Exception.class)
 public class MailServiceImpl implements MailService {
 
     @Autowired
