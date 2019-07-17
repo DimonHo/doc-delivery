@@ -14,12 +14,14 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -99,6 +101,29 @@ public class TjController {
         avgResponseJson.put("avgResponseTime", avgResponseTime);
         avgResponseJson.put("avgSuccessResponseTime", avgSuccessResponseTime);
         return ResponseModel.ok().setBody(avgResponseJson);
+    }
+
+
+    @ApiOperation(value = "机构统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "统计类型，0（默认）：时分秒，1：按分钟统计，2按小时统计，3按日统计，4按月统计，5按年统计", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "begin", value = "起始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "end", value = "结束时间", dataType = "Date", paramType = "query")
+    })
+    @GetMapping("/tj/org")
+    public ResponseModel orgTj(@RequestParam(required = false, defaultValue = "3") Integer type,
+                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date begin,
+                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end) {
+        end = end == null ? DateUtil.endOfDay(new Date()).toJdkDate() : end;
+        // 默认范围一个月
+        begin = begin == null ? DateUtil.offsetMonth(end, -1).toJdkDate() : begin;
+        JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
+        if (org != null) {
+            String orgFlag = org.getStr("flag");
+            return ResponseModel.ok().setBody(tjService.orgTj(orgFlag, type, begin, end));
+        }
+
+        return ResponseModel.fail().setMessage("访问IP非法");
     }
 
 }

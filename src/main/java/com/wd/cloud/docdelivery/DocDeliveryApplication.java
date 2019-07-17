@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery;
 
 
-import com.wd.cloud.casspringbootstarter.EnableCasClient;
+import com.wd.starter.casspringbootstarter.EnableCasClient;
 import com.wd.starter.swaggerspringbootstarter.EnableSwagger2Doc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

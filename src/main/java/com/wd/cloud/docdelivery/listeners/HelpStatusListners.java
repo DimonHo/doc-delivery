@@ -81,5 +81,4 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
     public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
         return false;
     }
-
 }
