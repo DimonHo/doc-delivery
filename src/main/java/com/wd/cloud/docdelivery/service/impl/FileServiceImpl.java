@@ -23,6 +23,7 @@ import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.GiveService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +35,9 @@ import java.util.Optional;
  * @date 2018/5/16
  * @Description:
  */
+@Slf4j
 @Service("fileService")
 public class FileServiceImpl implements FileService {
-
-    private static final Log log = LogFactory.get();
 
     @Autowired
     Global global;

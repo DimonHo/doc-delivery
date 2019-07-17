@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service("backendService")
+@Transactional(rollbackFor = Exception.class)
 public class BackendServiceImpl implements BackendService {
 
     @Autowired
