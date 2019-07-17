@@ -17,13 +17,30 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
-        <wd.swagger.version>1.0.3</wd.swagger.version>
-        <cas.starter.version>2.0.0-SNAPSHOT</cas.starter.version>
         <druid.version>1.1.14</druid.version>
-        <com.wd.cloud.commons.version>1.0.1</com.wd.cloud.commons.version>
+        <wd.swagger.version>2.0.0-SNAPSHOT</wd.swagger.version>
+        <wd.cas.version>2.0.0-SNAPSHOT</wd.cas.version>
+        <cloud.commons.version>2.0.0-SNAPSHOT</cloud.commons.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.wd.cloud</groupId>
+            <artifactId>commons</artifactId>
+            <version>${cloud.commons.version}</version>
+        </dependency>
+        <!-- 集成swagger -->
+        <dependency>
+            <groupId>com.wd.starter</groupId>
+            <artifactId>swagger-spring-boot-starter</artifactId>
+            <version>${wd.swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wd.starter</groupId>
+            <artifactId>cas-spring-boot-starter</artifactId>
+            <version>${wd.cas.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -43,8 +60,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-
-
         <!-- 监控配置 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,23 +84,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
-        </dependency>
-        <!-- 集成swagger -->
-        <dependency>
-            <groupId>com.wd.starter</groupId>
-            <artifactId>swagger-spring-boot-starter</artifactId>
-            <version>${wd.swagger.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.wd.starter</groupId>
-            <artifactId>cas-spring-boot-starter</artifactId>
-            <version>${cas.starter.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.wd.cloud</groupId>
-            <artifactId>commons</artifactId>
-            <version>${com.wd.cloud.commons.version}</version>
         </dependency>
 
         <dependency>
