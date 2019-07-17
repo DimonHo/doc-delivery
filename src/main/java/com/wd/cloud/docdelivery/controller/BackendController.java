@@ -63,8 +63,8 @@ public class BackendController {
             @ApiImplicitParam(name = "orgFlag", value = "学校falg", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "搜索关键词", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "watchName", value = "值班人员", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "beginTime", value = "开始时间", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "beginTime", value = "开始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/helpRecords/view")
     public ResponseModel helpList(@RequestParam(required = false) Integer status,

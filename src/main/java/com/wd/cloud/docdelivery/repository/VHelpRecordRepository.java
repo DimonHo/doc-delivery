@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.repository;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,6 +47,9 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (CollectionUtil.isNotEmpty(giveType)) {
                     list.add(cb.in(root.get("giveType")).value(giveType));
+                }else{
+                    list.add(cb.notEqual(root.get("giveType"), GiveTypeEnum.BIG_DB.value()));
+                    list.add(cb.notEqual(root.get("giveType"), GiveTypeEnum.AUTO.value()));
                 }
                 if (StrUtil.isNotBlank(keyword)) {
                     list.add(cb.or(
