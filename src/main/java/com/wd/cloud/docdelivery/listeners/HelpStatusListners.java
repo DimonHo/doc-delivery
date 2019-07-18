@@ -29,10 +29,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class HelpStatusListners extends DefaultLoadEventListener implements PostUpdateEventListener {
-    /**
-     * HelpRecord.status字段名称
-     */
-    private static final String HELP_RECORD_STATUS = "status";
+
     /**
      * 3:求助第三方，4：求助成功，5：疑难文献
      */
@@ -69,9 +66,10 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
                 // 新旧字段值是否不一样
                 boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
                 // 是否是status字段
-                boolean isColumnEqStatus = HELP_RECORD_STATUS.equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
+                boolean isColumnEqStatus = "status".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
                 // 新值是否在status列表中
                 boolean newStatusContains = SEND_STATUS.contains(postUpdateEvent.getState()[i]);
+
                 boolean statusChangeSend = isColumnEqStatus && newNotEqOld && newStatusContains;
 
                 // 是否是difficult字段
