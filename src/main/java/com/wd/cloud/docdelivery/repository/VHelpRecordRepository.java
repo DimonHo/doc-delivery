@@ -47,6 +47,13 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (CollectionUtil.isNotEmpty(giveType)) {
                     list.add(cb.in(root.get("giveType")).value(giveType));
+                }else{
+
+                    list.add(cb.or(
+                            cb.and(cb.notEqual(root.get("giveType"), GiveTypeEnum.AUTO.value()),
+                                    cb.notEqual(root.get("giveType"), GiveTypeEnum.BIG_DB.value())
+                            ),
+                            cb.isNull(root.get("giveType"))));
                 }
                 if (StrUtil.isNotBlank(keyword)) {
                     list.add(cb.or(
