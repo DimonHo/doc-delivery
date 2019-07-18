@@ -2,7 +2,9 @@ package com.wd.cloud.docdelivery.repository;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,22 +32,29 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
 
     class SpecBuilder {
 
-        public static Specification<VHelpRecord> buildBackendList(String orgFlag, Integer status, String keyword, List<Integer> giveType, Date beginTime, Date endTime, String watchName) {
+        public static Specification<VHelpRecord> buildBackendList(String orgFlag, List<Integer> status,Boolean isDifficult, String keyword, List<Integer> giveType, Date beginTime, Date endTime, String watchName) {
             return (Specification<VHelpRecord>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
+
+                if (isDifficult != null){
+                    list.add(cb.equal(root.get("difficult"),isDifficult));
+                }
                 if (StrUtil.isNotBlank(orgFlag)) {
                     list.add(cb.equal(root.get("orgFlag"), orgFlag));
                 }
-                if (status != null && status != 0) {
-                    //列表查询未处理
-                    if (status == 1) {
-                        list.add(cb.or(cb.equal(root.get("status").as(Integer.class), 0), cb.equal(root.get("status").as(Integer.class), 1), cb.equal(root.get("status").as(Integer.class), 2)));
-                    } else {
-                        list.add(cb.equal(root.get("status").as(Integer.class), status));
-                    }
+                if (CollectionUtil.isNotEmpty(status)){
+                    list.add(cb.in(root.get("status")).value(status));
                 }
+
                 if (CollectionUtil.isNotEmpty(giveType)) {
                     list.add(cb.in(root.get("giveType")).value(giveType));
+                }else{
+
+                    list.add(cb.or(
+                            cb.and(cb.notEqual(root.get("giveType"), GiveTypeEnum.AUTO.value()),
+                                    cb.notEqual(root.get("giveType"), GiveTypeEnum.BIG_DB.value())
+                            ),
+                            cb.isNull(root.get("giveType"))));
                 }
                 if (StrUtil.isNotBlank(keyword)) {
                     list.add(cb.or(

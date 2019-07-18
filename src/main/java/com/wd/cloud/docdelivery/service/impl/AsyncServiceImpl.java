@@ -14,7 +14,6 @@ import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.AsyncService;
-import com.wd.cloud.docdelivery.service.HelpRequestService;
 import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +97,10 @@ public class AsyncServiceImpl implements AsyncService {
 
                     docFileRepository.save(docFile);
                     giveRecordRepository.save(giveRecord);
-                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
+                            .setFileId(fileId)
+                            .setGiveType(GiveTypeEnum.BIG_DB.value())
+                            .setGiverName(GiveTypeEnum.BIG_DB.name());
                     helpRecordRepository.save(helpRecord);
                 } else {
                     flag[0] = false;
@@ -125,7 +127,10 @@ public class AsyncServiceImpl implements AsyncService {
                 .setStatus(GiveStatusEnum.SUCCESS.value())
                 .setHelpRecordId(helpRecord.getId());
         giveRecordRepository.save(giveRecord);
-        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
+                .setFileId(reusingDocFile.getFileId())
+                .setGiveType(GiveTypeEnum.AUTO.value())
+                .setGiverName(GiveTypeEnum.AUTO.name());
         helpRecordRepository.save(helpRecord);
         return true;
     }

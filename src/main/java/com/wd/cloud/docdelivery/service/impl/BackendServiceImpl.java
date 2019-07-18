@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service("backendService")
+@Transactional(rollbackFor = Exception.class)
 public class BackendServiceImpl implements BackendService {
 
     @Autowired
@@ -72,13 +74,13 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDTO> getHelpList(List<Integer> status,Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
 
         //  https://www.tapd.cn/33969136/bugtrace/bugs/view?bug_id=1133969136001000485
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;
 
         //根据条件查询视图
-        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword,giveType, beginTime, endTime, watchName), pageable);
+        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, isDifficult, keyword,giveType, beginTime, endTime, watchName), pageable);
 
         return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class));
     }
@@ -134,11 +136,11 @@ public class BackendServiceImpl implements BackendService {
             log.info("文件{}上传成功!", file.getOriginalFilename());
             fileId = uploadResult.getBody().getStr("fileId");
         }
-        DocFile docFile = saveDocFile(helpRecord.getLiteratureId(), fileId);
+        saveDocFile(helpRecord.getLiteratureId(), fileId);
 
         //修改求助状态为应助成功
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
-                .setFileId(docFile.getFileId())
+                .setFileId(fileId)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
                 .setGiverName(null)
                 .setHandlerName(handlerName);
@@ -171,7 +173,6 @@ public class BackendServiceImpl implements BackendService {
                 .setHandlerName(handlerName)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
                 .setGiverName(null);
-
     }
 
     /**

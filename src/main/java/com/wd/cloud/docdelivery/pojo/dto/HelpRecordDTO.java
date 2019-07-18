@@ -1,11 +1,9 @@
 package com.wd.cloud.docdelivery.pojo.dto;
 
-import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author He Zhigang
@@ -51,6 +49,8 @@ public class HelpRecordDTO {
     private Boolean difficult;
 
     private String remark;
+
+    private String handlerName;
 
     private String giverName;
 
