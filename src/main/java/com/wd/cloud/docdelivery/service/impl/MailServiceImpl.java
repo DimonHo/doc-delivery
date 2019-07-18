@@ -1,7 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.mail.MailException;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
@@ -83,16 +82,9 @@ public class MailServiceImpl implements MailService {
         mailTemplateModel.setChannelName(vHelpRecord.getChannelName())
                 .setChannelUrl(vHelpRecord.getChannelUrl())
                 .setDocTitle(vHelpRecord.getDocTitle());
-
         Optional<HelpStatusEnum> optionalHelpStatusEnum = HelpStatusEnum.match(vHelpRecord.getStatus());
         if (optionalHelpStatusEnum.isPresent()) {
             switch (optionalHelpStatusEnum.get()) {
-                case WAIT_HELP:
-                    mailTemplateModel.setMailTitle("用户文献互助")
-                            .setHelperEmail(vHelpRecord.getHelperEmail())
-                            .setOrgName(vHelpRecord.getOrgName())
-                            .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-notify"));
-                    break;
                 case HELP_THIRD:
                     mailTemplateModel.setMailTitle(String.format("回复: [文献互助•疑难文献]-%s", vHelpRecord.getDocTitle()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-third"));
@@ -102,12 +94,9 @@ public class MailServiceImpl implements MailService {
                             .setDownloadUrl(buildDownloadUrl(vHelpRecord.getId()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-success"));
                     break;
-                case HELP_FAILED:
+                default:
                     mailTemplateModel.setMailTitle(String.format("回复: [文献互助•失败]-%s", vHelpRecord.getDocTitle()))
                             .setTemplate(String.format(vHelpRecord.getChannelTemplate(), vHelpRecord.getOrgName() + "-failed"));
-                    break;
-                default:
-                    throw new MailException("邮件构建错误");
             }
         }
         return mailTemplateModel;
