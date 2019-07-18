@@ -173,7 +173,6 @@ public class BackendServiceImpl implements BackendService {
                 .setHandlerName(handlerName)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
                 .setGiverName(null);
-
     }
 
     /**

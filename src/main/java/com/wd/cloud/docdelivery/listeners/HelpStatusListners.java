@@ -66,13 +66,28 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
         if (postUpdateEvent.getEntity() instanceof HelpRecord) {
             HelpRecord helpRecord = (HelpRecord) postUpdateEvent.getEntity();
             for (int i = 0; i < postUpdateEvent.getPersister().getPropertyNames().length; i++) {
-                if (HELP_RECORD_STATUS.equals(postUpdateEvent.getPersister().getPropertyNames()[i])
-                        && postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i]
-                        && SEND_STATUS.contains(postUpdateEvent.getState()[i])) {
+                // 新旧字段值是否不一样
+                boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
+                // 是否是status字段
+                boolean isColumnEqStatus = HELP_RECORD_STATUS.equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
+                // 新值是否在status列表中
+                boolean newStatusContains = SEND_STATUS.contains(postUpdateEvent.getState()[i]);
+                boolean statusChangeSend = isColumnEqStatus && newNotEqOld && newStatusContains;
+
+                // 是否是difficult字段
+                boolean isColumnEqDifficult = "difficult".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
+                // 新值difficult是否为true
+                boolean newDifficultIsTrue = false;
+                if (isColumnEqDifficult){
+                    newDifficultIsTrue = (boolean)postUpdateEvent.getState()[i];
+                }
+                boolean difficultChangeSend = isColumnEqDifficult && newDifficultIsTrue;
+                if (statusChangeSend || difficultChangeSend) {
                     Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecord.getId());
                     optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
-
+                    break;
                 }
+
             }
         }
     }
