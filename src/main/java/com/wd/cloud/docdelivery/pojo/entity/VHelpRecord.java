@@ -69,6 +69,8 @@ public class VHelpRecord {
 
     private Integer status;
 
+    private String handlerName;
+
     private Integer giveType;
 
     private String giverName;

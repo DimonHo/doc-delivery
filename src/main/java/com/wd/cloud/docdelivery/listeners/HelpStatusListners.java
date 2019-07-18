@@ -33,7 +33,7 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
     /**
      * 3:求助第三方，4：求助成功，5：疑难文献
      */
-    private static final List<Integer> SEND_STATUS = CollectionUtil.newArrayList(3, 4, 5);
+    private static final List<Integer> SEND_STATUS = CollectionUtil.newArrayList(3, 4);
     @Autowired
     MailService mailService;
 
