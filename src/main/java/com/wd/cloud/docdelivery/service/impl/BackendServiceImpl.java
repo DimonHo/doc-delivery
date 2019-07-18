@@ -74,13 +74,13 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public Page<HelpRecordDTO> getHelpList(Integer status, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDTO> getHelpList(List<Integer> status,Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
 
         //  https://www.tapd.cn/33969136/bugtrace/bugs/view?bug_id=1133969136001000485
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;
 
         //根据条件查询视图
-        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, keyword,giveType, beginTime, endTime, watchName), pageable);
+        Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, isDifficult, keyword,giveType, beginTime, endTime, watchName), pageable);
 
         return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class));
     }

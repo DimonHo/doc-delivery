@@ -59,7 +59,7 @@ public class BackendController {
      */
     @ApiOperation(value = "文献互助列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "status", value = "状态", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献,默认（false）", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "orgFlag", value = "学校falg", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "搜索关键词", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "watchName", value = "值班人员", dataType = "String", paramType = "query"),
@@ -67,7 +67,8 @@ public class BackendController {
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/helpRecords/view")
-    public ResponseModel helpList(@RequestParam(required = false) Integer status,
+    public ResponseModel helpList(@RequestParam(required = false) List<Integer> status,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean isDifficult,
                                   @RequestParam(required = false) String orgFlag,
                                   @RequestParam(required = false) String keyword,
                                   @RequestParam(required = false) String watchName,
@@ -76,7 +77,7 @@ public class BackendController {
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, orgFlag, keyword,watchName,giveType,beginTime,endTime,pageable);
+        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, isDifficult, orgFlag, keyword,watchName,giveType,beginTime,endTime,pageable);
         return ResponseModel.ok().setBody(helpRecordDTOPage);
     }
 
