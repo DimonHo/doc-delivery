@@ -100,7 +100,8 @@ public class AsyncServiceImpl implements AsyncService {
                     helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
                             .setFileId(fileId)
                             .setGiveType(GiveTypeEnum.BIG_DB.value())
-                            .setGiverName(GiveTypeEnum.BIG_DB.name());
+                            .setGiverName(GiveTypeEnum.BIG_DB.name())
+                            .setHandlerName(GiveTypeEnum.BIG_DB.name());
                     helpRecordRepository.save(helpRecord);
                 } else {
                     flag[0] = false;
@@ -130,7 +131,8 @@ public class AsyncServiceImpl implements AsyncService {
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
                 .setFileId(reusingDocFile.getFileId())
                 .setGiveType(GiveTypeEnum.AUTO.value())
-                .setGiverName(GiveTypeEnum.AUTO.name());
+                .setGiverName(GiveTypeEnum.AUTO.name())
+                .setHandlerName(GiveTypeEnum.BIG_DB.name());
         helpRecordRepository.save(helpRecord);
         return true;
     }
