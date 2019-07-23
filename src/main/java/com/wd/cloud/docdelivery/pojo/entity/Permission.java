@@ -28,6 +28,7 @@ public class Permission extends AbstractEntity {
 
     private String orgName;
 
+    private Integer channel;
     /**
      * 校内：1，登陆：2，验证：4，最后相加得到权限
      */

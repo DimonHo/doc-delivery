@@ -19,7 +19,7 @@ import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
-import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
+import com.wd.cloud.docdelivery.feign.SdolServerApi;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.*;
@@ -69,7 +69,7 @@ public class FrontServiceImpl implements FrontService {
     FsServerApi fsServerApi;
 
     @Autowired
-    PdfSearchServerApi pdfSearchServerApi;
+    SdolServerApi sdolServerApi;
 
     @Autowired
     GiveService giveService;

@@ -41,15 +41,15 @@ spec:
           - name: feignUrlMaiServer
             value: "http://mail-server"
           - name: feignUrlFsServer
-            value: "http://cloud.hnlat.local/fs-server"
+            value: "http://fs-server"
           - name: feignUrlUoServer
             value: "http://uo-server"
-          - name: feignUrlPdfsearchServer
-            value: "http://cloud.hnlat.local/pdfsearch-server"
+          - name: feignUrlSdolServer
+            value: "http://sdol-server"
           - name: casServerUrlPrefix
-            value: "http://sso.hnlat.com"
+            value: "http://sso"
           - name: casServerLoginUrl
-            value: "http://sso.hnlat.com/login"
+            value: "http://sso/login"
           - name: casServerValidationUrl
             value: "http://sso"
           - name: casClientHostUrl
