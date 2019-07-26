@@ -8,7 +8,7 @@ maven-build:
   stage: build
   only:
     - branches
-  script: "mvn package -Dmaven.test.skip=true -B"
+  script: "mvn package -Dmaven.test.skip=true -B -U"
   artifacts:
     paths:
       - target/*.jar

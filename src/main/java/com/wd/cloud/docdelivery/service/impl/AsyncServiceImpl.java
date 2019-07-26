@@ -129,7 +129,7 @@ public class AsyncServiceImpl implements AsyncService {
                 .setFileId(reusingDocFile.getFileId())
                 .setGiveType(GiveTypeEnum.AUTO.value())
                 .setGiverName(GiveTypeEnum.AUTO.name())
-                .setHandlerName(GiveTypeEnum.BIG_DB.name());
+                .setHandlerName(GiveTypeEnum.AUTO.name());
         helpRecordRepository.save(helpRecord);
         return true;
     }
