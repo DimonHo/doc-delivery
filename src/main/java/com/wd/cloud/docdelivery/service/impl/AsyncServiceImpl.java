@@ -87,6 +87,7 @@ public class AsyncServiceImpl implements AsyncService {
 
                     DocFile docFile = docFileRepository.findByFileIdAndLiteratureId(fileId, literature.getId()).orElse(new DocFile());
                     docFile.setFileId(fileId).setLiteratureId(literature.getId()).setBigDb(true);
+                    docFileRepository.save(docFile);
 
                     GiveRecord giveRecord = new GiveRecord();
                     giveRecord.setFileId(fileId)
@@ -94,9 +95,8 @@ public class AsyncServiceImpl implements AsyncService {
                             .setGiverName(GiveTypeEnum.BIG_DB.name())
                             .setStatus(GiveStatusEnum.SUCCESS.value());
                     giveRecord.setHelpRecordId(helpRecord.getId());
-
-                    docFileRepository.save(docFile);
                     giveRecordRepository.save(giveRecord);
+
                     helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
                             .setFileId(fileId)
                             .setGiveType(GiveTypeEnum.BIG_DB.value())
@@ -107,7 +107,7 @@ public class AsyncServiceImpl implements AsyncService {
                 }
             }
         } catch (Exception e) {
-            log.info("pdf 服务平台正在调试");
+            log.error("数据库应助失败",e);
         }
         return flag;
     }
