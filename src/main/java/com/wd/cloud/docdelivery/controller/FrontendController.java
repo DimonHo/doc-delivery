@@ -93,6 +93,12 @@ public class FrontendController {
         }
     }
 
+    @ApiOperation(value = "文献求助")
+    @PostMapping(value = "/help/record")
+    public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
+        return this.helpFrom(helpRequestModel);
+    }
+
     @ApiOperation(value = "查询求助记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "List", paramType = "query"),
