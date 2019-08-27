@@ -126,6 +126,10 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long>, J
 
     List<GiveRecord> findByTypeAndStatus(Integer type, Integer status);
 
+    /**
+     * 查询超过15分钟未上传文件的用户应助
+     * @return
+     */
     @Query(value = "select * FROM give_record WHERE status = 0 AND file_id IS NULL or file_id = \"\" AND 15 < TIMESTAMPDIFF(MINUTE, gmt_create, now())", nativeQuery = true)
     List<GiveRecord> findTimeOutRecord();
 

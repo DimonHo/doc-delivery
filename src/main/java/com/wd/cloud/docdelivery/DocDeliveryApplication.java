@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @date 2018/04/08
  */
 @EnableAsync
-@EnableScheduling
 @EnableJpaAuditing
 @EnableSwagger2Doc
 @EnableFeignClients
