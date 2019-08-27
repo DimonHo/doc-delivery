@@ -66,7 +66,13 @@ public class FrontendController {
     @Autowired
     HttpServletRequest request;
 
-    @ApiOperation(value = "文献求助")
+    @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
+    @PostMapping(value = "/help/record")
+    public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
+        return this.helpFrom(helpRequestModel);
+    }
+
+    @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
     public ResponseModel<HelpRecord> helpFrom(@Valid HelpRequestModel helpRequestModel) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
@@ -91,12 +97,6 @@ public class FrontendController {
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
         }
-    }
-
-    @ApiOperation(value = "文献求助")
-    @PostMapping(value = "/help/record")
-    public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
-        return this.helpFrom(helpRequestModel);
     }
 
     @ApiOperation(value = "查询求助记录")
