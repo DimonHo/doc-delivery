@@ -69,12 +69,16 @@ public class FrontendController {
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
     public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
-        return this.helpFrom(helpRequestModel);
+        return helpRequest(helpRequestModel);
     }
 
     @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
     public ResponseModel<HelpRecord> helpFrom(@Valid HelpRequestModel helpRequestModel) {
+        return helpRequest(helpRequestModel);
+    }
+
+    private ResponseModel<HelpRecord> helpRequest(HelpRequestModel helpRequestModel) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
