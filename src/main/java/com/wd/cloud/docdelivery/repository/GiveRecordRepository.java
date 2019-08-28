@@ -29,7 +29,7 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long>, J
      * @param status
      * @return
      */
-    GiveRecord deleteByGiverNameAndHelpRecordIdAndStatus(String giverName,Long helpRecordId,Integer status);
+    Integer deleteByGiverNameAndHelpRecordIdAndStatus(String giverName,Long helpRecordId,Integer status);
 
     List<GiveRecord> findByHelpRecordIdAndStatusNot(Long helpRecordId, Integer auditStatus);
 
