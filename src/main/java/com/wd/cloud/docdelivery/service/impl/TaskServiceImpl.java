@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ public class TaskServiceImpl implements TaskService {
         // 修改giveRecode的状态为超时
         giveRecord.setStatus(GiveStatusEnum.TIME_OUT.value());
         log.info("已超时：{}的应助超过15分钟没有上传文件",giveRecord.getGiverName());
+        log.info("已超时：当前时间：{}, 应助认领时间：{}",new Date(), giveRecord.getGmtCreate());
         Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(giveRecord.getHelpRecordId());
         // 重置helpRecode的状态为待应助，且清除giver字段信息
         optionalHelpRecord.ifPresent(helpRecord -> helpRecord.setStatus(0).setGiverName(null).setGiveType(null));
