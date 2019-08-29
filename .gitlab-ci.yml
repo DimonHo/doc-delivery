@@ -44,13 +44,7 @@ k8s-deploy:
     - kubectl version
     - cd manifests/
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml service.yaml
-    - |
-      if kubectl apply -f deployment.yaml  -n dev | grep -q unchanged; then
-          echo "=> Patching deployment to force image update."
-          kubectl patch -f deployment.yaml -n dev -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
-      else
-          echo "=> Deployment apply has changed the object, no need to force image update."
-      fi
+    - kubectl patch -f deployment.yaml -n dev -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
     - kubectl apply -f service.yaml -n dev || true
     - kubectl rollout status -f deployment.yaml -n dev
     - kubectl get all -l app=doc-delivery -n dev
