@@ -18,10 +18,28 @@ import java.util.List;
  */
 public interface FrontService {
 
+    /**
+     * 应助认领
+     * @param helpRecordId
+     * @param giverName
+     * @param ip
+     */
     void give(Long helpRecordId, String giverName, String ip);
 
+    /**
+     * 上传应助文件
+     * @param helpRecord
+     * @param giverName
+     * @param file
+     * @param ip
+     */
     void uploadFile(HelpRecord helpRecord, String giverName, MultipartFile file, String ip);
 
+    /**
+     * 取消应助
+     * @param helpRecordId
+     * @param giverName
+     */
     void cancelGivingHelp(long helpRecordId, String giverName);
 
     /**
@@ -46,59 +64,93 @@ public interface FrontService {
      * @param helpRecord
      * @param giverName
      * @param fileId
-     * @param giviIp
+     * @param giveIp
      */
-    void setFile(HelpRecord helpRecord, String giverName, String fileId, String giviIp);
+    void setFile(HelpRecord helpRecord, String giverName, String fileId, String giveIp);
 
     /**
-     * 获取用户的求助记录
-     *
+     * 我的求助记录
+     * @param helperName
      * @param status
+     * @param isDifficult
+     * @param pageable
      * @return
      */
     Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, Pageable pageable);
 
+    /**
+     * 我的应助记录
+     * @param giverName
+     * @param status
+     * @param pageable
+     * @return
+     */
     Page<GiveRecordDTO> myGiveRecords(String giverName, List<Integer> status, Pageable pageable);
 
 
-    Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Pageable pageable);
-
     /**
-     * 获取待应助的求助记录
-     *
-     * @return
-     */
-    Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Pageable pageable);
-
-    /**
-     * 求助完成列表
-     *
+     * 求助列表
      * @param channel
+     * @param status
+     * @param email
+     * @param keyword
+     * @param isDifficult
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getFinishHelpRecords(List<Long> channel, String orgFlag, Pageable pageable);
+    Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
+
+    /**
+     * 待应助列表
+     * @param channel
+     * @param isDifficult
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
+    Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 求助成功列表
-     *
      * @param helpChannel
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Pageable pageable);
+    Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 疑难文献列表
-     *
      * @param helpChannel
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
      * @param pageable
      * @return
      */
     Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
+    /**
+     * 求助权限
+     * @param orgFlag
+     * @param level
+     * @return
+     */
     Permission getPermission(String orgFlag, Integer level);
 
+    /**
+     * 下一级求助权限
+     * @param orgFlag
+     * @param level
+     * @return
+     */
     Permission nextPermission(String orgFlag, Integer level);
 
 }

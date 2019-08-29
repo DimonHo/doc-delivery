@@ -111,7 +111,7 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (beginDate != null || endDate != null) {
                     Date end = endDate == null ? new Date() : endDate;
-                    Date begin = beginDate == null ? DateUtil.offsetMonth(end, -1).toJdkDate() : beginDate;
+                    Date begin = beginDate == null ? DateUtil.parse("2000-01-01 00:00:00") : beginDate;
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
 

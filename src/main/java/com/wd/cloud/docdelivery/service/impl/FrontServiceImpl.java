@@ -200,61 +200,109 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Page<HelpRecordDTO> myHelpRecords(String username, List<Integer> status, Boolean isDifficult, Pageable pageable) {
-
         Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(null, status, null, username, null, isDifficult, null, null, null), pageable);
         return coversHelpRecordDTO(vHelpRecords);
     }
 
+    /**
+     * 我的应助记录
+     *
+     * @param giverName
+     * @param status
+     * @param pageable
+     * @return
+     */
     @Override
     public Page<GiveRecordDTO> myGiveRecords(String giverName, List<Integer> status, Pageable pageable) {
-
         Page<GiveRecord> giveRecords = giveRecordRepository.findAll(GiveRecordRepository.SpecBuilder.buildGiveRecord(status, giverName), pageable);
-
         return coversGiveRecordDTO(giveRecords);
     }
 
 
+    /**
+     * 求助列表
+     *
+     * @param channel
+     * @param status
+     * @param email
+     * @param keyword
+     * @param isDifficult
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
     @Override
-    public Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Pageable pageable) {
-        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, email, null, keyword, isDifficult, orgFlag, null, null), pageable);
+    public Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+        Date end = endTime == null ? new Date() : endTime;
+        // 默认只返回最近一个星期的数据
+        Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
+        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, email, null, keyword, isDifficult, orgFlag, begin, end), pageable);
         return coversHelpRecordDTO(vHelpRecords);
     }
 
-
+    /**
+     * 待应助列表
+     *
+     * @param channel
+     * @param isDifficult
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
     @Override
-    public Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Pageable pageable) {
-
+    public Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+        // 待应助记录包含三种状态，0,1,3
         List<Integer> status = CollectionUtil.newArrayList(
                 HelpStatusEnum.WAIT_HELP.value(),
                 HelpStatusEnum.HELPING.value(),
                 HelpStatusEnum.HELP_THIRD.value());
-        Page<VHelpRecord> waitHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, isDifficult, orgFlag, null, null), pageable);
+        Date end = endTime == null ? new Date() : endTime;
+        // 默认只返回最近一个星期的数据
+        Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
+        Page<VHelpRecord> waitHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, isDifficult, orgFlag, begin, end), pageable);
         return coversHelpRecordDTO(waitHelpRecords);
     }
 
+    /**
+     * 求助成功列表
+     *
+     * @param helpChannel
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
     @Override
-    public Page<HelpRecordDTO> getFinishHelpRecords(List<Long> channel, String orgFlag, Pageable pageable) {
-        List<Integer> status = CollectionUtil.newArrayList(HelpStatusEnum.HELP_SUCCESSED.value(), HelpStatusEnum.HELP_FAILED.value());
-        Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, null, orgFlag, null, null), pageable);
-        return coversHelpRecordDTO(finishHelpRecords);
-    }
-
-
-    @Override
-    public Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> channel, String orgFlag, Pageable pageable) {
+    public Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         List<Integer> status = CollectionUtil.newArrayList(HelpStatusEnum.HELP_SUCCESSED.value());
-        Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, null, orgFlag, null, null), pageable);
+        Date end = endTime == null ? new Date() : endTime;
+        // 默认只返回最近一个星期的数据
+        Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
+        Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, null, null, null, orgFlag, begin, end), pageable);
         return coversHelpRecordDTO(finishHelpRecords);
-
     }
 
+    /**
+     * 疑难文献列表
+     * @param channel
+     * @param orgFlag
+     * @param beginTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
     @Override
     public Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> channel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         // start 需求(【互助大厅-疑难文献取值范围修改】
         //https://www.tapd.cn/47850539/prong/stories/view/1147850539001000859)
         Date endDate = endTime != null ? endTime : new Date();
-        // 默认一个月间隔
-        Date beginDate = beginTime != null ? beginTime : DateUtil.offsetMonth(endDate, -1);
+        // 默认一周间隔
+        Date beginDate = beginTime != null ? beginTime : DateUtil.offsetWeek(endDate, -1);
         // end
         Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, null, null, null, null, true, orgFlag, beginDate, endDate), pageable);
         return coversHelpRecordDTO(finishHelpRecords);

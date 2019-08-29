@@ -111,6 +111,8 @@ public class FrontendController {
             @ApiImplicitParam(name = "email", value = "邮箱过滤", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records")
     public ResponseModel helpRecords(@RequestParam(required = false) List<Long> channel,
@@ -119,10 +121,12 @@ public class FrontendController {
                                      @RequestParam(required = false) String email,
                                      @RequestParam(required = false) Boolean isDifficult,
                                      @RequestParam(required = false, defaultValue = "false") boolean isOrg,
+                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                      @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, pageable);
+        Page<HelpRecordDTO> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, beginTime, endTime, pageable);
         return ResponseModel.ok().setBody(helpRecordDTOS);
     }
 
@@ -130,50 +134,40 @@ public class FrontendController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
-            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query")
+            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/wait")
     public ResponseModel helpWaitList(@RequestParam(required = false) List<Long> channel,
                                       @RequestParam(required = false) Boolean isDifficult,
                                       @RequestParam(required = false, defaultValue = "false") boolean isOrg,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                       @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> waitHelpRecords = frontService.getWaitHelpRecords(channel, isDifficult, orgFlag, pageable);
-
+        Page<HelpRecordDTO> waitHelpRecords = frontService.getWaitHelpRecords(channel, isDifficult, orgFlag, beginTime, endTime, pageable);
         return ResponseModel.ok().setBody(waitHelpRecords);
-    }
-
-
-    @ApiOperation(value = "求助完成列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query")
-    })
-    @GetMapping("/help/records/finish")
-    public ResponseModel helpFinishList(@RequestParam(required = false) List<Long> channel,
-                                        @RequestParam(required = false, defaultValue = "false") boolean isOrg,
-                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
-        String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> finishHelpRecords = frontService.getFinishHelpRecords(channel, orgFlag, pageable);
-
-        return ResponseModel.ok().setBody(finishHelpRecords);
     }
 
 
     @ApiOperation(value = "求助成功列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query")
+            @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/success")
     public ResponseModel helpSuccessList(@RequestParam(required = false) List<Long> channel,
                                          @RequestParam(required = false, defaultValue = "false") boolean isOrg,
+                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                          @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, pageable);
+        Page<HelpRecordDTO> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
         return ResponseModel.ok().setBody(successHelpRecords);
     }
 
@@ -181,7 +175,7 @@ public class FrontendController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
-            @ApiImplicitParam(name = "beginTime", value = "起始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/failed")
