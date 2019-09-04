@@ -147,6 +147,8 @@ public class FrontendController {
                                       @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
+        endTime = endTime == null ? new Date() : endTime;
+        beginTime = beginTime == null ? DateUtil.offsetMonth(endTime, -1).toJdkDate() : beginTime;
         Page<HelpRecordDTO> waitHelpRecords = frontService.getWaitHelpRecords(channel, isDifficult, orgFlag, beginTime, endTime, pageable);
         return ResponseModel.ok().setBody(waitHelpRecords);
     }
@@ -186,6 +188,8 @@ public class FrontendController {
                                         @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
+        endTime = endTime == null ? new Date() : endTime;
+        beginTime = beginTime == null ? DateUtil.offsetWeek(endTime, -1).toJdkDate() : beginTime;
         Page<HelpRecordDTO> finishHelpRecords = frontService.getDifficultHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
 
         return ResponseModel.ok().setBody(finishHelpRecords);
