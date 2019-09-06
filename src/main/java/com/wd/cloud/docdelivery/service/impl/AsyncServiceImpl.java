@@ -1,8 +1,5 @@
 package com.wd.cloud.docdelivery.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
@@ -11,15 +8,13 @@ import com.wd.cloud.docdelivery.feign.SdolServerApi;
 import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.repository.*;
 import com.wd.cloud.docdelivery.service.AsyncService;
+import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @Author: He Zhigang
@@ -48,10 +43,8 @@ public class AsyncServiceImpl implements AsyncService {
     @Autowired
     SdolServerApi sdolServerApi;
 
-    private static int index = 0;
-
     @Autowired
-    private List<LiteraturePlan> literaturePlans;
+    LiteraturePlanService literaturePlanService;
 
     /**
      * 执行自动应助
@@ -70,22 +63,7 @@ public class AsyncServiceImpl implements AsyncService {
             }
             //如果求助不成功,则对求助请求进行排班记录分配
             if (!flag) {
-                Optional<LiteraturePlan> optionalLiteraturePlan = literaturePlans.stream()
-                        .filter(literaturePlan -> DateUtil.isIn(new Date(),literaturePlan.getStartTime(),literaturePlan.getEndTime()))
-                        .findAny();
-                if (!optionalLiteraturePlan.isPresent()){
-                    literaturePlans = literaturePlanRepository.findByNowWatch();
-                    index = 0;
-                }
-                LiteraturePlan nowWatch;
-                // 轮询排班
-                if(CollectionUtil.isNotEmpty(literaturePlans)){
-                    nowWatch = literaturePlans.get(index);
-                    index = (index+1) % literaturePlans.size();
-                }else{
-                    nowWatch = literaturePlanRepository.findByNextWatch();
-                }
-
+                LiteraturePlan nowWatch = literaturePlanService.nowWatch();
                 if (nowWatch != null) {
                     helpRecord.setWatchName(nowWatch.getUsername());
                     helpRecordRepository.save(helpRecord);
