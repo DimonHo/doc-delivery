@@ -18,16 +18,9 @@ import java.util.List;
 @Configuration
 public class BeanInitConfig {
 
-    @Autowired
-    LiteraturePlanRepository literaturePlanRepository;
-
     @Bean
     public AvgResponseTimeModel avgResponseTimeModel() {
         return new AvgResponseTimeModel(100, 217);
     }
 
-    @Bean
-    public List<LiteraturePlan> literaturePlans(){
-       return literaturePlanRepository.findByNowWatch();
-    }
 }

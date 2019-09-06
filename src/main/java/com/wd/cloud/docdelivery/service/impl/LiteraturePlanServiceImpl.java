@@ -2,7 +2,6 @@ package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
 import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
 import com.wd.cloud.docdelivery.repository.LiteraturePlanRepository;
@@ -13,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service("literaturePlanService")
@@ -27,8 +24,7 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
 
     private static int index = 0;
 
-    @Autowired
-    private List<LiteraturePlan> literaturePlans;
+    private static List<LiteraturePlan> oldNowPlans = new ArrayList<>();
 
     @Override
     public void addPlan(List<PlanVO> PlanVOs) {
@@ -54,22 +50,26 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
 
     @Override
     public LiteraturePlan nowWatch(){
-        Optional<LiteraturePlan> optionalLiteraturePlan = literaturePlans.stream()
-                .filter(literaturePlan -> DateUtil.isIn(new Date(),literaturePlan.getStartTime(),literaturePlan.getEndTime()))
-                .findAny();
-        if (!optionalLiteraturePlan.isPresent()){
-            literaturePlans = literaturePlanRepository.findByNowWatch();
+        // 获取当前时间的排班人列表
+        List<LiteraturePlan> nowPlans = literaturePlanRepository.findByNowPlans();
+
+        // 如果上一次的排班人列表跟这一次的不相同，那么index重新计数
+        if (!oldNowPlans.containsAll(nowPlans) || !nowPlans.containsAll(oldNowPlans)) {
             index = 0;
         }
-        LiteraturePlan nowWatch;
+
         // 轮询排班
-        if(CollectionUtil.isNotEmpty(literaturePlans)){
-            nowWatch = literaturePlans.get(index);
-            index = (index+1) % literaturePlans.size();
+        LiteraturePlan nowWatch;
+        if (CollectionUtil.isNotEmpty(nowPlans)) {
+            nowWatch = nowPlans.get(index);
+            index = (index + 1) % nowPlans.size();
         }else{
+            // 如果当前排班人列表为空，那么自动分配给下一个时段的排班人
             nowWatch = literaturePlanRepository.findByNextWatch();
         }
+        oldNowPlans = nowPlans;
         return nowWatch;
     }
+
 
 }
