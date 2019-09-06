@@ -58,8 +58,13 @@ public class MailServiceImpl implements MailService {
             try{
                 ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
                 if (responseModel.isError()) {
-                    helpRecord.setSend(false);
-                    log.error(responseModel.getMessage());
+                    if (responseModel.getStatus() == 403){
+                        helpRecord.setSend(true);
+                        log.warn("重复发送的邮件:{}", businessId);
+                    }else{
+                        helpRecord.setSend(false);
+                        log.error(responseModel.getMessage());
+                    }
                 } else {
                     helpRecord.setSend(true);
                 }
