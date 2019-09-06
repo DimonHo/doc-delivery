@@ -25,5 +25,19 @@ public interface LiteraturePlanRepository extends JpaRepository<LiteraturePlan, 
     @Query(value = "select * from literature_plan where DATE_FORMAT(start_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')", nativeQuery = true)
     List<LiteraturePlan> findNowDayLiteraturePlans();
 
+    /**
+     * 查询当前时间区间内的排班人列表
+     * @return
+     */
+    @Query(value = "select * from literature_plan t where start_time <= now() and end_time >= now();", nativeQuery = true)
+    List<LiteraturePlan> findByNowWatch();
+
+
+    /**
+     * 查询最接近当前时间的下一个排班人
+     * @return
+     */
+    @Query(value = "select * from literature_plan t where start_time > now() order by start_time asc limit 1;", nativeQuery = true)
+    LiteraturePlan findByNextWatch();
 
 }
