@@ -52,20 +52,20 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
     public LiteraturePlan nowWatch(){
         // 获取当前时间的排班人列表
         List<LiteraturePlan> nowPlans = literaturePlanRepository.findByNowPlans();
-
+        // 如果当前排班人列表为空，则获取下一个时段排班人列表
+        if (CollectionUtil.isEmpty(nowPlans)){
+            nowPlans = literaturePlanRepository.findByNextPlans();
+        }
         // 如果上一次的排班人列表跟这一次的不相同，那么index重新计数
         if (!oldNowPlans.containsAll(nowPlans) || !nowPlans.containsAll(oldNowPlans)) {
             index = 0;
         }
 
         // 轮询排班
-        LiteraturePlan nowWatch;
+        LiteraturePlan nowWatch = null;
         if (CollectionUtil.isNotEmpty(nowPlans)) {
             nowWatch = nowPlans.get(index);
             index = (index + 1) % nowPlans.size();
-        }else{
-            // 如果当前排班人列表为空，那么自动分配给下一个时段的排班人
-            nowWatch = literaturePlanRepository.findByNextWatch();
         }
         oldNowPlans = nowPlans;
         return nowWatch;

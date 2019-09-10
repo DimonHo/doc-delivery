@@ -34,10 +34,10 @@ public interface LiteraturePlanRepository extends JpaRepository<LiteraturePlan, 
 
 
     /**
-     * 查询最接近当前时间的下一个排班人
+     * 查询最接近当前时间的下一个排班人列表
      * @return
      */
-    @Query(value = "select * from literature_plan t where start_time > now() order by start_time ,order_list limit 1", nativeQuery = true)
-    LiteraturePlan findByNextWatch();
+    @Query(value = "select * from literature_plan where start_time = (select start_time from literature_plan where start_time > now() GROUP BY start_time order by start_time asc limit 1)", nativeQuery = true)
+    List<LiteraturePlan> findByNextPlans();
 
 }
