@@ -57,4 +57,6 @@ public class HelpRecordDTO {
     private Integer giveType;
 
     private String watchName;
+
+    private String downloadUrl;
 }

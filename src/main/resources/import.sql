@@ -127,4 +127,4 @@
 #     v_help_record
 # WHERE
 #         help_channel = 1
-#   AND DATE_FORMAT( gmt_create, "%Y-%m" ) = "2019-07";
+#   AND DATE_FORMAT( gmt_create, "%Y-%m" ) = "2019-08";

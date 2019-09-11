@@ -9,6 +9,7 @@ import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.enums.StatusEnum;
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.AppContextUtil;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
@@ -128,6 +129,8 @@ public class FrontendController {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         Page<HelpRecordDTO> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, beginTime, endTime, pageable);
+        helpRecordDTOS.filter(h -> h.getStatus() == 4)
+                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(helpRecordDTOS);
     }
 
@@ -171,6 +174,7 @@ public class FrontendController {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         Page<HelpRecordDTO> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
+        successHelpRecords.forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(successHelpRecords);
     }
 
@@ -207,6 +211,8 @@ public class FrontendController {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
         Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, pageable);
+        myHelpRecords.filter(h -> h.getStatus() == 4)
+                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
     }
 
