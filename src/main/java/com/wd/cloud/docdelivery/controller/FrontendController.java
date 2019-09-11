@@ -130,7 +130,7 @@ public class FrontendController {
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         Page<HelpRecordDTO> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, beginTime, endTime, pageable);
         helpRecordDTOS.filter(h -> h.getStatus() == 4)
-                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
+                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(helpRecordDTOS);
     }
 
@@ -174,7 +174,7 @@ public class FrontendController {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         Page<HelpRecordDTO> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
-        successHelpRecords.forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
+        successHelpRecords.forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(successHelpRecords);
     }
 
@@ -212,7 +212,7 @@ public class FrontendController {
         String username = loginUser != null ? loginUser.getStr("username") : null;
         Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
-                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(AppContextUtil.getApplicationUrl(request) + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
+                .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
     }
 
