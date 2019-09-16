@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,6 +49,7 @@ import java.util.Map;
  * @author He Zhigang
  * @date 2018/5/3
  */
+@Slf4j
 @Api(value = "前台controller", tags = {"前台文献互助接口"})
 @RestController
 @RequestMapping("/front")
@@ -71,6 +73,7 @@ public class FrontendController {
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
     public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
+        log.info(helpRequestModel.toString());
         return helpRequest(helpRequestModel);
     }
 
