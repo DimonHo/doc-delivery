@@ -99,7 +99,7 @@ public class FrontendController {
         } else {
             helpRecord.setOrgFlag(helpRequestModel.getOrgFlag()).setOrgName(helpRequestModel.getOrgName());
         }
-        helpRecord.setHelperIp(ip).setSend(true);
+        helpRecord.setHelperIp(ip);
         try {
             helpRequestService.helpRequest(literature, helpRecord);
             return ResponseModel.ok().setMessage("求助成功");
