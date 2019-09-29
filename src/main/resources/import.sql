@@ -128,3 +128,10 @@
 # WHERE
 #         help_channel = 1
 #   AND DATE_FORMAT( gmt_create, "%Y-%m" ) = "2019-08";
+
+# insert into permission (gmt_create,gmt_modified,level,org_id,org_flag,org_name,today_total,total) values
+# (now(),now(),1,166,"haut","河南工业大学",999,null),
+# (now(),now(),2,166,"haut","河南工业大学",999,null),
+# (now(),now(),3,166,"haut","河南工业大学",999,null),
+# (now(),now(),6,166,"haut","河南工业大学",999,null),
+# (now(),now(),7,166,"haut","河南工业大学",999,null);

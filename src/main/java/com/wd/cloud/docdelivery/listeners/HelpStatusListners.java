@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.listeners;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,30 +64,40 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
         log.info("update start***********");
         if (postUpdateEvent.getEntity() instanceof HelpRecord) {
             HelpRecord helpRecord = (HelpRecord) postUpdateEvent.getEntity();
+            Date gmtCreate = new Date();
+            boolean statusChangeSend = false;
+            boolean difficultChangeSend = false;
             for (int i = 0; i < postUpdateEvent.getPersister().getPropertyNames().length; i++) {
-                // 新旧字段值是否不一样
-                boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
+                boolean isCloumnEqGmtCreate = "gmtCreate".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
+                if (isCloumnEqGmtCreate){
+                    gmtCreate = (Date)postUpdateEvent.getState()[i];
+                    continue;
+                }
                 // 是否是status字段
                 boolean isColumnEqStatus = "status".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
-                // 新值是否在status列表中
-                boolean newStatusContains = SEND_STATUS.contains(postUpdateEvent.getState()[i]);
-
-                boolean statusChangeSend = isColumnEqStatus && newNotEqOld && newStatusContains;
+                if (isColumnEqStatus){
+                    // 新旧字段值是否不一样
+                    boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
+                    // 新值是否在status列表中
+                    boolean newStatusContains = SEND_STATUS.contains(postUpdateEvent.getState()[i]);
+                    statusChangeSend = newNotEqOld && newStatusContains;
+                    continue;
+                }
 
                 // 是否是difficult字段
                 boolean isColumnEqDifficult = "difficult".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
                 // 新值difficult是否为true
-                boolean newDifficultIsTrue = false;
                 if (isColumnEqDifficult){
-                    newDifficultIsTrue = (boolean)postUpdateEvent.getState()[i];
+                    difficultChangeSend = (boolean)postUpdateEvent.getState()[i];
                 }
-                boolean difficultChangeSend = isColumnEqDifficult && newDifficultIsTrue;
+
+            }
+            // 求助时间在2分钟前的才发邮件
+            if (DateUtil.offsetMinute(gmtCreate,2).before(new Date())){
                 if (statusChangeSend || difficultChangeSend) {
                     Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecord.getId());
                     optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
-                    break;
                 }
-
             }
         }
     }

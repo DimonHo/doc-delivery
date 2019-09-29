@@ -1,12 +1,11 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.feign.MailServerApi;
 import com.wd.cloud.docdelivery.model.AvgResponseTimeModel;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
-import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
 import com.wd.cloud.docdelivery.service.MailService;
 import com.wd.cloud.docdelivery.service.TaskService;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +78,9 @@ public class TaskController {
      */
     @GetMapping("/task/mail/resend")
     public ResponseModel sendMail(){
-        List<VHelpRecord> bySend = vHelpRecordRepository.findBySend(false);
+        // 2分钟前的未发送
+        Date gmtModified = DateUtil.offsetMinute(new Date(), -2).toJdkDate();
+        List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBefore(false, gmtModified);
         String businessId = "";
         if (CollectionUtil.isNotEmpty(bySend)) {
             VHelpRecord vHelpRecord = RandomUtil.randomEle(bySend);
