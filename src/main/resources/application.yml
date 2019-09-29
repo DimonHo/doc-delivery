@@ -23,7 +23,7 @@ feign:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
     fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
     uo-server: ${feignUrlUoServer:http://cloud.hnlat.local/uo-server}
-    pdfsearch-server: ${feignUrlPdfsearchServer:http://cloud.hnlat.local/pdfsearch-server}
+    sdol-server: ${feignUrlSdolServer:http://cloud.hnlat.local/sdol-server}
 ######################################################################
 
 spring:

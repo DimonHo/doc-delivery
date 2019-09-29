@@ -13,7 +13,7 @@ import javax.validation.Valid;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel(value = "文献求助post对象")
+@ApiModel(value = "文献求助免验证post对象")
 public class HelpRequestVO {
 
     @Valid

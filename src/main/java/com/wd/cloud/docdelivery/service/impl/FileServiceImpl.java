@@ -2,19 +2,14 @@ package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.wd.cloud.commons.exception.ExpException;
-import com.wd.cloud.commons.exception.NotFoundException;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
-import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
-import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
+import com.wd.cloud.docdelivery.feign.SdolServerApi;
 import com.wd.cloud.docdelivery.model.DownloadFileModel;
-import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Literature;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
@@ -60,7 +55,7 @@ public class FileServiceImpl implements FileService {
     GiveService giveService;
 
     @Autowired
-    PdfSearchServerApi pdfSearchServerApi;
+    SdolServerApi sdolServerApi;
 
     @Override
     public DownloadFileModel getDownloadFile(Long helpRecordId) {
@@ -90,7 +85,7 @@ public class FileServiceImpl implements FileService {
         docTitle = FileUtil.cleanInvalid(docTitle);
         DownloadFileModel downloadFileModel = new DownloadFileModel();
         ResponseModel<byte[]> responseModel = helpRecord.getGiveType() == GiveTypeEnum.BIG_DB.value() ?
-                pdfSearchServerApi.getFileByte(fileId) : fsServerApi.getFileByte(fileId);
+                sdolServerApi.getFileByte(fileId) : fsServerApi.getFileByte(fileId);
         if (responseModel.isError()) {
             log.error("文件服务调用失败：{}", responseModel.getMessage());
             return null;

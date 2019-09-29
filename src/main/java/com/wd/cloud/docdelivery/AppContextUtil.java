@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Author: He Zhigang
  * @Date: 2019/5/8 16:02
@@ -58,5 +60,10 @@ public class AppContextUtil implements ApplicationContextAware {
      */
     public static <T> T getBean(String name, Class<T> clazz) {
         return getApplicationContext().getBean(name, clazz);
+    }
+
+
+    public static String getApplicationUrl(HttpServletRequest request){
+        return request.getScheme() + "://" + request.getServerName() + ':' + request.getServerPort()  + request.getContextPath();
     }
 }

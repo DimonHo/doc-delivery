@@ -4,21 +4,17 @@ import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.feign.PdfSearchServerApi;
-import com.wd.cloud.docdelivery.pojo.entity.DocFile;
-import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
-import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
-import com.wd.cloud.docdelivery.repository.DocFileRepository;
-import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
-import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
-import com.wd.cloud.docdelivery.repository.LiteratureRepository;
+import com.wd.cloud.docdelivery.feign.SdolServerApi;
+import com.wd.cloud.docdelivery.pojo.entity.*;
+import com.wd.cloud.docdelivery.repository.*;
 import com.wd.cloud.docdelivery.service.AsyncService;
-import com.wd.cloud.docdelivery.util.DocDeliveryArrangeUtils;
+import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * @Author: He Zhigang
@@ -36,13 +32,19 @@ public class AsyncServiceImpl implements AsyncService {
     LiteratureRepository literatureRepository;
 
     @Autowired
+    LiteraturePlanRepository literaturePlanRepository;
+
+    @Autowired
     GiveRecordRepository giveRecordRepository;
 
     @Autowired
     DocFileRepository docFileRepository;
 
     @Autowired
-    PdfSearchServerApi pdfSearchServerApi;
+    SdolServerApi sdolServerApi;
+
+    @Autowired
+    LiteraturePlanService literaturePlanService;
 
     /**
      * 执行自动应助
@@ -53,19 +55,17 @@ public class AsyncServiceImpl implements AsyncService {
 
         helpRecordRepository.findById(helpRecordId).ifPresent(helpRecord -> {
             DocFile reusingDocFile = docFileRepository.findByLiteratureIdAndReusingIsTrue(helpRecord.getLiteratureId());
-            boolean flag = false;
+            boolean flag;
             if (null != reusingDocFile) {
-                reusingGive(reusingDocFile, helpRecord);
-                flag = true;
+                flag = reusingGive(reusingDocFile, helpRecord);
             } else {
                 flag = bigDbGive(helpRecord);
             }
             //如果求助不成功,则对求助请求进行排班记录分配
-            if (flag == false) {
-                //查询排班人员
-                LiteraturePlan literaturePlan = DocDeliveryArrangeUtils.getUserName();
-                if (literaturePlan != null) {
-                    helpRecord.setWatchName(literaturePlan.getUsername());
+            if (!flag) {
+                LiteraturePlan nowWatch = literaturePlanService.nowWatch();
+                if (nowWatch != null) {
+                    helpRecord.setWatchName(nowWatch.getUsername());
                     helpRecordRepository.save(helpRecord);
                 }
             }
@@ -78,15 +78,18 @@ public class AsyncServiceImpl implements AsyncService {
      * @param helpRecord
      */
     public boolean bigDbGive(HelpRecord helpRecord) {
-        boolean[] flag = {true};
+        boolean flag = false;
         try {
-            literatureRepository.findById(helpRecord.getLiteratureId()).ifPresent(literature -> {
-                ResponseModel<String> pdfResponse = pdfSearchServerApi.search(literature);
+            Optional<Literature> literatureOptional = literatureRepository.findById(helpRecord.getLiteratureId());
+            if (literatureOptional.isPresent()) {
+                Literature literature = literatureOptional.get();
+                ResponseModel<String> pdfResponse = sdolServerApi.search(literature);
                 if (!pdfResponse.isError()) {
                     String fileId = pdfResponse.getBody();
 
                     DocFile docFile = docFileRepository.findByFileIdAndLiteratureId(fileId, literature.getId()).orElse(new DocFile());
                     docFile.setFileId(fileId).setLiteratureId(literature.getId()).setBigDb(true);
+                    docFileRepository.save(docFile);
 
                     GiveRecord giveRecord = new GiveRecord();
                     giveRecord.setFileId(fileId)
@@ -94,24 +97,21 @@ public class AsyncServiceImpl implements AsyncService {
                             .setGiverName(GiveTypeEnum.BIG_DB.name())
                             .setStatus(GiveStatusEnum.SUCCESS.value());
                     giveRecord.setHelpRecordId(helpRecord.getId());
-
-                    docFileRepository.save(docFile);
                     giveRecordRepository.save(giveRecord);
+
                     helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
                             .setFileId(fileId)
                             .setGiveType(GiveTypeEnum.BIG_DB.value())
-                            .setGiverName(GiveTypeEnum.BIG_DB.name());
+                            .setGiverName(GiveTypeEnum.BIG_DB.name())
+                            .setHandlerName(GiveTypeEnum.BIG_DB.name());
                     helpRecordRepository.save(helpRecord);
-                } else {
-                    flag[0] = false;
+                    flag = true;
                 }
-            });
+            }
         } catch (Exception e) {
-            log.info("pdf 服务平台正在调试");
-            flag[0] = false;
-            return flag[0];
+            log.error("数据库应助失败",e);
         }
-        return flag[0];
+        return flag;
     }
 
     /**
@@ -130,7 +130,8 @@ public class AsyncServiceImpl implements AsyncService {
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
                 .setFileId(reusingDocFile.getFileId())
                 .setGiveType(GiveTypeEnum.AUTO.value())
-                .setGiverName(GiveTypeEnum.AUTO.name());
+                .setGiverName(GiveTypeEnum.AUTO.name())
+                .setHandlerName(GiveTypeEnum.AUTO.name());
         helpRecordRepository.save(helpRecord);
         return true;
     }

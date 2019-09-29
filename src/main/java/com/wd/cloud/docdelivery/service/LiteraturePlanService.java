@@ -19,4 +19,10 @@ public interface LiteraturePlanService {
     List<LiteraturePlan> findNextLiteraturePlans();
 
     List<LiteraturePlan> findNowDaysLiteraturePlans();
+
+    /**
+     * 当前排班人
+     * @return
+     */
+    LiteraturePlan nowWatch();
 }

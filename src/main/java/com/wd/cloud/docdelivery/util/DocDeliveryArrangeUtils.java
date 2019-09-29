@@ -48,6 +48,8 @@ public class DocDeliveryArrangeUtils {
     public static LiteraturePlan getUserName() {
         //获取当天日期,查询排班人员
         Date now = new Date();
+        log.info("当前排班时间：{}",DateUtil.format(now,"yyyy-MM-dd HH:mm:ss"));
+
         // 如果日期大于当前日期或者排班日期为空,则默认代替
         if (endTime == null || now.after(endTime)) {
             // 如果当天时间为空的,则获取当天列表
@@ -55,6 +57,7 @@ public class DocDeliveryArrangeUtils {
                 log.info("查询排版人员的时间：{}", DateUtil.formatDateTime(now));
                 userNames = literaturePlanService.findNowDaysLiteraturePlans();
             }
+
             // 判断当前时间是否大于当天最晚时间
             if (CollectionUtil.isNotEmpty(userNames)) {
                 // 初始化最晚时间

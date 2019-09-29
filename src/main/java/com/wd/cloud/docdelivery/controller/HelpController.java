@@ -35,10 +35,7 @@ public class HelpController {
     HelpRequestService helpRequestService;
 
     @PostMapping("/help")
-    public ResponseModel helpRequest(@Valid @RequestBody HelpRequestVO helpRequestVO, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new ParamException("参数错误");
-        }
+    public ResponseModel helpRequest(@Valid @RequestBody HelpRequestVO helpRequestVO) {
         Literature literature = BeanUtil.toBean(helpRequestVO.getLiterature(), Literature.class);
         HelpRecord helpRecord = BeanUtil.toBean(helpRequestVO.getHelper(), HelpRecord.class);
         String ip = ServletUtil.getClientIP(request);
