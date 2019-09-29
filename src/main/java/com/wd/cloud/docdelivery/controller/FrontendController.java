@@ -72,14 +72,14 @@ public class FrontendController {
 
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
-    public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
+    public ResponseModel<HelpRecord> addHelpRecord1(@Valid @RequestBody HelpRequestModel helpRequestModel){
         log.info("求助体" + helpRequestModel.toString());
         return helpRequest(helpRequestModel);
     }
 
     @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
-    public ResponseModel<HelpRecord> helpFrom(@Valid HelpRequestModel helpRequestModel) {
+    public ResponseModel<HelpRecord> addHelpRecord2(@Valid HelpRequestModel helpRequestModel) {
         return helpRequest(helpRequestModel);
     }
 

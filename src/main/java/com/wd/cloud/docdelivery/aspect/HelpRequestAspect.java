@@ -40,7 +40,7 @@ public class HelpRequestAspect {
     @Autowired
     HttpServletRequest request;
 
-    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord(..))")
+    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord*(..))")
     public void helpRequest() {
     }
 
