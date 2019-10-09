@@ -6,6 +6,7 @@ import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.exception.AuthException;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
+import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.PermissionRepository;
@@ -56,6 +57,9 @@ public class HelpRequestAspect {
         if (level < 1) {
             throw new AuthException("校外必须先登录才能求助");
         }
+        Object[] args = joinPoint.getArgs();
+        HelpRequestModel helpRequestModel = (HelpRequestModel) args[0];
+
         long helpTotal;
         long helpTotalToday;
         if (StrUtil.isNotBlank(username)) {
@@ -64,7 +68,7 @@ public class HelpRequestAspect {
             helpTotalToday = helpRecordRepository.countByHelperNameToday(username);
             log.info("登陆用户【{}】正在求助", username);
         } else {
-            String email = request.getParameter("helperEmail");
+            String email = helpRequestModel.getHelperEmail();
             helpTotal = helpRecordRepository.countByHelperEmail(email);
             helpTotalToday = helpRecordRepository.countByHelperEmailToday(email);
             log.info("邮箱【{}】正在求助", email);
@@ -84,5 +88,4 @@ public class HelpRequestAspect {
             }
         }
     }
-
 }
