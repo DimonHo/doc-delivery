@@ -34,6 +34,8 @@ public class Global {
     /**
      * 邮件业务类型，与mail-server中的business对应
      */
-    private String business;
+    private String bizSuccess;
+
+    private String bizOther;
 
 }

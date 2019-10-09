@@ -21,7 +21,7 @@ feign:
         logger-level: ${feignClientConfigFsServerLoggerLevel:FULL}
   url:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
-    fs-server: ${feignUrlFsServer:http://cloud.hnlat.com/fs-server}
+    fs-server: ${feignUrlFsServer:http://cloud.hnlat.local/fs-server}
     uo-server: ${feignUrlUoServer:http://cloud.hnlat.local/uo-server}
     sdol-server: ${feignUrlSdolServer:http://cloud.hnlat.local/sdol-server}
 ######################################################################
@@ -84,7 +84,8 @@ global:
   cloud-host: ${globalCloudHost:http://cloud.hnlat.local}
   hbase-table-name: literature
   file-types: [pdf,txt,doc,docx,zip,rar,caj]
-  business: doc-delivery:result
+  biz-success: doc-delivery-success
+  biz-other: doc-delivery-other
 cas:
   server-url-prefix: ${casServerUrlPrefix:http://sso.hnlat.local}
   server-login-url: ${casServerLoginUrl:http://sso.hnlat.local/login}

@@ -94,7 +94,7 @@ public class HelpRecord extends AbstractEntity {
     /**
      * 是否成功发送邮件
      */
-    @Column(name = "is_send", nullable = false, columnDefinition = "bit(1) default 1 COMMENT '0：未发送邮件， 1：已成功发送邮件'")
+    @Column(name = "is_send", nullable = false, columnDefinition = "bit(1) default 0 COMMENT '0：未发送邮件， 1：已成功发送邮件'")
     private Boolean send;
 
     /**

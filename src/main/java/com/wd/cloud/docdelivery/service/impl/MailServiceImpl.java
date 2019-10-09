@@ -56,7 +56,7 @@ public class MailServiceImpl implements MailService {
             // 防止重复发送
             String businessId = helpRecord.getId() + "-" + helpRecord.getStatus() + "-" + helpRecord.getDifficult();
             try{
-                ResponseModel responseModel = mailServerApi.send(global.getBusiness(), businessId, mailMessage);
+                ResponseModel responseModel = mailServerApi.send(helpRecord.getStatus() == 4 ? global.getBizSuccess() : global.getBizOther(), businessId, mailMessage);
                 if (responseModel.isError()) {
                     if (responseModel.getStatus() == 403){
                         helpRecord.setSend(true);

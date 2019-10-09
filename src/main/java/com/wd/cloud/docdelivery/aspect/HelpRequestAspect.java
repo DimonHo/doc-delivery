@@ -40,7 +40,7 @@ public class HelpRequestAspect {
     @Autowired
     HttpServletRequest request;
 
-    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.helpFrom(..))")
+    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord*(..))")
     public void helpRequest() {
     }
 
@@ -55,10 +55,6 @@ public class HelpRequestAspect {
         //如果是校外，且未登錄
         if (level < 1) {
             throw new AuthException("校外必须先登录才能求助");
-        }
-        // 校验请求参数
-        if (validateParam(request)) {
-            throw new AppException(ExceptionEnum.HELP_PARAM);
         }
         long helpTotal;
         long helpTotalToday;
@@ -87,18 +83,6 @@ public class HelpRequestAspect {
                 throw new AppException(ExceptionEnum.HELP_TOTAL_TODAY_CEILING);
             }
         }
-    }
-
-    /**
-     * 参数校验
-     *
-     * @param request
-     * @return
-     */
-    private boolean validateParam(HttpServletRequest request) {
-        String email = request.getParameter("helperEmail");
-        String docTitle = request.getParameter("docTitle");
-        return StrUtil.isBlank(email) || StrUtil.isBlank(docTitle);
     }
 
 }

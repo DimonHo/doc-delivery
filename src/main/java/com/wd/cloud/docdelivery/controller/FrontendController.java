@@ -72,14 +72,14 @@ public class FrontendController {
 
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
-    public ResponseModel<HelpRecord> addHelpRecord(@Valid @RequestBody HelpRequestModel helpRequestModel){
+    public ResponseModel<HelpRecord> addHelpRecord1(@Valid @RequestBody HelpRequestModel helpRequestModel){
         log.info("求助体" + helpRequestModel.toString());
         return helpRequest(helpRequestModel);
     }
 
     @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
-    public ResponseModel<HelpRecord> helpFrom(@Valid HelpRequestModel helpRequestModel) {
+    public ResponseModel<HelpRecord> addHelpRecord2(@Valid HelpRequestModel helpRequestModel) {
         return helpRequest(helpRequestModel);
     }
 
@@ -99,7 +99,7 @@ public class FrontendController {
         } else {
             helpRecord.setOrgFlag(helpRequestModel.getOrgFlag()).setOrgName(helpRequestModel.getOrgName());
         }
-        helpRecord.setHelperIp(ip).setSend(true);
+        helpRecord.setHelperIp(ip);
         try {
             helpRequestService.helpRequest(literature, helpRecord);
             return ResponseModel.ok().setMessage("求助成功");
@@ -142,7 +142,7 @@ public class FrontendController {
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
-            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一个月）", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/wait")

@@ -80,7 +80,8 @@ public class TaskController {
     public ResponseModel sendMail(){
         // 2分钟前的未发送
         Date gmtModified = DateUtil.offsetMinute(new Date(), -2).toJdkDate();
-        List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBefore(false, gmtModified);
+        List<Integer> sendStatus = CollectionUtil.newArrayList(3, 4);
+        List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBeforeAndStatusIn(false, gmtModified, sendStatus);
         String businessId = "";
         if (CollectionUtil.isNotEmpty(bySend)) {
             VHelpRecord vHelpRecord = RandomUtil.randomEle(bySend);

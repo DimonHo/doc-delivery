@@ -39,7 +39,7 @@ public class HelpController {
         Literature literature = BeanUtil.toBean(helpRequestVO.getLiterature(), Literature.class);
         HelpRecord helpRecord = BeanUtil.toBean(helpRequestVO.getHelper(), HelpRecord.class);
         String ip = ServletUtil.getClientIP(request);
-        helpRecord.setHelperIp(ip).setSend(true);
+        helpRecord.setHelperIp(ip);
         helpRequestService.helpRequest(literature, helpRecord);
         return ResponseModel.ok();
     }
