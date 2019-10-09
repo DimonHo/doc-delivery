@@ -106,10 +106,12 @@ public class AsyncServiceImpl implements AsyncService {
                             .setHandlerName(GiveTypeEnum.BIG_DB.name());
                     helpRecordRepository.save(helpRecord);
                     flag = true;
+                }else{
+                    log.error("全文服务返回错误消息:{}",pdfResponse.getMessage());
                 }
             }
         } catch (Exception e) {
-            log.error("数据库应助失败",e);
+            log.error("全文服务应助失败",e);
         }
         return flag;
     }
