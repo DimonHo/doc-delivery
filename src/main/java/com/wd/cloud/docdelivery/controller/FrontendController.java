@@ -142,7 +142,7 @@ public class FrontendController {
             @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
-            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一个月）", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
     })
     @GetMapping("/help/records/wait")
