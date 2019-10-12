@@ -312,5 +312,15 @@ public class FrontendController {
         return ResponseModel.ok().setBody(resp);
     }
 
+    @ApiOperation(value = "查询当前邮箱15天内是否求助该文章")
+    @GetMapping("/help/repeat")
+    public ResponseModel checkIsRepeat(String docTitle, String docHref, String helperEmail) {
+        try {
+            helpRequestService.checkIsRepeat(docTitle, docHref, helperEmail);
+            return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
+        } catch (ConstraintViolationException e) {
+            throw new AppException(ExceptionEnum.HELP_REPEAT);
+        }
+    }
 
 }
