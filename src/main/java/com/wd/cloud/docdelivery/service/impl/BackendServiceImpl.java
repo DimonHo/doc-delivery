@@ -143,7 +143,8 @@ public class BackendServiceImpl implements BackendService {
                 .setFileId(fileId)
                 .setGiveType(GiveTypeEnum.MANAGER.value())
                 .setGiverName(null)
-                .setHandlerName(handlerName);
+                .setHandlerName(handlerName)
+                .setDifficult(false);
     }
 
 
