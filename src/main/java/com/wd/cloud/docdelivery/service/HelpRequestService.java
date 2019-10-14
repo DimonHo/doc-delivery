@@ -19,4 +19,12 @@ public interface HelpRequestService {
      */
     void helpRequest(Literature literatureVo, HelpRecord helpRecord);
 
+    /**
+     *
+     * @param docTitle
+     * @param docHref
+     * @param email
+     */
+    void checkIsRepeat(String docTitle, String docHref, String email);
+
 }
