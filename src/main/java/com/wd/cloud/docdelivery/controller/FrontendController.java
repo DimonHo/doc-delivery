@@ -314,11 +314,11 @@ public class FrontendController {
     }
 
     @ApiOperation(value = "查询当前邮箱15天内是否求助该文章")
-    @GetMapping("/help/repeat")
-    public ResponseModel addHelpRecordRepeat(String docTitle, String docHref, String helperEmail) {
+    @PostMapping("/help/repeat")
+    public ResponseModel addHelpRecordRepeat(@Valid HelpRequestModel helpRequestModel) {
         try {
-            log.info("查询重复的title" + docTitle);
-            helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(docTitle.trim())), docHref, helperEmail);
+            log.info("查询重复的title" + helpRequestModel.getDocTitle());
+            helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(helpRequestModel.getDocTitle())), helpRequestModel.getDocHref(), helpRequestModel.getHelperEmail());
             return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
