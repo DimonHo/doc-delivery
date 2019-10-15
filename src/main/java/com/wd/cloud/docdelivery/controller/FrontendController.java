@@ -317,6 +317,7 @@ public class FrontendController {
     @GetMapping("/help/repeat")
     public ResponseModel addHelpRecordRepeat(String docTitle, String docHref, String helperEmail) {
         try {
+            log.info("查询重复的title" + docTitle);
             helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(docTitle.trim())), docHref, helperEmail);
             return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
         } catch (ConstraintViolationException e) {
