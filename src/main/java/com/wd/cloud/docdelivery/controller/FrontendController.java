@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.http.HtmlUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
@@ -316,7 +317,7 @@ public class FrontendController {
     @GetMapping("/help/repeat")
     public ResponseModel addHelpRecordRepeat(String docTitle, String docHref, String helperEmail) {
         try {
-            helpRequestService.checkIsRepeat(docTitle, docHref, helperEmail);
+            helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(docTitle.trim())), docHref, helperEmail);
             return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
