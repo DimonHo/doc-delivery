@@ -23,10 +23,10 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
     @Query(value = "select gmt_create from v_help_record group by gmt_create", nativeQuery = true)
     List<Map<String, Object>> orgTj(String orgFlag, String dateFormat, Date begin, Date end);
 
-    @Query(value = "select * from v_help_record where status in (0,1,3) and ((gmt_create between ?1 and ?3 and is_difficult = 0) or (is_difficult = 1 and gmt_modified between ?2 and ?3)) order by ?#{#pageable}", nativeQuery = true)
+    @Query(value = "select * from v_help_record where status in (0,1,3) and ((gmt_create between ?1 and ?3 and is_difficult = 0) or (is_difficult = 1 and gmt_create between ?2 and ?3))", nativeQuery = true)
     Page<VHelpRecord> findByWaitHelp(Date begin1, Date begin2, Date end, Pageable pageable);
 
-    @Query(value = "select * from v_help_record where org_flag = ?4 and status in (0,1,3) and ((gmt_create between ?1 and ?3 and is_difficult = 0) or (is_difficult = 1 and gmt_modified between ?2 and ?3)) order by ?#{#pageable}", nativeQuery = true)
+    @Query(value = "select * from v_help_record where org_flag = ?4 and status in (0,1,3) and ((gmt_create between ?1 and ?3 and is_difficult = 0) or (is_difficult = 1 and gmt_create between ?2 and ?3))", nativeQuery = true)
     Page<VHelpRecord> findByWaitHelpForOrg(Date begin1, Date begin2, Date end, String orgFlag, Pageable pageable);
 
     /**
