@@ -9,17 +9,15 @@ import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.enums.StatusEnum;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.AppContextUtil;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
-import com.wd.cloud.docdelivery.pojo.entity.Literature;
-import com.wd.cloud.docdelivery.pojo.entity.Permission;
+import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.service.FrontService;
+import com.wd.cloud.docdelivery.service.HelpRawService;
 import com.wd.cloud.docdelivery.service.HelpRequestService;
 import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
@@ -70,6 +68,49 @@ public class FrontendController {
     @Autowired
     HttpServletRequest request;
 
+    @Autowired
+    HelpRawService helpRawService;
+
+    @ApiOperation(value = "录入原始求助信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "anonymous", value = "是否匿名", defaultValue = "false", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "helpChannel", value = "渠道1：QQ，2：SPIS，3：ZHY，4：CRS，5：PAPER，6：CRS_V2，7：MINI", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "helperEmail", value = "求助者邮箱", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "helperIp", value = "求助者IP", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "helperName", value = "求助者用户名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "orgFlag", value = "求助者学校ID", dataType = "String" , paramType = "query"),
+            @ApiImplicitParam(name = "orgName", value = "求助者学校名称", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "info", value = "求助的信息", dataType = "String", paramType = "query")
+    })
+    @PostMapping("/help/raw/save")
+    public ResponseModel addHelpRaw(@RequestParam(required = false) Boolean anonymous,
+                                     @RequestParam(required = false) Long helpChannel,
+                                     @RequestParam(required = false) String helperEmail,
+                                     @RequestParam(required = false) String helperIp,
+                                     @RequestParam(required = false) String helperName,
+                                     @RequestParam(required = false) String orgFlag,
+                                     @RequestParam(required = false) String orgName,
+                                     @RequestParam(required = false) String info){
+        helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
+        return ResponseModel.ok().setMessage("求助成功");
+    }
+
+    @ApiOperation(value = "根据状态查询求助记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "helperName" , value = "求助者姓名",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "求助状态0：待应助， 1：应助中，2: 待审核，3：求助第三方，4：应助成功，5：应助失败（超过15天无结果）",dataType = "Integer", paramType = "query")
+    })
+    @GetMapping(value = "/help/raw/myHelpRaw")
+    public ResponseModel myHelpRaw(@RequestParam(required = false) String helperName,
+                                   @RequestParam(required = false) Integer status){
+        List<VHelpRaw> helpRaws =  helpRawService.myHelpRaw(helperName,status);
+        if (helpRaws==null || helpRaws.size()==0){
+            return ResponseModel.ok().setMessage("无数据");
+        }else {
+            return ResponseModel.ok().setBody(helpRaws);
+        }
+    }
+
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
     public ResponseModel<HelpRecord> addHelpRecord1(@Valid @RequestBody HelpRequestModel helpRequestModel){
@@ -77,7 +118,7 @@ public class FrontendController {
         return helpRequest(helpRequestModel);
     }
 
-    @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
+    @ApiOperation(value = "文献求助 form表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
     public ResponseModel<HelpRecord> addHelpRecord2(@Valid HelpRequestModel helpRequestModel) {
         return helpRequest(helpRequestModel);
@@ -90,7 +131,6 @@ public class FrontendController {
         String ip = ServletUtil.getClientIP(request);
         HelpRecord helpRecord = BeanUtil.toBean(helpRequestModel, HelpRecord.class);
         Literature literature = BeanUtil.toBean(helpRequestModel, Literature.class);
-
         if (StrUtil.isNotBlank(username)) {
             helpRecord.setHelperName(username);
         }

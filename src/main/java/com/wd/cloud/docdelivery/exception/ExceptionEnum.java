@@ -25,11 +25,9 @@ public enum ExceptionEnum {
         this.message = message;
     }
 
-    public String message() {
-        return message;
+    public String message() { return message;
     }
 
-    public Integer status() {
-        return status;
+    public Integer status() { return status;
     }
 }
