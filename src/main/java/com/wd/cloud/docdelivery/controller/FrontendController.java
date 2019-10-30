@@ -12,6 +12,7 @@ import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
+import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
@@ -92,6 +93,21 @@ public class FrontendController {
                                      @RequestParam(required = false) String orgFlag,
                                      @RequestParam(required = false) String orgName,
                                      @RequestParam(required = false) String info){
+        helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
+        return ResponseModel.ok().setMessage("求助成功");
+    }
+
+    @ApiOperation(value = "Json录入原始求助信息")
+    @PostMapping("/help/raw/savej")
+    public ResponseModel addHelpRaw1(@RequestBody HelpRawModel helpRawModel){
+        Boolean anonymous = helpRawModel.getAnonymous();
+        Long helpChannel = helpRawModel.getHelpChannel();
+        String helperEmail = helpRawModel.getHelperEmail();
+        String helperIp = helpRawModel.getHelperIp();
+        String helperName = helpRawModel.getHelperName();
+        String orgFlag = helpRawModel.getOrgFlag();
+        String orgName = helpRawModel.getOrgName();
+        String info = helpRawModel.getInfo();
         helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
         return ResponseModel.ok().setMessage("求助成功");
     }

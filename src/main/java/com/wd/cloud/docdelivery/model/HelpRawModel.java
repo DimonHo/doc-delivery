@@ -42,10 +42,10 @@ public class HelpRawModel {
     private String helperName;
 
     @ApiModelProperty(value = "求助的学校ID")
-    private Long helperScid;
+    private String orgFlag;
 
     @ApiModelProperty(value = "求助的学校名称")
-    private String helperScname;
+    private String orgName;
 
     @ApiModelProperty(value = "求助的信息", example = "doi:01923959101,xxx:102030104")
     @NotBlank
