@@ -32,7 +32,7 @@ public class VHelpRaw{
 
     private Long helpRecordId;
 
-    @Column(name = "is_invalid")
+    @Column(name = "invalid")
     private Integer invalid;
 
     private String helperEmail;

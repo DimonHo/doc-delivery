@@ -28,12 +28,13 @@ public interface VHelpRawRepository extends JpaRepository<VHelpRaw, Long>, JpaSp
 
     class SpecBuilder {
 
-        public static Specification<VHelpRaw> findVhelpRaw(Date gmtCreate, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid) {
+        public static Specification<VHelpRaw> findVhelpRaw(Date gmtCreate,Date gmtModified, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid) {
             return (Specification<VHelpRaw>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
-                if (gmtCreate != null) {
+                if (gmtCreate != null || gmtModified != null) {
+                    Date end = gmtModified == null ? new Date() : gmtModified;
                     Date begin = gmtCreate == null ? DateUtil.parse("2000-01-01 00:00:00") : gmtCreate;
-                    list.add(cb.equal(root.get("gmtCreate").as(Date.class), begin));
+                    list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
                 if (helpChannel != null){
                     list.add(cb.equal(root.get("helpChannel").as(Long.class),helpChannel));
@@ -66,7 +67,7 @@ public interface VHelpRawRepository extends JpaRepository<VHelpRaw, Long>, JpaSp
             };
         }
 
-        public static Specification<VHelpRaw> buildVhelpRaw(String helperName,Long helpRecordId,Date beginTime,Boolean isDifficult,Integer isInvalid,List<Integer> status) {
+        public static Specification<VHelpRaw> buildVhelpRaw(String helperName,Long helpRecordId,Date gmtCreate,Date gmtModified,Boolean isDifficult,Integer isInvalid,List<Integer> status) {
             return (Specification<VHelpRaw>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StrUtil.isNotBlank(helperName)) {
@@ -75,9 +76,10 @@ public interface VHelpRawRepository extends JpaRepository<VHelpRaw, Long>, JpaSp
                 if (helpRecordId != null){
                     list.add(cb.equal(root.get("helpRecordId").as(Long.class),helpRecordId));
                 }
-                if (beginTime != null) {
-                    Date begin = beginTime == null ? DateUtil.parse("2000-01-01 00:00:00") : beginTime;
-                    list.add(cb.equal(root.get("gmtCreate").as(Date.class), begin));
+                if (gmtCreate != null || gmtModified != null) {
+                    Date end = gmtModified == null ? new Date() : gmtModified;
+                    Date begin = gmtCreate == null ? DateUtil.parse("2000-01-01 00:00:00") : gmtCreate;
+                    list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
                 // 是否是疑难文献
                 if (isDifficult != null) {
