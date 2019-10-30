@@ -17,7 +17,6 @@ import java.util.List;
  */
 public interface HelpRawRepository extends JpaRepository<HelpRaw,Long>, JpaSpecificationExecutor<HelpRaw> {
 
-    @Modifying
     @Transactional
     @Query(value = "select * from help_raw where id = ?1", nativeQuery = true)
     List<HelpRaw> findByIdHelpRaw(Long id);

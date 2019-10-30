@@ -28,10 +28,6 @@ public class HelpRawDTO {
 
     private Long anonymous;
 
-    private Long helperScid;
-
-    private String helperScname;
-
     private String docTitle;
 
     private String docHref;

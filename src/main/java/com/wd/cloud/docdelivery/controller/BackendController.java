@@ -2,6 +2,7 @@ package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
@@ -73,7 +74,6 @@ public class BackendController {
             @ApiImplicitParam(name = "helperIp", value = "求助者IP", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "helperName", value = "求助者用户名", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "orgFlag", value = "求助者学校ID", dataType = "String" , paramType = "query"),
-            @ApiImplicitParam(name = "orgName", value = "求助者学校名称", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "invalid", value = "是否有效：0:待处理,1:无效,2:有效", dataType = "Long", paramType = "query")
     })
@@ -85,15 +85,11 @@ public class BackendController {
                                      @RequestParam(required = false) String helperIp,
                                      @RequestParam(required = false) String helperName,
                                      @RequestParam(required = false) String orgFlag,
-                                     @RequestParam(required = false) String orgName,
                                      @RequestParam(required = false) Long helpRecordId,
-                                     @RequestParam(required = false) Integer invalid){
-        List<VHelpRaw> helpRaws = helpRawService.findHelpRaw(gmtCreate, anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, orgName, helpRecordId, invalid);
-        if (helpRaws==null || helpRaws.size()==0){
-            return ResponseModel.ok().setMessage("无数据");
-        }else {
-            return ResponseModel.ok().setBody(helpRaws);
-        }
+                                     @RequestParam(required = false) Integer invalid,
+                                     @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<VHelpRaw> helpRawDTOS = helpRawService.findHelpRaw(gmtCreate, anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid,pageable);
+        return ResponseModel.ok().setBody(helpRawDTOS);
     }
 
     @ApiOperation(value = "根据原始数据ID修改求助记录的ID和有效值")

@@ -1,12 +1,21 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
+import com.wd.cloud.docdelivery.pojo.entity.Literature;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
+import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import com.wd.cloud.docdelivery.repository.HelpRawRepository;
+import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.repository.VHelpRawRepository;
+import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
 import com.wd.cloud.docdelivery.service.HelpRawService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import static jdk.nashorn.internal.runtime.GlobalFunctions.anonymous;
 
 /**
  * @author Hu Langshi
@@ -30,6 +42,9 @@ public class HelpRawServiceImpl implements HelpRawService {
 
     @Autowired
     VHelpRawRepository vHelpRawRepository;
+
+    @Autowired
+    LiteratureRepository literatureRepository;
 
     @Autowired
     HttpServletRequest request;
@@ -58,20 +73,30 @@ public class HelpRawServiceImpl implements HelpRawService {
     }
 
     @Override
-    public List<VHelpRaw> findHelpRaw(Date gmtCreate, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, String orgName, Long helpRecordId, Integer invalid) {
-        return vHelpRawRepository.findHelpRaw(gmtCreate,anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,helpRecordId,invalid);
-    }
-
-    @Override
     public void updateHelpRecordId(Long id, Long helpRecordId,Integer invalid) {
         Date gmtModified = new Date();
         helpRawRepository.updateHelpRecordId(id,helpRecordId,invalid,gmtModified);
     }
 
     @Override
-    public List<VHelpRaw> myHelpRaw(String helperName, Integer status) {
-        return vHelpRawRepository.findByHelperNameAndStatus(helperName,status);
+    public Page<VHelpRaw> findHelpRaw(Date gmtCreate, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid, Pageable pageable) {
+        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.findVhelpRaw(gmtCreate, anonymous, helpChannel, helperEmail, helperIp, helperName,orgFlag,helpRecordId,invalid), pageable);
+        return vHelpRaws;
     }
 
+    @Override
+    public Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,Pageable pageable) {
+        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, beginTime, isDifficult, isInvalid, status), pageable);
+        return vHelpRaws;
+    }
+
+//    private Page<HelpRawDTO> coversHelpRawDTO(Page<VHelpRaw> helpRawPage) {
+//        return helpRawPage.map(vHelpRaw -> {
+//            HelpRawDTO helpRawDTO = BeanUtil.toBean(anonymous(vHelpRaw), HelpRawDTO.class);
+//            Optional<Literature> optionalLiterature = literatureRepository.findById(vHelpRaw.getLiteratureId());
+//            optionalLiterature.ifPresent(literature -> helpRawDTO.setDocTitle(literature.getDocTitle()).setDocHref(literature.getDocHref()));
+//            return helpRawDTO;
+//        });
+//    }
 
 }

@@ -14,6 +14,7 @@ import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.service.FrontService;
@@ -98,17 +99,22 @@ public class FrontendController {
     @ApiOperation(value = "根据状态查询求助记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "helperName" , value = "求助者姓名",dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "求助状态0：待应助， 1：应助中，2: 待审核，3：求助第三方，4：应助成功，5：应助失败（超过15天无结果）",dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "Difficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "Invalid", value =  "是否有效", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query")
     })
     @GetMapping(value = "/help/raw/myHelpRaw")
     public ResponseModel myHelpRaw(@RequestParam(required = false) String helperName,
-                                   @RequestParam(required = false) Integer status){
-        List<VHelpRaw> helpRaws =  helpRawService.myHelpRaw(helperName,status);
-        if (helpRaws==null || helpRaws.size()==0){
-            return ResponseModel.ok().setMessage("无数据");
-        }else {
-            return ResponseModel.ok().setBody(helpRaws);
-        }
+                                   @RequestParam(required = false) Long helpRecordId,
+                                   @RequestParam(required = false) Date beginTime,
+                                   @RequestParam(required = false) Boolean isDifficult,
+                                   @RequestParam(required = false) Integer isInvalid,
+                                   @RequestParam(required = false) List<Integer> status,
+                                   @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<VHelpRaw> helpRawDTOS = helpRawService.getHelpRaws(helperName, helpRecordId, beginTime, isDifficult,isInvalid, status, pageable);
+        return ResponseModel.ok().setBody(helpRawDTOS);
     }
 
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})

@@ -1,7 +1,11 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.Date;
 import java.util.List;
@@ -17,9 +21,9 @@ public interface HelpRawService {
 
     List<HelpRaw> findByIdHelpRaw(Long id);
 
-    List<VHelpRaw> findHelpRaw(Date gmtCreate, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, String orgName, Long helpRecordId, Integer invalid);
+    Page<VHelpRaw> findHelpRaw(Date gmtCreate, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid,Pageable pageable);
 
     void updateHelpRecordId(Long id,Long helpRecordId,Integer invalid);
 
-    List<VHelpRaw> myHelpRaw(String helperName, Integer status);
+    Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,Pageable pageable);
 }

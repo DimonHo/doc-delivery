@@ -1,5 +1,5 @@
 server:
-  port: ${serverPort:80}
+  port: ${serverPort:8080}
   tomcat:
     basedir: ${serverTomcatBasedir:spring-tomcat/${spring.application.name}}
 
@@ -44,7 +44,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL57Dialect
   datasource:
-    url: jdbc:mysql://${dbUrl:mysql-dev.database:3306}/${dbName:${spring.application.name}}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://${dbUrl:mysql-test.database:3306}/${dbName:${spring.application.name}}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: ${dbUser:root}
     password: ${dbPass:wdkj@123#}
     druid:
