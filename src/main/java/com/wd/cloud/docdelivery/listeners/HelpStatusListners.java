@@ -85,7 +85,8 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
                     boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
                     if (newNotEqOld){
                         HandlerLog handlerLog = new HandlerLog();
-                        handlerLog.setHandlerName(helpRecord.getHandlerName())
+                        handlerLog.setHelpRecordId(helpRecord.getId())
+                                .setHandlerName(helpRecord.getHandlerName())
                                 .setBeforeStatus((Integer) postUpdateEvent.getOldState()[i])
                                 .setAfterStatus((Integer) postUpdateEvent.getState()[i]);
                         handlerLogRepository.save(handlerLog);

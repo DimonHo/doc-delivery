@@ -27,5 +27,5 @@ public class HandlerLog extends AbstractEntity {
 
     private Integer afterStatus;
 
-
+    private long helpRecordId;
 }
