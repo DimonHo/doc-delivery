@@ -89,7 +89,7 @@ public class HelpRaw extends AbstractEntity{
      * 1：无效
      * 2：有效
      */
-    @Column(name = "is_invalid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '是否有效：0待处理，1：无效；2：有效'")
+    @Column(name = "invalid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '是否有效：0待处理，1：无效；2：有效'")
     private Integer invalid;
 
 }
