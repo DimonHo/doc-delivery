@@ -21,9 +21,9 @@ public interface HelpRawService {
 
     List<HelpRaw> findByIdHelpRaw(Long id);
 
-    Page<VHelpRaw> findHelpRaw(Date gmtCreate,Date gmtModified ,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid,Pageable pageable);
+    Page<VHelpRaw> findHelpRaw(Date beginTime,Date endTime ,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid,Pageable pageable);
 
     void updateHelpRecordId(Long id,Long helpRecordId,Integer invalid);
 
-    Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date gmtCreate,Date mtModified,Boolean isDifficult,Integer isInvalid,List<Integer> status,Pageable pageable);
+    Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,Pageable pageable);
 }

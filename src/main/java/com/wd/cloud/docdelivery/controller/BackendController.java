@@ -67,8 +67,8 @@ public class BackendController {
 
     @ApiOperation(value = "查询原始求助信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "gmtCreate", value = "开始时间", dataType = "Date", paramType = "query"),
-            @ApiImplicitParam(name = "gmtModified", value = "结束时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "开始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "anonymous", value = "是否匿名", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "helpChannel", value = "渠道1：QQ，2：SPIS，3：ZHY，4：CRS，5：PAPER，6：CRS_V2，7：MINI", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "helperEmail", value = "求助者邮箱", dataType = "String", paramType = "query"),
@@ -79,8 +79,8 @@ public class BackendController {
             @ApiImplicitParam(name = "invalid", value = "是否有效：0:待处理,1:无效,2:有效", dataType = "Long", paramType = "query")
     })
     @GetMapping(value = "/help/raw/findHelpRaw")
-    public ResponseModel findHelpRaw(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date gmtCreate,
-                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date gmtModified,
+    public ResponseModel findHelpRaw(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                      @RequestParam(required = false) Boolean anonymous,
                                      @RequestParam(required = false) Long helpChannel,
                                      @RequestParam(required = false) String helperEmail,
@@ -90,7 +90,7 @@ public class BackendController {
                                      @RequestParam(required = false) Long helpRecordId,
                                      @RequestParam(required = false) Integer invalid,
                                      @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
-        Page<VHelpRaw> helpRawDTOS = helpRawService.findHelpRaw(gmtCreate, gmtModified ,anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid,pageable);
+        Page<VHelpRaw> helpRawDTOS = helpRawService.findHelpRaw(beginTime, endTime ,anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid,pageable);
         return ResponseModel.ok().setBody(helpRawDTOS);
     }
 

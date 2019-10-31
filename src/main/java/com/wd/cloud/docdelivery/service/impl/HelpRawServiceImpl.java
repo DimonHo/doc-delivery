@@ -79,14 +79,14 @@ public class HelpRawServiceImpl implements HelpRawService {
     }
 
     @Override
-    public Page<VHelpRaw> findHelpRaw(Date gmtCreate,Date gmtModified,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid, Pageable pageable) {
-        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.findVhelpRaw(gmtCreate,gmtModified ,anonymous, helpChannel, helperEmail, helperIp, helperName,orgFlag,helpRecordId,invalid), pageable);
+    public Page<VHelpRaw> findHelpRaw(Date beginTime,Date endTime,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid, Pageable pageable) {
+        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.findVhelpRaw(beginTime,endTime ,anonymous, helpChannel, helperEmail, helperIp, helperName,orgFlag,helpRecordId,invalid), pageable);
         return vHelpRaws;
     }
 
     @Override
-    public Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date gmtCreate,Date gmtModified,Boolean isDifficult,Integer invalid,List<Integer> status,Pageable pageable) {
-        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, gmtCreate,gmtModified, isDifficult, invalid, status), pageable);
+    public Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer invalid,List<Integer> status,Pageable pageable) {
+        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, beginTime,endTime, isDifficult, invalid, status), pageable);
         return vHelpRaws;
     }
 
