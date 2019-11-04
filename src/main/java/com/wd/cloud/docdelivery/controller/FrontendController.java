@@ -166,7 +166,7 @@ public class FrontendController {
         helpRecord.setHelperIp(ip);
         try {
             helpRequestService.helpRequest(literature, helpRecord);
-            return ResponseModel.ok().setMessage("求助成功");
+            return ResponseModel.ok().setMessage("求助成功").setBody(helpRecord.getId());
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
         }
