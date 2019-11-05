@@ -99,7 +99,7 @@ public class BackendController {
             @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "path"),
             @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query", defaultValue = "0")
     })
-    @PatchMapping(value = "/help/raw/updateHelpRecordId/{id}")
+    @PostMapping(value = "/help/raw/updateHelpRecordId/{id}")
     public ResponseModel updateHelpRecordId(@PathVariable Long id,
                                             @RequestParam(required = false) Long helpRecordId){
         helpRawService.updateHelpRecordId(id,helpRecordId);
