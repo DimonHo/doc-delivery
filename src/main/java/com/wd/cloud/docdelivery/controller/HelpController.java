@@ -41,6 +41,6 @@ public class HelpController {
         String ip = ServletUtil.getClientIP(request);
         helpRecord.setHelperIp(ip);
         helpRequestService.helpRequest(literature, helpRecord);
-        return ResponseModel.ok();
+        return ResponseModel.ok().setBody(helpRecord.getId());
     }
 }
