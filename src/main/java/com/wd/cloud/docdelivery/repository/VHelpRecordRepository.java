@@ -17,7 +17,7 @@ import java.util.*;
 
 public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>, JpaSpecificationExecutor<VHelpRecord> {
 
-    List<VHelpRecord> findBySendAndGmtModifiedBeforeAndStatusIn(boolean isSend,Date gmtModified,List<Integer> status);
+    List<VHelpRecord> findBySendAndGmtModifiedBeforeAndStatusInOrDifficult(boolean isSend,Date gmtModified,List<Integer> status,boolean difficult);
 
     //@Query(value = "SELECT t1.help_date AS help_date,IFNULL(t2.total,0) AS total FROM (SELECT @s :=@s+1 AS _index,DATE_FORMAT(DATE_SUB(?4,INTERVAL @s HOUR),?2) AS help_date FROM mysql.help_topic,(SELECT @s :=-1) temp WHERE DATE(DATE_SUB(?4,INTERVAL @s HOUR))>=?3) AS t1 LEFT JOIN (SELECT count(id) AS total,date_format(gmt_create,?2) help_date FROM v_help_record WHERE org_flag=?1 AND gmt_create BETWEEN ?3 AND ?4 GROUP BY help_date) AS t2 ON t1.help_date=t2.help_date ORDER BY t1.help_date",nativeQuery = true)
     @Query(value = "select gmt_create from v_help_record group by gmt_create", nativeQuery = true)
