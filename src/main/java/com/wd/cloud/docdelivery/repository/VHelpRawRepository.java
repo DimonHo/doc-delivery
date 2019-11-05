@@ -39,9 +39,8 @@ public interface VHelpRawRepository extends JpaRepository<VHelpRaw, Long>, JpaSp
                 if (helpChannel != null){
                     list.add(cb.equal(root.get("helpChannel").as(Long.class),helpChannel));
                 }
-                // 是否是疑难文献
                 if (anonymous != null) {
-                    list.add(cb.equal(root.get("difficult").as(Boolean.class), anonymous));
+                    list.add(cb.equal(root.get("anonymous").as(Boolean.class), anonymous));
                 }
                 if (StrUtil.isNotBlank(helperEmail)) {
                     list.add(cb.equal(root.get("helperEmail"), helperEmail));
