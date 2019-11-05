@@ -96,15 +96,13 @@ public class BackendController {
 
     @ApiOperation(value = "根据原始数据ID修改求助记录的ID和有效值")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "query"),
-            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
-            @ApiImplicitParam(name = "invalid", value = "是否有效：0:待处理,1:无效,2:有效", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query", defaultValue = "0")
     })
-    @PatchMapping(value = "/help/raw/updateHelpRecordId")
-    public ResponseModel updateHelpRecordId(@RequestParam(required = false) Long id,
-                                            @RequestParam(required = false) Long helpRecordId,
-                                            @RequestParam(required = false) Integer invalid){
-        helpRawService.updateHelpRecordId(id,helpRecordId,invalid);
+    @PatchMapping(value = "/help/raw/updateHelpRecordId/{id}")
+    public ResponseModel updateHelpRecordId(@PathVariable Long id,
+                                            @RequestParam(required = false) Long helpRecordId){
+        helpRawService.updateHelpRecordId(id,helpRecordId);
         return ResponseModel.ok().setMessage("修改成功");
     }
 

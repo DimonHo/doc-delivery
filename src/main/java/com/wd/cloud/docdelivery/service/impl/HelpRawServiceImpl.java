@@ -73,8 +73,14 @@ public class HelpRawServiceImpl implements HelpRawService {
     }
 
     @Override
-    public void updateHelpRecordId(Long id, Long helpRecordId,Integer invalid) {
+    public void updateHelpRecordId(Long id, Long helpRecordId) {
         Date gmtModified = new Date();
+        Integer invalid = 0;
+        if(helpRecordId > 0 && helpRecordId != null){
+             invalid = 2;
+        }else {
+             invalid = 1;
+        }
         helpRawRepository.updateHelpRecordId(id,helpRecordId,invalid,gmtModified);
     }
 
