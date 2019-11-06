@@ -92,9 +92,9 @@ public class FrontendController {
                                      @RequestParam(required = false) String helperName,
                                      @RequestParam(required = false) String orgFlag,
                                      @RequestParam(required = false) String orgName,
-                                     @RequestParam(required = false) String info){
-        helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
-        return ResponseModel.ok().setMessage("求助成功");
+                                     @RequestParam String info){
+            helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
+            return ResponseModel.ok().setMessage("求助成功");
     }
 
     @ApiOperation(value = "Json录入原始求助信息")
