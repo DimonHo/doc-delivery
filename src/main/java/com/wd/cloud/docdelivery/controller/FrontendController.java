@@ -211,10 +211,11 @@ public class FrontendController {
     @GetMapping("/help/records/my")
     public ResponseModel myHelpRecords(@RequestParam(required = false) List<Integer> status,
                                        @RequestParam(required = false) Boolean isDifficult,
+                                       @RequestParam(required = false) List<Long> helpChannel,
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, pageable);
+        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
