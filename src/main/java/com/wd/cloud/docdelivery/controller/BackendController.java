@@ -2,12 +2,12 @@ package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
+import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
 import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
-import com.wd.cloud.docdelivery.service.BackendService;
-import com.wd.cloud.docdelivery.service.FileService;
-import com.wd.cloud.docdelivery.service.LiteraturePlanService;
-import com.wd.cloud.docdelivery.service.MailService;
+import com.wd.cloud.docdelivery.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -51,6 +51,60 @@ public class BackendController {
     @Autowired
     Global global;
 
+    @Autowired
+    HelpRawService helpRawService;
+
+
+    @ApiOperation(value = "根据ID查询原始求助信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "query")
+    })
+    @GetMapping(value = "/help/raw/findByIdHelpRaw")
+    public ResponseModel findByIdHelpRaw(@RequestParam(required = true) Long id){
+        List<HelpRaw> helpRaw = helpRawService.findByIdHelpRaw(id);
+        return ResponseModel.ok().setBody(helpRaw);
+    }
+
+    @ApiOperation(value = "查询原始求助信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "beginTime", value = "开始时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "anonymous", value = "是否匿名", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "helpChannel", value = "渠道1：QQ，2：SPIS，3：ZHY，4：CRS，5：PAPER，6：CRS_V2，7：MINI", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "helperEmail", value = "求助者邮箱", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "helperIp", value = "求助者IP", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "helperName", value = "求助者用户名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "orgFlag", value = "求助者学校ID", dataType = "String" , paramType = "query"),
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "invalid", value = "是否有效：0:待处理,1:无效,2:有效", dataType = "Long", paramType = "query")
+    })
+    @GetMapping(value = "/help/raw/findHelpRaw")
+    public ResponseModel findHelpRaw(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
+                                     @RequestParam(required = false) Boolean anonymous,
+                                     @RequestParam(required = false) Long helpChannel,
+                                     @RequestParam(required = false) String helperEmail,
+                                     @RequestParam(required = false) String helperIp,
+                                     @RequestParam(required = false) String helperName,
+                                     @RequestParam(required = false) String orgFlag,
+                                     @RequestParam(required = false) Long helpRecordId,
+                                     @RequestParam(required = false) Integer invalid,
+                                     @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<VHelpRaw> helpRawDTOS = helpRawService.findHelpRaw(beginTime, endTime ,anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid,pageable);
+        return ResponseModel.ok().setBody(helpRawDTOS);
+    }
+
+    @ApiOperation(value = "根据原始数据ID修改求助记录的ID和有效值")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query", defaultValue = "0")
+    })
+    @PostMapping(value = "/help/raw/updateHelpRecordId/{id}")
+    public ResponseModel updateHelpRecordId(@PathVariable Long id,
+                                            @RequestParam(required = false) Long helpRecordId){
+        helpRawService.updateHelpRecordId(id,helpRecordId);
+        return ResponseModel.ok().setMessage("修改成功");
+    }
 
     /**
      * 文献互助列表
