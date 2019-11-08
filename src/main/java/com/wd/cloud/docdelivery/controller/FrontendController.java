@@ -279,6 +279,7 @@ public class FrontendController {
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
+        log.info("求助渠道" + helpChannel.toString());
         Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
