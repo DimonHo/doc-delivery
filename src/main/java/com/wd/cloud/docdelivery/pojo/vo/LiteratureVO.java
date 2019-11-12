@@ -40,7 +40,7 @@ public class LiteratureVO {
     @ApiModelProperty(value = "文献作者", example = "濯天临")
     private String author;
 
-    @ApiModelProperty(value = "求助文献链接", example = "1：文献，2：图书，3：会议")
+    @ApiModelProperty(value = "文献类型", example = "1：文献，2：图书，3：会议")
     private Integer type;
 
     /**

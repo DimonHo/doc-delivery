@@ -81,7 +81,7 @@ public class TaskController {
         // 2分钟前的未发送
         Date gmtModified = DateUtil.offsetMinute(new Date(), -2).toJdkDate();
         List<Integer> sendStatus = CollectionUtil.newArrayList(3, 4);
-        List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBeforeAndStatusIn(false, gmtModified, sendStatus);
+        List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBeforeAndStatusInOrDifficult(false, gmtModified, sendStatus, true);
         String businessId = "";
         if (CollectionUtil.isNotEmpty(bySend)) {
             VHelpRecord vHelpRecord = RandomUtil.randomEle(bySend);

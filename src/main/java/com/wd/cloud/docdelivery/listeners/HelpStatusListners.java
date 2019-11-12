@@ -2,8 +2,10 @@ package com.wd.cloud.docdelivery.listeners;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import com.wd.cloud.docdelivery.pojo.entity.HandlerLog;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
+import com.wd.cloud.docdelivery.repository.HandlerLogRepository;
 import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
 import com.wd.cloud.docdelivery.service.MailService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,9 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
     VHelpRecordRepository vHelpRecordRepository;
 
     @Autowired
+    HandlerLogRepository handlerLogRepository;
+
+    @Autowired
     private EntityManagerFactory entityManagerFactory;
 
     @PostConstruct
@@ -78,6 +83,14 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
                 if (isColumnEqStatus){
                     // 新旧字段值是否不一样
                     boolean newNotEqOld = postUpdateEvent.getOldState()[i] != postUpdateEvent.getState()[i];
+                    if (newNotEqOld){
+                        HandlerLog handlerLog = new HandlerLog();
+                        handlerLog.setHelpRecordId(helpRecord.getId())
+                                .setHandlerName(helpRecord.getHandlerName())
+                                .setBeforeStatus((Integer) postUpdateEvent.getOldState()[i])
+                                .setAfterStatus((Integer) postUpdateEvent.getState()[i]);
+                        handlerLogRepository.save(handlerLog);
+                    }
                     // 新值是否在status列表中
                     boolean newStatusContains = SEND_STATUS.contains(postUpdateEvent.getState()[i]);
                     statusChangeSend = newNotEqOld && newStatusContains;

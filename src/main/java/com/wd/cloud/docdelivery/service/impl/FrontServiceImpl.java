@@ -1,9 +1,7 @@
 package com.wd.cloud.docdelivery.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.http.HtmlUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.exception.FeignException;
@@ -22,11 +20,15 @@ import com.wd.cloud.docdelivery.feign.FsServerApi;
 import com.wd.cloud.docdelivery.feign.SdolServerApi;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.*;
+import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
+import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
+import com.wd.cloud.docdelivery.pojo.entity.Permission;
+import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import com.wd.cloud.docdelivery.repository.*;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.GiveService;
+import com.wd.cloud.docdelivery.util.BizUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -199,9 +201,9 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public Page<HelpRecordDTO> myHelpRecords(String username, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable) {
-        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, username, null, isDifficult, null, null, null), pageable);
-        return coversHelpRecordDTO(vHelpRecords);
+    public Page<HelpRecordDTO> myHelpRecords(String username, List<Integer> status, Boolean isDifficult, Pageable pageable) {
+        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(null, status, null, username, null, isDifficult, null, null, null), pageable);
+        return BizUtil.coversHelpRecordDTO(vHelpRecords, literatureRepository);
     }
 
     /**
@@ -215,7 +217,7 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public Page<GiveRecordDTO> myGiveRecords(String giverName, List<Integer> status, Pageable pageable) {
         Page<GiveRecord> giveRecords = giveRecordRepository.findAll(GiveRecordRepository.SpecBuilder.buildGiveRecord(status, giverName), pageable);
-        return coversGiveRecordDTO(giveRecords);
+        return BizUtil.coversGiveRecordDTO(giveRecords, literatureRepository, helpRecordRepository);
     }
 
 
@@ -239,7 +241,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, email, null, keyword, isDifficult, orgFlag, begin, end), pageable);
-        return coversHelpRecordDTO(vHelpRecords);
+        return BizUtil.coversHelpRecordDTO(vHelpRecords, literatureRepository);
     }
 
     /**
@@ -264,7 +266,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> waitHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, isDifficult, orgFlag, begin, end), pageable);
-        return coversHelpRecordDTO(waitHelpRecords);
+        return BizUtil.coversHelpRecordDTO(waitHelpRecords, literatureRepository);
     }
 
     /**
@@ -284,7 +286,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, null, null, null, orgFlag, begin, end), pageable);
-        return coversHelpRecordDTO(finishHelpRecords);
+        return BizUtil.coversHelpRecordDTO(finishHelpRecords, literatureRepository);
     }
 
     /**
@@ -305,7 +307,7 @@ public class FrontServiceImpl implements FrontService {
         Date beginDate = beginTime != null ? beginTime : DateUtil.offsetWeek(endDate, -1);
         // end
         Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, null, null, null, null, true, orgFlag, beginDate, endDate), pageable);
-        return coversHelpRecordDTO(finishHelpRecords);
+        return BizUtil.coversHelpRecordDTO(finishHelpRecords, literatureRepository);
     }
 
 
@@ -340,54 +342,6 @@ public class FrontServiceImpl implements FrontService {
             default:
                 return 0;
         }
-    }
-
-
-    private Page<HelpRecordDTO> coversHelpRecordDTO(Page<VHelpRecord> helpRecordPage) {
-        return helpRecordPage.map(vHelpRecord -> {
-            HelpRecordDTO helpRecordDTO = BeanUtil.toBean(anonymous(vHelpRecord), HelpRecordDTO.class);
-            Optional<Literature> optionalLiterature = literatureRepository.findById(vHelpRecord.getLiteratureId());
-            optionalLiterature.ifPresent(literature -> helpRecordDTO.setDocTitle(literature.getDocTitle()).setDocHref(literature.getDocHref()));
-//            //如果有用户正在应助
-//            if (vHelpRecord.getStatus() == HelpStatusEnum.HELPING.value()) {
-//                Optional<GiveRecord> optionalGiveRecord = giveService.getGiveRecord(vHelpRecord.getId(), GiveStatusEnum.WAIT_UPLOAD);
-//                optionalGiveRecord.ifPresent(helpRecordDTO::setGiving);
-//            }
-            return helpRecordDTO;
-        });
-    }
-
-    private Page<GiveRecordDTO> coversGiveRecordDTO(Page<GiveRecord> giveRecordPage) {
-        return giveRecordPage.map(giveRecord -> {
-            GiveRecordDTO giveRecordDTO = BeanUtil.toBean(giveRecord, GiveRecordDTO.class);
-            Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(giveRecord.getHelpRecordId());
-            optionalHelpRecord.ifPresent(helpRecord -> {
-                giveRecordDTO.setHelperEmail(BooleanUtil.isTrue(helpRecord.getAnonymous()) ? "匿名" : StrUtil.hideMailAddr(helpRecord.getHelperEmail()))
-                        .setRemark(helpRecord.getRemark()).setOrgName(helpRecord.getOrgName());
-                Optional<Literature> optionalLiterature = literatureRepository.findById(helpRecord.getLiteratureId());
-                optionalLiterature.ifPresent(literature -> {
-                    giveRecordDTO.setDocTitle(literature.getDocTitle()).setDocHref(literature.getDocHref());
-                });
-            });
-            return giveRecordDTO;
-        });
-    }
-
-    /**
-     * 匿名和邮箱隐藏处理
-     *
-     * @param vHelpRecord
-     * @return
-     */
-    private VHelpRecord anonymous(VHelpRecord vHelpRecord) {
-        if (BooleanUtil.isTrue(vHelpRecord.getAnonymous())) {
-            vHelpRecord.setHelperEmail("匿名").setHelperName("匿名");
-        } else {
-            String helperEmail = vHelpRecord.getHelperEmail();
-            String s = StrUtil.hideMailAddr(helperEmail);
-            vHelpRecord.setHelperEmail(s);
-        }
-        return vHelpRecord;
     }
 
 
