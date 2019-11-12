@@ -55,5 +55,20 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         asyncService.autoGive(helpRecord.getId());
     }
 
-
+    @Override
+    public void checkIsRepeat(String docTitle, String docHref, String email) {
+        Literature literature = new Literature();
+        literature.setDocTitle(docTitle).setDocHref(docHref);
+        literature.createUnid();
+        Optional<Literature> optionalLiterature = literatureRepository.findByUnid(literature.getUnid());
+        if (optionalLiterature.isPresent()) {
+            Literature lt = optionalLiterature.get();
+            // 最近15天是否求助过相同的文献
+            helpRecordRepository
+                    .findByHelperEmailAndLiteratureId(email, lt.getId())
+                    .ifPresent(h -> {
+                        throw new RepeatHelpRequestException();
+                    });
+        }
+    }
 }

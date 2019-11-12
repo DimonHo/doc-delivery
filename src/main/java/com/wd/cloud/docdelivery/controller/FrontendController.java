@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.http.HtmlUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
@@ -243,10 +244,12 @@ public class FrontendController {
     @GetMapping("/help/records/my")
     public ResponseModel myHelpRecords(@RequestParam(required = false) List<Integer> status,
                                        @RequestParam(required = false) Boolean isDifficult,
+                                       @RequestParam(required = false) List<Long> helpChannel,
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, pageable);
+        log.info("求助渠道" + helpChannel.toString());
+        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
@@ -345,5 +348,16 @@ public class FrontendController {
         return ResponseModel.ok().setBody(resp);
     }
 
+    @ApiOperation(value = "查询当前邮箱15天内是否求助该文章")
+    @PostMapping("/help/repeat")
+    public ResponseModel addHelpRecordRepeat(@Valid HelpRequestModel helpRequestModel) {
+        try {
+            log.info("查询重复的title" + helpRequestModel.getDocTitle());
+            helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(helpRequestModel.getDocTitle())), helpRequestModel.getDocHref(), helpRequestModel.getHelperEmail());
+            return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
+        } catch (ConstraintViolationException e) {
+            throw new AppException(ExceptionEnum.HELP_REPEAT);
+        }
+    }
 
 }
