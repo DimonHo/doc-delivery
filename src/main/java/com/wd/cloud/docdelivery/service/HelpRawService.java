@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
@@ -16,10 +17,9 @@ import java.util.List;
  * @Description:
  */
 public interface HelpRawService {
+    void addHelpRaw(HelpRawModel helpRawModel);
 
-    void addHelpRaw(Boolean anonymous,Long helpChannel,String helperEamil,String helperIp,String helperName, String orgFlag,String orgName,String info);
-
-    List<HelpRaw> findByIdHelpRaw(Long id);
+    HelpRaw findByIdHelpRaw(Long id);
 
     Page<VHelpRaw> findHelpRaw(Date beginTime,Date endTime ,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid,Pageable pageable);
 

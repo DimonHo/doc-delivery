@@ -26,16 +26,14 @@ public class HelpRawModel {
     @ApiModelProperty(value = "是否匿名,默认0", example = "0")
     private Boolean anonymous;
 
-    @ApiModelProperty(value = "求助渠道,默认0", example = "1")
+    @ApiModelProperty(value = "求助渠道,默认0", example = "0")
     @NotNull
     private Long helpChannel;
 
     @ApiModelProperty(value = "求助的邮箱", example = "hulangshi@qq.com")
-    @NotBlank
     private String helperEmail;
 
     @ApiModelProperty(value = "求助者IP")
-    @NotNull
     private String helperIp;
 
     @ApiModelProperty(value = "求助者用户名")

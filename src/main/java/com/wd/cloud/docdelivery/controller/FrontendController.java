@@ -73,42 +73,11 @@ public class FrontendController {
     @Autowired
     HelpRawService helpRawService;
 
-    @ApiOperation(value = "录入原始求助信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "anonymous", value = "是否匿名", defaultValue = "false", dataType = "Boolean", paramType = "query"),
-            @ApiImplicitParam(name = "helpChannel", value = "渠道1：QQ，2：SPIS，3：ZHY，4：CRS，5：PAPER，6：CRS_V2，7：MINI", dataType = "Long", paramType = "query"),
-            @ApiImplicitParam(name = "helperEmail", value = "求助者邮箱", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "helperIp", value = "求助者IP", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "helperName", value = "求助者用户名", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "orgFlag", value = "求助者学校ID", dataType = "String" , paramType = "query"),
-            @ApiImplicitParam(name = "orgName", value = "求助者学校名称", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "info", value = "求助的信息", dataType = "String", paramType = "query")
-    })
-    @PostMapping("/help/raw/save")
-    public ResponseModel addHelpRaw(@RequestParam(required = false) Boolean anonymous,
-                                     @RequestParam(required = false) Long helpChannel,
-                                     @RequestParam(required = false) String helperEmail,
-                                     @RequestParam(required = false) String helperIp,
-                                     @RequestParam(required = false) String helperName,
-                                     @RequestParam(required = false) String orgFlag,
-                                     @RequestParam(required = false) String orgName,
-                                     @RequestParam String info){
-            helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
-            return ResponseModel.ok().setMessage("求助成功");
-    }
-
     @ApiOperation(value = "Json录入原始求助信息")
-    @PostMapping("/help/raw/savej")
-    public ResponseModel addHelpRaw1(@RequestBody HelpRawModel helpRawModel){
-        Boolean anonymous = helpRawModel.getAnonymous();
-        Long helpChannel = helpRawModel.getHelpChannel();
-        String helperEmail = helpRawModel.getHelperEmail();
-        String helperIp = helpRawModel.getHelperIp();
-        String helperName = helpRawModel.getHelperName();
-        String orgFlag = helpRawModel.getOrgFlag();
-        String orgName = helpRawModel.getOrgName();
-        String info = helpRawModel.getInfo();
-        helpRawService.addHelpRaw(anonymous,helpChannel,helperEmail,helperIp,helperName,orgFlag,orgName,info);
+    @PostMapping("/help/raw")
+    public ResponseModel addHelpRaw(@Valid @RequestBody HelpRawModel helpRawModel){
+        helpRawModel.setHelperIp(ServletUtil.getClientIP(request));
+        helpRawService.addHelpRaw(helpRawModel);
         return ResponseModel.ok().setMessage("求助成功");
     }
 
@@ -122,7 +91,7 @@ public class FrontendController {
             @ApiImplicitParam(name = "invalid", value =  "是否有效", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query")
     })
-    @GetMapping(value = "/help/raw/myHelpRaw")
+    @GetMapping(value = "/help/raw")
     public ResponseModel myHelpRaw(@RequestParam(required = false) String helperName,
                                    @RequestParam(required = false) Long helpRecordId,
                                    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,

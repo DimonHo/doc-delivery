@@ -57,11 +57,11 @@ public class BackendController {
 
     @ApiOperation(value = "根据ID查询原始求助信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "path")
     })
-    @GetMapping(value = "/help/raw/findByIdHelpRaw")
-    public ResponseModel findByIdHelpRaw(@RequestParam(required = true) Long id){
-        List<HelpRaw> helpRaw = helpRawService.findByIdHelpRaw(id);
+    @GetMapping(value = "/help/raw/{id}")
+    public ResponseModel findByIdHelpRaw(@PathVariable Long id){
+        HelpRaw helpRaw = helpRawService.findByIdHelpRaw(id);
         return ResponseModel.ok().setBody(helpRaw);
     }
 
@@ -78,7 +78,7 @@ public class BackendController {
             @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "invalid", value = "是否有效：0:待处理,1:无效,2:有效", dataType = "Long", paramType = "query")
     })
-    @GetMapping(value = "/help/raw/findHelpRaw")
+    @GetMapping(value = "/help/raw")
     public ResponseModel findHelpRaw(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                      @RequestParam(required = false) Boolean anonymous,
@@ -99,7 +99,7 @@ public class BackendController {
             @ApiImplicitParam(name = "id", value = "ID", dataType = "Long", paramType = "path"),
             @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query", defaultValue = "0")
     })
-    @PostMapping(value = "/help/raw/updateHelpRecordId/{id}")
+    @PutMapping(value = "/help/raw/{id}")
     public ResponseModel updateHelpRecordId(@PathVariable Long id,
                                             @RequestParam(required = false) Long helpRecordId){
         helpRawService.updateHelpRecordId(id,helpRecordId);
