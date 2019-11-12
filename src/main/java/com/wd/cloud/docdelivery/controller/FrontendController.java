@@ -4,22 +4,23 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.http.HtmlUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.enums.StatusEnum;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.AppContextUtil;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
+import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
-import com.wd.cloud.docdelivery.pojo.entity.Literature;
-import com.wd.cloud.docdelivery.pojo.entity.Permission;
+import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.service.FrontService;
+import com.wd.cloud.docdelivery.service.HelpRawService;
 import com.wd.cloud.docdelivery.service.HelpRequestService;
 import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
@@ -70,13 +71,47 @@ public class FrontendController {
     @Autowired
     HttpServletRequest request;
 
+    @Autowired
+    HelpRawService helpRawService;
+
+    @ApiOperation(value = "Json录入原始求助信息")
+    @PostMapping("/help/raw")
+    public ResponseModel addHelpRaw(@Valid @RequestBody HelpRawModel helpRawModel){
+        helpRawModel.setHelperIp(ServletUtil.getClientIP(request));
+        helpRawService.addHelpRaw(helpRawModel);
+        return ResponseModel.ok().setMessage("求助成功");
+    }
+
+    @ApiOperation(value = "根据状态查询求助记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "helperName" , value = "求助者姓名",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录的ID", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "invalid", value =  "是否有效", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query")
+    })
+    @GetMapping(value = "/help/raw")
+    public ResponseModel myHelpRaw(@RequestParam(required = false) String helperName,
+                                   @RequestParam(required = false) Long helpRecordId,
+                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
+                                   @RequestParam(required = false) Boolean isDifficult,
+                                   @RequestParam(required = false) Integer invalid,
+                                   @RequestParam(required = false) List<Integer> status,
+                                   @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<VHelpRaw> helpRawDTOS = helpRawService.getHelpRaws(helperName, helpRecordId, beginTime,endTime, isDifficult,invalid, status, pageable);
+        return ResponseModel.ok().setBody(helpRawDTOS);
+    }
+
     @ApiOperation(value = "文献求助 json参数",tags = {"文献求助"})
     @PostMapping(value = "/help/record")
     public ResponseModel<HelpRecord> addHelpRecord1(@Valid @RequestBody HelpRequestModel helpRequestModel){
         return helpRequest(helpRequestModel);
     }
 
-    @ApiOperation(value = "文献求助 from表单",tags = {"文献求助"})
+    @ApiOperation(value = "文献求助 form表单",tags = {"文献求助"})
     @PostMapping(value = "/help/form")
     public ResponseModel<HelpRecord> addHelpRecord2(@Valid HelpRequestModel helpRequestModel) {
         return helpRequest(helpRequestModel);
@@ -89,7 +124,6 @@ public class FrontendController {
         String ip = ServletUtil.getClientIP(request);
         HelpRecord helpRecord = BeanUtil.toBean(helpRequestModel, HelpRecord.class);
         Literature literature = BeanUtil.toBean(helpRequestModel, Literature.class);
-
         if (StrUtil.isNotBlank(username)) {
             helpRecord.setHelperName(username);
         }
@@ -101,7 +135,7 @@ public class FrontendController {
         helpRecord.setHelperIp(ip);
         try {
             helpRequestService.helpRequest(literature, helpRecord);
-            return ResponseModel.ok().setMessage("求助成功");
+            return ResponseModel.ok().setMessage("求助成功").setBody(helpRecord.getId());
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
         }
@@ -209,10 +243,12 @@ public class FrontendController {
     @GetMapping("/help/records/my")
     public ResponseModel myHelpRecords(@RequestParam(required = false) List<Integer> status,
                                        @RequestParam(required = false) Boolean isDifficult,
+                                       @RequestParam(required = false) List<Long> helpChannel,
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, pageable);
+        log.info("求助渠道" + helpChannel.toString());
+        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
@@ -312,10 +348,11 @@ public class FrontendController {
     }
 
     @ApiOperation(value = "查询当前邮箱15天内是否求助该文章")
-    @GetMapping("/help/repeat")
-    public ResponseModel checkIsRepeat(String docTitle, String docHref, String helperEmail) {
+    @PostMapping("/help/repeat")
+    public ResponseModel addHelpRecordRepeat(@Valid HelpRequestModel helpRequestModel) {
         try {
-            helpRequestService.checkIsRepeat(docTitle, docHref, helperEmail);
+            log.info("查询重复的title" + helpRequestModel.getDocTitle());
+            helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(helpRequestModel.getDocTitle())), helpRequestModel.getDocHref(), helpRequestModel.getHelperEmail());
             return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
