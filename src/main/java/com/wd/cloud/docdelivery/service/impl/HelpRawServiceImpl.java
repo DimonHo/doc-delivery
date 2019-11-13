@@ -49,18 +49,19 @@ public class HelpRawServiceImpl implements HelpRawService {
     }
 
     @Override
-    public HelpRaw findByIdHelpRaw(Long id) {
-        return helpRawRepository.findById(id).orElseThrow(NotFoundException::new);
+    public VHelpRaw findByIdHelpRaw(Long id) {
+        return vHelpRawRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     @Override
     public void updateHelpRecordId(Long id, Long helpRecordId) {
         Date gmtModified = new Date();
-        Integer invalid = 0;
+        Integer invalid;
         if (helpRecordId > 0 && helpRecordId != null) {
             invalid = 2;
         } else {
             invalid = 1;
+            helpRecordId = new Long(0);
         }
         helpRawRepository.updateHelpRecordId(id, helpRecordId, invalid, gmtModified);
     }

@@ -19,7 +19,7 @@ import java.util.List;
 public interface HelpRawService {
     void addHelpRaw(HelpRawModel helpRawModel);
 
-    HelpRaw findByIdHelpRaw(Long id);
+    VHelpRaw findByIdHelpRaw(Long id);
 
     Page<VHelpRaw> findHelpRaw(Date beginTime,Date endTime ,Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid,Pageable pageable);
 

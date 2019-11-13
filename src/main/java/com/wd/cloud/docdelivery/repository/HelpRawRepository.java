@@ -20,5 +20,5 @@ public interface HelpRawRepository extends JpaRepository<HelpRaw,Long>, JpaSpeci
     @Modifying
     @Transactional
     @Query(value = "update help_raw set help_record_id = ?2,invalid = ?3 ,gmt_modified = ?4 where id = ?1", nativeQuery = true)
-    void updateHelpRecordId(Long id, Long helpRecordId, Integer invalid, Date gmtModified);
+    void updateHelpRecordId(Long id, Long helpRecordId1, Integer invalid, Date gmtModified);
 }
