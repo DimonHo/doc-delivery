@@ -200,9 +200,19 @@ public class FrontServiceImpl implements FrontService {
 
     }
 
+    /**
+     * 我的求助记录
+     *
+     * @param helperName
+     * @param status
+     * @param isDifficult
+     * @param helpChannel
+     * @param pageable
+     * @return
+     */
     @Override
-    public Page<HelpRecordDTO> myHelpRecords(String username, List<Integer> status, Boolean isDifficult, Pageable pageable) {
-        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(null, status, null, username, null, isDifficult, null, null, null), pageable);
+    public Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable) {
+        Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, helperName, null, isDifficult, null, null, null), pageable);
         return BizUtil.coversHelpRecordDTO(vHelpRecords, literatureRepository);
     }
 
