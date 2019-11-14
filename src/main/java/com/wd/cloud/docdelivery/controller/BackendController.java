@@ -61,8 +61,8 @@ public class BackendController {
     })
     @GetMapping(value = "/help/raw/{id}")
     public ResponseModel findByIdHelpRaw(@PathVariable Long id){
-        HelpRaw helpRaw = helpRawService.findByIdHelpRaw(id);
-        return ResponseModel.ok().setBody(helpRaw);
+        VHelpRaw vhelpRaw = helpRawService.findByIdHelpRaw(id);
+        return ResponseModel.ok().setBody(vhelpRaw);
     }
 
     @ApiOperation(value = "查询原始求助信息")
