@@ -25,5 +25,5 @@ public interface HelpRawService {
 
     void updateHelpRecordId(Long id,Long helpRecordId);
 
-    Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,Pageable pageable);
+    Page<VHelpRaw> getHelpRaws(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,String invalidStatus,Pageable pageable);
 }
