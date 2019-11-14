@@ -92,7 +92,8 @@ public class FrontendController {
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "invalid", value =  "是否有效", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query")
+            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query"),
+            @ApiImplicitParam(name = "invalidStatus", value =  "有效值状态", dataType = "String", paramType = "query"),
     })
     @GetMapping(value = "/help/raw")
     public ResponseModel myHelpRaw(@RequestParam(required = false) String helperName,
@@ -102,8 +103,9 @@ public class FrontendController {
                                    @RequestParam(required = false) Boolean isDifficult,
                                    @RequestParam(required = false) Integer invalid,
                                    @RequestParam(required = false) List<Integer> status,
+                                   @RequestParam(required = false) String invalidStatus,
                                    @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable){
-        Page<VHelpRaw> helpRawDTOS = helpRawService.getHelpRaws(helperName, helpRecordId, beginTime,endTime, isDifficult,invalid, status, pageable);
+        Page<VHelpRaw> helpRawDTOS = helpRawService.getHelpRaws(helperName, helpRecordId, beginTime,endTime, isDifficult,invalid, status,invalidStatus,pageable);
         return ResponseModel.ok().setBody(helpRawDTOS);
     }
 

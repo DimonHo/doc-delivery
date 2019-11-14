@@ -73,9 +73,9 @@ public class HelpRawServiceImpl implements HelpRawService {
     }
 
     @Override
-    public Page<VHelpRaw> getHelpRaws(String helperName, Long helpRecordId, Date beginTime, Date endTime, Boolean isDifficult, Integer invalid, List<Integer> status, Pageable pageable) {
-        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, beginTime, endTime, isDifficult, invalid, status), pageable);
-        return BizUtil.coversVhelpRaw(vHelpRaws);
+    public Page<VHelpRaw> getHelpRaws(String helperName, Long helpRecordId, Date beginTime, Date endTime, Boolean isDifficult, Integer invalid, List<Integer> status,String invalidStatus, Pageable pageable) {
+            Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, beginTime, endTime, isDifficult, invalid, status,invalidStatus), pageable);
+            return BizUtil.coversVhelpRaw(vHelpRaws);
     }
 
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
+import io.swagger.models.auth.In;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -66,32 +67,68 @@ public interface VHelpRawRepository extends JpaRepository<VHelpRaw, Long>, JpaSp
             };
         }
 
-        public static Specification<VHelpRaw> buildVhelpRaw(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer isInvalid,List<Integer> status) {
+        public static Specification<VHelpRaw> buildVhelpRaw(String helperName,Long helpRecordId,Date beginTime,Date endTime,Boolean isDifficult,Integer isInvalid,List<Integer> status,String invalidStatus) {
             return (Specification<VHelpRaw>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
-                if (StrUtil.isNotBlank(helperName)) {
-                    list.add(cb.equal(root.get("helperName"), helperName));
-                }
-                if (helpRecordId != null){
-                    list.add(cb.equal(root.get("helpRecordId").as(Long.class),helpRecordId));
-                }
-                if (beginTime != null || endTime != null) {
-                    Date end = endTime == null ? new Date() : endTime;
-                    Date begin = beginTime == null ? DateUtil.parse("2000-01-01 00:00:00") : beginTime;
-                    list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
-                }
-                // 是否是疑难文献
-                if (isDifficult != null) {
-                    list.add(cb.equal(root.get("difficult").as(Boolean.class), isDifficult));
-                }
-                //是否有效
-                if (isInvalid != null){
-                    list.add(cb.equal(root.get("invalid").as(Integer.class),isInvalid));
-                }
-                // 状态过滤
-                if (CollectionUtil.isNotEmpty(status)) {
-                    list.add(cb.in(root.get("status")).value(status));
-                }
+                    if (StrUtil.isNotBlank(helperName)) {
+                        list.add(cb.equal(root.get("helperName"), helperName));
+                    }
+                    if (helpRecordId != null){
+                        list.add(cb.equal(root.get("helpRecordId").as(Long.class),helpRecordId));
+                    }
+                    if (beginTime != null || endTime != null) {
+                        Date end = endTime == null ? new Date() : endTime;
+                        Date begin = beginTime == null ? DateUtil.parse("2000-01-01 00:00:00") : beginTime;
+                        list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
+                    }
+                    // 是否是疑难文献
+                    if (isDifficult != null) {
+                        list.add(cb.equal(root.get("difficult").as(Boolean.class), isDifficult));
+                    }
+                    //根据有效值标记查询
+                    if (invalidStatus == null){
+                        if (isInvalid != null) {
+                            list.add(cb.equal(root.get("invalid").as(Integer.class), isInvalid));
+                        }
+                        if (CollectionUtil.isNotEmpty(status)) {
+                            list.add(cb.in(root.get("status")).value(status));
+                        }
+                    }else if ("ing".equals(invalidStatus)){
+                        // 进行中
+                        Integer invalid = new Integer(0);
+                        List<Integer> status1 = new ArrayList<>();
+                        status1.add(-1);
+                        status1.add(0);
+                        status1.add(1);
+                        status1.add(2);
+                        status1.add(3);
+                        list.add(cb.or(cb.equal(root.get("invalid").as(Integer.class),invalid),
+                                cb.in(root.get("status")).value(status1)));
+                    }else if ("fail".equals(invalidStatus)){
+                        //当标记符号为fail时，求助失败
+                        Integer invalid = new Integer(1);
+                        List<Integer> status1 = new ArrayList<>();
+                        status1.add(5);
+                        list.add(cb.or(cb.equal(root.get("invalid").as(Integer.class),invalid),
+                                cb.in(root.get("status")).value(status1)));
+                    }else if ("success".equals(invalidStatus)){
+                        //当标记符号为success时，求助成功
+                        List<Integer> status1 = new ArrayList<>();
+                        status1.add(4);
+                        list.add(cb.in(root.get("status")).value(status1));
+                    }else if ("difficult".equals(invalidStatus)){
+                        //当标记符号为difficult时，为疑难文献
+                        Integer invalid = new Integer(0);
+                        List<Integer> status1 = new ArrayList<>();
+                        status1.add(0);
+                        status1.add(1);
+                        status1.add(2);
+                        status1.add(3);
+                        Boolean diffcult = new Boolean(true);
+                        list.add(cb.and((cb.or(cb.equal(root.get("invalid").as(Integer.class),invalid),
+                                cb.in(root.get("status")).value(status1))),cb.equal(root.get("difficult").as(Boolean.class), diffcult)));
+                    }
+
                 Predicate[] p = new Predicate[list.size()];
                 return cb.and(list.toArray(p));
             };

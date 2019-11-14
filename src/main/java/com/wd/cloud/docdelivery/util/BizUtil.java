@@ -67,10 +67,14 @@ public class BizUtil {
 
     public static Page<VHelpRaw> coversVhelpRaw(Page<VHelpRaw> vHelpRaws){
         return vHelpRaws.map(vHelpRaw -> {
-            if (vHelpRaw.getStatus() == HelpStatusEnum.HELP_SUCCESSING.value()){
-                vHelpRaw.setStatus(HelpStatusEnum.HELPING.value());
+            if (vHelpRaw.getStatus() != null){
+                if (vHelpRaw.getStatus() == HelpStatusEnum.HELP_SUCCESSING.value()){
+                    vHelpRaw.setStatus(HelpStatusEnum.HELPING.value());
+                }
+                return vHelpRaw;
+            }else {
+                return vHelpRaw;
             }
-            return vHelpRaw;
         });
     }
 }
