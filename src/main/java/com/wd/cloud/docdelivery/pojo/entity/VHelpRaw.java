@@ -81,7 +81,13 @@ public class VHelpRaw{
 
     private String unid;
 
+    private String issn;
+
     private String year;
+
+    private String volume;
+
+    private String issue;
 
     private String watchName;
 
