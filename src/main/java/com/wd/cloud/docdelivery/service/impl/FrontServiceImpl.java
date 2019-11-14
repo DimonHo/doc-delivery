@@ -273,7 +273,7 @@ public class FrontServiceImpl implements FrontService {
      */
     @Override
     public Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
-        // 待应助记录包含三种状态，0,1,3
+        // 待应助记录包含三种状态，-1,0,1,3
         List<Integer> status = CollectionUtil.newArrayList(
                 HelpStatusEnum.HELP_SUCCESSING.value(),
                 HelpStatusEnum.WAIT_HELP.value(),
