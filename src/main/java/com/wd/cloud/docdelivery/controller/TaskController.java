@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Author: He Zhigang
@@ -111,7 +110,10 @@ public class TaskController {
                 HelpStatusEnum.HELP_SUCCESSING.value(),
                 DateUtil.offsetMinute(new Date(), -5));
         if (CollectionUtil.isNotEmpty(helpRecords)) {
-            helpRecords.forEach(h -> h.setStatus(HelpStatusEnum.HELP_SUCCESSED.value()));
+            helpRecords.forEach(h -> {
+                h.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+                helpRecordRepository.save(h);
+            });
         }
         return ResponseModel.ok();
     }
