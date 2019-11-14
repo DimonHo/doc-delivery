@@ -124,9 +124,6 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
 
-                // 过滤状态为-1的不返回
-                list.add(cb.notEqual(root.get("status"), HelpStatusEnum.HELP_SUCCESSING.value()));
-
                 Predicate[] p = new Predicate[list.size()];
                 return cb.and(list.toArray(p));
             };

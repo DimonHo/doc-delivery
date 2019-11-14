@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.util;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.wd.cloud.commons.util.StrUtil;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
@@ -43,6 +44,9 @@ public class BizUtil {
         return helpRecordPage.map(vHelpRecord -> {
             HelpRecordDTO helpRecordDTO = BeanUtil.toBean(anonymous(vHelpRecord), HelpRecordDTO.class);
             helpRecordDTO.setDocTitle(vHelpRecord.getDocTitle()).setDocHref(vHelpRecord.getDocHref());
+            if (helpRecordDTO.getStatus() == HelpStatusEnum.HELP_SUCCESSING.value()){
+                helpRecordDTO.setStatus(HelpStatusEnum.HELPING.value());
+            }
             return helpRecordDTO;
         });
     }
