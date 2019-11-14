@@ -1,6 +1,8 @@
 package com.wd.cloud.docdelivery;
 
+import cn.hutool.core.lang.Console;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import java.util.Date;
 
@@ -13,6 +15,8 @@ public class JunitTest {
 
     @Test
     public void test1(){
-        boolean flag = new Date().compareTo(null) > 0;
+        Page<String> ps = Page.empty();
+        Page<String> pss = ps.map(s-> s+"1");
+        Console.log(pss);
     }
 }

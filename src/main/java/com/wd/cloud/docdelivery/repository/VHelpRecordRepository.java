@@ -2,8 +2,10 @@ package com.wd.cloud.docdelivery.repository;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,7 +78,6 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (beginTime != null) {
                     list.add(cb.greaterThanOrEqualTo(root.get("gmtCreate").as(Date.class), beginTime));
-
                 }
                 // 默认最新返回10秒之前的求助，防止自动应助任务还未跑完，被文献传递人员抢先处理
                 Date end = endTime != null ? endTime : DateUtil.offsetSecond(new Date(), -10).toJdkDate();
@@ -119,9 +120,12 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                 }
                 if (beginDate != null || endDate != null) {
                     Date end = endDate == null ? new Date() : endDate;
-                    Date begin = beginDate == null ? DateUtil.parse("2000-01-01 00:00:00") : beginDate;
+                    Date begin = beginDate == null ? DateUtil.parse("1970-01-01 00:00:00") : beginDate;
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), begin, end));
                 }
+
+                // 过滤状态为-1的不返回
+                list.add(cb.notEqual(root.get("status"), HelpStatusEnum.HELP_SUCCESSING.value()));
 
                 Predicate[] p = new Predicate[list.size()];
                 return cb.and(list.toArray(p));

@@ -37,6 +37,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -238,16 +239,14 @@ public class FrontendController {
 
 
     @ApiOperation(value = "我的求助记录")
-    @ApiImplicitParam(name = "status", value = "状态", dataType = "List", paramType = "query")
     @ValidateLogin
     @GetMapping("/help/records/my")
     public ResponseModel myHelpRecords(@RequestParam(required = false) List<Integer> status,
                                        @RequestParam(required = false) Boolean isDifficult,
                                        @RequestParam(required = false) List<Long> helpChannel,
-                                       @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                       @ApiIgnore @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        log.info("求助渠道" + helpChannel.toString());
         Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
@@ -281,10 +280,6 @@ public class FrontendController {
 
 
     @ApiOperation(value = "应助取消")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path"),
-            @ApiImplicitParam(name = "username", value = "应助者用户名称", dataType = "String", paramType = "query")
-    })
     @ValidateLogin
     @PatchMapping("/help/records/{helpRecordId}/giving/cancel")
     public ResponseModel cancelGiving(@PathVariable Long helpRecordId) {
@@ -296,9 +291,6 @@ public class FrontendController {
 
 
     @ApiOperation(value = "应助上传文件")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path")
-    })
     @ValidateLogin
     @PostMapping("/give/upload/{helpRecordId}")
     public ResponseModel upload(@PathVariable Long helpRecordId,
@@ -347,13 +339,13 @@ public class FrontendController {
         return ResponseModel.ok().setBody(resp);
     }
 
-    @ApiOperation(value = "查询当前邮箱15天内是否求助该文章")
+    @ApiOperation(value = "查询当前邮箱7天内是否求助该文章")
     @PostMapping("/help/repeat")
     public ResponseModel addHelpRecordRepeat(@Valid HelpRequestModel helpRequestModel) {
         try {
             log.info("查询重复的title" + helpRequestModel.getDocTitle());
             helpRequestService.checkIsRepeat(HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(helpRequestModel.getDocTitle())), helpRequestModel.getDocHref(), helpRequestModel.getHelperEmail());
-            return ResponseModel.ok().setMessage("15天内没有求助过当前文章");
+            return ResponseModel.ok().setMessage("7天内没有求助过当前文章");
         } catch (ConstraintViolationException e) {
             throw new AppException(ExceptionEnum.HELP_REPEAT);
         }

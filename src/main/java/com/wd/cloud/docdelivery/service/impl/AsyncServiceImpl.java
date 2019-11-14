@@ -99,7 +99,7 @@ public class AsyncServiceImpl implements AsyncService {
                     giveRecord.setHelpRecordId(helpRecord.getId());
                     giveRecordRepository.save(giveRecord);
 
-                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
+                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value())
                             .setFileId(fileId)
                             .setGiveType(GiveTypeEnum.BIG_DB.value())
                             .setGiverName(GiveTypeEnum.BIG_DB.name())
@@ -129,7 +129,7 @@ public class AsyncServiceImpl implements AsyncService {
                 .setStatus(GiveStatusEnum.SUCCESS.value())
                 .setHelpRecordId(helpRecord.getId());
         giveRecordRepository.save(giveRecord);
-        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value())
+        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value())
                 .setFileId(reusingDocFile.getFileId())
                 .setGiveType(GiveTypeEnum.AUTO.value())
                 .setGiverName(GiveTypeEnum.AUTO.name())

@@ -128,7 +128,7 @@ public class ProcessServiceImpl implements ProcessService {
                     .setStatus(GiveStatusEnum.SUCCESS.value())
                     .setHandlerName(handlerName);
             //修改求助状态为应助成功
-            helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
+            helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value());
             docFileRepository.save(docFile);
             giveRecordRepository.save(giveRecord);
             helpRecordRepository.save(helpRecord);
@@ -140,29 +140,15 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public void failed(Long helpRecordId, String handlerName) {
-        Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(helpRecordId);
-        if (optionalHelpRecord.isPresent()) {
-            HelpRecord helpRecord = optionalHelpRecord.get();
-            if (helpRecord.getStatus() >= HelpStatusEnum.HELP_SUCCESSED.value()) {
-                throw new AppException(ExceptionEnum.FLOW_STATUS);
-            }
-            helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.value());
-            //如果有求助第三方的状态的应助记录，则直接处理更新这个记录
-            GiveRecord giveRecord = giveService.getGiveRecord(helpRecordId, GiveStatusEnum.THIRD).orElse(new GiveRecord());
-
-            giveRecord.setHandlerName(handlerName)
-                    .setType(GiveTypeEnum.MANAGER.value())
-                    .setStatus(GiveStatusEnum.NO_RESULT.value())
-                    .setHelpRecordId(helpRecordId);
-            giveRecordRepository.save(giveRecord);
-            helpRecordRepository.save(helpRecord);
-
-            Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecordId);
-            optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
-        } else {
-            throw new NotFoundException("没有找到ID为【" + helpRecordId + "】的求助记录");
-        }
+    public void markDifficult(Long helpRecordId, String handlerName) {
+        HelpRecord helpRecord = helpRecordRepository.findById(helpRecordId).orElseThrow(NotFoundException::new);
+        //标记为疑难文献
+        helpRecord.setDifficult(true)
+                // 状态回到待应助的状态
+                .setStatus(HelpStatusEnum.WAIT_HELP.value())
+                .setHandlerName(handlerName)
+                .setGiveType(GiveTypeEnum.MANAGER.value())
+                .setGiverName(null);
     }
 
     @Override
@@ -175,13 +161,6 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public Page<HelpRecordDTO> successHelpRecordList(Pageable pageable) {
         List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.HELP_SUCCESSED.value());
-        Map<String, Object> param = MapUtil.of("status", waitStatusList);
-        return helpRecordList(param, pageable);
-    }
-
-    @Override
-    public Page<HelpRecordDTO> failedHelpRecordList(Pageable pageable) {
-        List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.HELP_FAILED.value());
         Map<String, Object> param = MapUtil.of("status", waitStatusList);
         return helpRecordList(param, pageable);
     }

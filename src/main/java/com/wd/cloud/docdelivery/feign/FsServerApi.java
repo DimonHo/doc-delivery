@@ -76,12 +76,7 @@ public interface FsServerApi {
             //decoderConverters.add(new ByteArrayHttpMessageConverter());
             final HttpMessageConverters httpMessageConverters = new HttpMessageConverters(decoderConverters);
 
-            return new SpringDecoder(new ObjectFactory<HttpMessageConverters>() {
-                @Override
-                public HttpMessageConverters getObject() {
-                    return httpMessageConverters;
-                }
-            });
+            return new SpringDecoder(() -> httpMessageConverters);
         }
     }
 

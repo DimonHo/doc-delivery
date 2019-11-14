@@ -201,7 +201,7 @@ public class BackendServiceImpl implements BackendService {
                     docFileRepository.save(docFile);
                 }
                 giveRecord.setHandlerName(handlerName).setStatus(GiveStatusEnum.SUCCESS.value());
-                helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.value()).setDifficult(false);
+                helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value()).setDifficult(false);
             }else{
                 giveRecord.setHandlerName(handlerName).setStatus(GiveStatusEnum.AUDIT_NO_PASS.value());
                 helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.value());

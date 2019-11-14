@@ -86,6 +86,13 @@ public class FrontServiceImpl implements FrontService {
     VHelpRecordRepository vHelpRecordRepository;
 
 
+    /**
+     * 应助认领
+     *
+     * @param helpRecordId
+     * @param giverName
+     * @param ip
+     */
     @Override
     public void give(Long helpRecordId, String giverName, String ip) {
         Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(helpRecordId);
@@ -95,10 +102,9 @@ public class FrontServiceImpl implements FrontService {
             if (HelpStatusEnum.HELPING.value() == helpRecord.getStatus()) {
                 throw new AppException(ExceptionEnum.GIVE_ING);
             }
-            // 可认领待应助，求助第三方或疑难状态的求助
+            // 可认领待应助，求助第三方或者是疑难文献的求助
             if (helpRecord.getStatus() == HelpStatusEnum.HELP_THIRD.value()
-                    || helpRecord.getStatus() == HelpStatusEnum.WAIT_HELP.value()
-                    || helpRecord.getStatus() == HelpStatusEnum.HELP_FAILED.value()) {
+                    || helpRecord.getStatus() == HelpStatusEnum.WAIT_HELP.value()) {
                 //检查用户是否已经认领了其它应助
                 Optional<VHelpRecord> row = vHelpRecordRepository.findByGiverNameAndStatus(giverName, HelpStatusEnum.HELPING.value());
                 if (row.isPresent()) {
@@ -213,7 +219,7 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable) {
         Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, helperName, null, isDifficult, null, null, null), pageable);
-        return BizUtil.coversHelpRecordDTO(vHelpRecords, literatureRepository);
+        return BizUtil.coversHelpRecordDTO(vHelpRecords);
     }
 
     /**
@@ -251,7 +257,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, email, null, keyword, isDifficult, orgFlag, begin, end), pageable);
-        return BizUtil.coversHelpRecordDTO(vHelpRecords, literatureRepository);
+        return BizUtil.coversHelpRecordDTO(vHelpRecords);
     }
 
     /**
@@ -276,7 +282,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> waitHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, null, null, null, isDifficult, orgFlag, begin, end), pageable);
-        return BizUtil.coversHelpRecordDTO(waitHelpRecords, literatureRepository);
+        return BizUtil.coversHelpRecordDTO(waitHelpRecords);
     }
 
     /**
@@ -296,7 +302,7 @@ public class FrontServiceImpl implements FrontService {
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
         Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, null, null, null, orgFlag, begin, end), pageable);
-        return BizUtil.coversHelpRecordDTO(finishHelpRecords, literatureRepository);
+        return BizUtil.coversHelpRecordDTO(finishHelpRecords);
     }
 
     /**
@@ -317,7 +323,7 @@ public class FrontServiceImpl implements FrontService {
         Date beginDate = beginTime != null ? beginTime : DateUtil.offsetWeek(endDate, -1);
         // end
         Page<VHelpRecord> finishHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, null, null, null, null, true, orgFlag, beginDate, endDate), pageable);
-        return BizUtil.coversHelpRecordDTO(finishHelpRecords, literatureRepository);
+        return BizUtil.coversHelpRecordDTO(finishHelpRecords);
     }
 
 

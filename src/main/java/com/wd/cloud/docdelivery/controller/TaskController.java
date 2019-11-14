@@ -4,8 +4,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.AvgResponseTimeModel;
+import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
+import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.VHelpRecordRepository;
 import com.wd.cloud.docdelivery.service.MailService;
 import com.wd.cloud.docdelivery.service.TaskService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: He Zhigang
@@ -36,6 +40,9 @@ public class TaskController {
 
     @Autowired
     VHelpRecordRepository vHelpRecordRepository;
+
+    @Autowired
+    HelpRecordRepository helpRecordRepository;
 
     @Autowired
     MailService mailService;
@@ -78,8 +85,8 @@ public class TaskController {
      */
     @GetMapping("/task/mail/resend")
     public ResponseModel sendMail(){
-        // 2分钟前的未发送
-        Date gmtModified = DateUtil.offsetMinute(new Date(), -2).toJdkDate();
+        // 5分钟前的未发送
+        Date gmtModified = DateUtil.offsetMinute(new Date(), -5).toJdkDate();
         List<Integer> sendStatus = CollectionUtil.newArrayList(3, 4);
         List<VHelpRecord> bySend = vHelpRecordRepository.findBySendAndGmtModifiedBeforeAndStatusInOrDifficult(false, gmtModified, sendStatus, true);
         String businessId = "";
@@ -90,5 +97,22 @@ public class TaskController {
             mailService.sendMail(vHelpRecord);
         }
         return ResponseModel.ok().setBody(businessId);
+    }
+
+    /**
+     * 定时将5分钟前准成功状态的更新为成功状态
+     *
+     * @return
+     */
+    @GetMapping("/task/status/change")
+    public ResponseModel helpSuccessed() {
+        // 返回5分钟前的状态为-1的记录
+        List<HelpRecord> helpRecords = helpRecordRepository.findByStatusAndGmtModifiedBefore(
+                HelpStatusEnum.HELP_SUCCESSING.value(),
+                DateUtil.offsetMinute(new Date(), -5));
+        if (CollectionUtil.isNotEmpty(helpRecords)) {
+            helpRecords.forEach(h -> h.setStatus(HelpStatusEnum.HELP_SUCCESSED.value()));
+        }
+        return ResponseModel.ok();
     }
 }

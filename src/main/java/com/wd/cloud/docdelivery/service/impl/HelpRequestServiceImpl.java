@@ -40,7 +40,7 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         Optional<Literature> optionalLiterature = literatureRepository.findByUnid(literature.getUnid());
         if (optionalLiterature.isPresent()) {
             Literature lt = optionalLiterature.get();
-            // 最近15天是否求助过相同的文献
+            // 最近7天是否求助过相同的文献
             helpRecordRepository
                     .findByHelperEmailAndLiteratureId(helpRecord.getHelperEmail(), lt.getId())
                     .ifPresent(h -> {
@@ -63,7 +63,7 @@ public class HelpRequestServiceImpl implements HelpRequestService {
         Optional<Literature> optionalLiterature = literatureRepository.findByUnid(literature.getUnid());
         if (optionalLiterature.isPresent()) {
             Literature lt = optionalLiterature.get();
-            // 最近15天是否求助过相同的文献
+            // 最近7天是否求助过相同的文献
             helpRecordRepository
                     .findByHelperEmailAndLiteratureId(email, lt.getId())
                     .ifPresent(h -> {

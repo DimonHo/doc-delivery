@@ -76,7 +76,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult,List<Long> helpChannel, Pageable pageable);
+    Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable);
 
     /**
      * 我的应助记录

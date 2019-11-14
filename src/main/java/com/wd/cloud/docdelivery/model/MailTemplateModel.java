@@ -29,7 +29,7 @@ public class MailTemplateModel {
     /**
      * 有效期毫秒数
      */
-    private int exp = 1000 * 60 * 60 * 24 * 15;
+    private int exp = 1000 * 60 * 60 * 24 * 7;
 
     /**
      * 有效期

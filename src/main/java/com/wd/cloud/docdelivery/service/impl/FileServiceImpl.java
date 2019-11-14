@@ -98,7 +98,7 @@ public class FileServiceImpl implements FileService {
 
 
     private boolean checkTimeOut(Date startDate) {
-        return 15 < DateUtil.betweenDay(startDate, new Date(), true);
+        return 7 < DateUtil.betweenDay(startDate, new Date(), true);
     }
 
     @Override

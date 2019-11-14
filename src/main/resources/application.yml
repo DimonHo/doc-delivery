@@ -27,6 +27,8 @@ feign:
 ######################################################################
 
 spring:
+  application:
+    name: doc-delivery
   servlet:
     multipart:
       max-file-size: 1000MB

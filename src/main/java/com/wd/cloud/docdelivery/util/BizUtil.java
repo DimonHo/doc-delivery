@@ -39,9 +39,9 @@ public class BizUtil {
         return vHelpRecord;
     }
 
-    public static Page<HelpRecordDTO> coversHelpRecordDTO(Page<VHelpRecord> helpRecordPage, LiteratureRepository literatureRepository) {
+    public static Page<HelpRecordDTO> coversHelpRecordDTO(Page<VHelpRecord> helpRecordPage) {
         return helpRecordPage.map(vHelpRecord -> {
-            HelpRecordDTO helpRecordDTO = BeanUtil.toBean(BizUtil.anonymous(vHelpRecord), HelpRecordDTO.class);
+            HelpRecordDTO helpRecordDTO = BeanUtil.toBean(anonymous(vHelpRecord), HelpRecordDTO.class);
             helpRecordDTO.setDocTitle(vHelpRecord.getDocTitle()).setDocHref(vHelpRecord.getDocHref());
             return helpRecordDTO;
         });

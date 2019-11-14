@@ -62,7 +62,7 @@ public class PaperController {
         } else {
             waitHelpRecords = vHelpRecordRepository.findByWaitHelpForOrg(begin1, begin2, end, orgFlag, pageable);
         }
-        return ResponseModel.ok().setBody(BizUtil.coversHelpRecordDTO(waitHelpRecords, literatureRepository));
+        return ResponseModel.ok().setBody(BizUtil.coversHelpRecordDTO(waitHelpRecords));
     }
 
 }

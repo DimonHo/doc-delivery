@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +20,14 @@ import java.util.Optional;
  */
 public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, JpaSpecificationExecutor<HelpRecord> {
 
+
+    /**
+     * 根据状态查询
+     * @param status
+     * @param date
+     * @return
+     */
+    List<HelpRecord> findByStatusAndGmtModifiedBefore(Integer status, Date date);
     /**
      * 查询
      *
@@ -70,13 +79,13 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
 
 
     /**
-     * 查询邮箱15天内求助某篇文献的记录
+     * 查询邮箱7天内求助某篇文献的记录
      *
      * @param helperEmail
      * @param literatureId
      * @return
      */
-    @Query(value = "select * FROM help_record where helper_email = ?1 AND literature_id = ?2 AND 15 > TIMESTAMPDIFF(DAY, gmt_create, now())", nativeQuery = true)
+    @Query(value = "select * FROM help_record where helper_email = ?1 AND literature_id = ?2 AND 7 > TIMESTAMPDIFF(DAY, gmt_create, now())", nativeQuery = true)
     Optional<HelpRecord> findByHelperEmailAndLiteratureId(String helperEmail, Long literatureId);
 
 

@@ -26,13 +26,13 @@ public enum HelpStatusEnum {
      */
     HELP_THIRD("求助第三方", 3),
     /**
-     * 审核通过
+     * 审核通过或后台处理
      */
     HELP_SUCCESSED("应助成功", 4),
     /**
-     * 应助完成
+     * 准成功，5分钟后自动转为成功状态，准成功状态无法被查询
      */
-    HELP_FAILED("疑难文献", 5);
+    HELP_SUCCESSING("准成功", -1);
 
 
     private String name;

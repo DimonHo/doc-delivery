@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.listeners;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.BooleanUtil;
 import com.wd.cloud.docdelivery.pojo.entity.HandlerLog;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
@@ -99,19 +99,20 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
 
                 // 是否是difficult字段
                 boolean isColumnEqDifficult = "difficult".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
-                // 新值difficult是否为true
+                // 新值difficult是否是从false转换为true
                 if (isColumnEqDifficult){
-                    difficultChangeSend = (boolean)postUpdateEvent.getState()[i];
+                    difficultChangeSend = BooleanUtil.isFalse((boolean)postUpdateEvent.getOldState()[i])
+                            && BooleanUtil.isTrue((boolean)postUpdateEvent.getState()[i]);
                 }
 
             }
             // 求助时间在2分钟前的才发邮件
-            if (DateUtil.offsetMinute(gmtCreate,2).before(new Date())){
+            //if (DateUtil.offsetMinute(gmtCreate,5).before(new Date())){
                 if (statusChangeSend || difficultChangeSend) {
                     Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecord.getId());
                     optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
                 }
-            }
+            //}
         }
     }
 

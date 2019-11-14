@@ -38,13 +38,11 @@ public interface ProcessService {
      * @param helpRecordId
      * @param giverName
      */
-    void failed(Long helpRecordId, String giverName);
+    void markDifficult(Long helpRecordId, String giverName);
 
     Page<HelpRecordDTO> waitHelpRecordList(Pageable pageable);
 
     Page<HelpRecordDTO> successHelpRecordList(Pageable pageable);
-
-    Page<HelpRecordDTO> failedHelpRecordList(Pageable pageable);
 
     Page<HelpRecordDTO> waitAuditHelpRecordList(Pageable pageable);
 
