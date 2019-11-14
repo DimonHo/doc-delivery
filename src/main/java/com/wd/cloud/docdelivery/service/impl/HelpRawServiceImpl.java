@@ -9,6 +9,7 @@ import com.wd.cloud.docdelivery.repository.HelpRawRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.repository.VHelpRawRepository;
 import com.wd.cloud.docdelivery.service.HelpRawService;
+import com.wd.cloud.docdelivery.util.BizUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -68,14 +69,13 @@ public class HelpRawServiceImpl implements HelpRawService {
 
     @Override
     public Page<VHelpRaw> findHelpRaw(Date beginTime, Date endTime, Boolean anonymous, Long helpChannel, String helperEmail, String helperIp, String helperName, String orgFlag, Long helpRecordId, Integer invalid, Pageable pageable) {
-        Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.findVhelpRaw(beginTime, endTime, anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid), pageable);
-        return vHelpRaws;
+        return vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.findVhelpRaw(beginTime, endTime, anonymous, helpChannel, helperEmail, helperIp, helperName, orgFlag, helpRecordId, invalid), pageable);
     }
 
     @Override
     public Page<VHelpRaw> getHelpRaws(String helperName, Long helpRecordId, Date beginTime, Date endTime, Boolean isDifficult, Integer invalid, List<Integer> status, Pageable pageable) {
         Page<VHelpRaw> vHelpRaws = vHelpRawRepository.findAll(VHelpRawRepository.SpecBuilder.buildVhelpRaw(helperName, helpRecordId, beginTime, endTime, isDifficult, invalid, status), pageable);
-        return vHelpRaws;
+        return BizUtil.coversVhelpRaw(vHelpRaws);
     }
 
 }

@@ -6,10 +6,7 @@ import com.wd.cloud.commons.util.StrUtil;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
-import com.wd.cloud.docdelivery.pojo.entity.Literature;
-import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
+import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import org.springframework.data.domain.Page;
@@ -64,6 +61,16 @@ public class BizUtil {
                 });
             });
             return giveRecordDTO;
+        });
+    }
+
+
+    public static Page<VHelpRaw> coversVhelpRaw(Page<VHelpRaw> vHelpRaws){
+        return vHelpRaws.map(vHelpRaw -> {
+            if (vHelpRaw.getStatus() == HelpStatusEnum.HELP_SUCCESSING.value()){
+                vHelpRaw.setStatus(HelpStatusEnum.HELPING.value());
+            }
+            return vHelpRaw;
         });
     }
 }
