@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,6 +47,11 @@ public class AsyncServiceImpl implements AsyncService {
 
     @Autowired
     LiteraturePlanService literaturePlanService;
+
+    /**
+     * 指定渠道状态直接为成功
+     */
+    private static final List<Long> CHANNEL_SEND = CollectionUtil.newArrayList(1L,5L,7L);
 
     /**
      * 执行自动应助
@@ -99,7 +106,8 @@ public class AsyncServiceImpl implements AsyncService {
                     giveRecord.setHelpRecordId(helpRecord.getId());
                     giveRecordRepository.save(giveRecord);
 
-                    helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value())
+                    helpRecord.setStatus(CHANNEL_SEND.contains(helpRecord.getHelpChannel())?
+                            HelpStatusEnum.HELP_SUCCESSED.value():HelpStatusEnum.HELP_SUCCESSING.value())
                             .setFileId(fileId)
                             .setGiveType(GiveTypeEnum.BIG_DB.value())
                             .setGiverName(GiveTypeEnum.BIG_DB.name())
@@ -129,7 +137,8 @@ public class AsyncServiceImpl implements AsyncService {
                 .setStatus(GiveStatusEnum.SUCCESS.value())
                 .setHelpRecordId(helpRecord.getId());
         giveRecordRepository.save(giveRecord);
-        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSING.value())
+        helpRecord.setStatus(CHANNEL_SEND.contains(helpRecord.getHelpChannel())?
+                HelpStatusEnum.HELP_SUCCESSED.value():HelpStatusEnum.HELP_SUCCESSING.value())
                 .setFileId(reusingDocFile.getFileId())
                 .setGiveType(GiveTypeEnum.AUTO.value())
                 .setGiverName(GiveTypeEnum.AUTO.name())
