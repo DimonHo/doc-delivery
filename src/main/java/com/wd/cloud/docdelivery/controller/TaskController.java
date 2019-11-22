@@ -108,7 +108,7 @@ public class TaskController {
         // 返回5分钟前的状态为-1的记录
         List<HelpRecord> helpRecords = helpRecordRepository.findByStatusAndGmtModifiedBefore(
                 HelpStatusEnum.HELP_SUCCESSING.value(),
-                DateUtil.offsetMinute(new Date(), -5));
+                DateUtil.offsetMinute(new Date(), -3));
         if (CollectionUtil.isNotEmpty(helpRecords)) {
             helpRecords.forEach(h -> {
                 h.setStatus(HelpStatusEnum.HELP_SUCCESSED.value());
