@@ -71,10 +71,10 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      * @param format     date_format(date,"%Y-%m-%d %H:%i:%s")
      * @return
      */
-    @Query(value = "select helper_scname as orgName, count(*) as ddcCount from help_record where helper_scname=?1 and date_format(gmt_create,?3) = date_format(?2,?3)", nativeQuery = true)
+    @Query(value = "select org_name as orgName, count(*) as ddcCount from help_record where org_name=?1 and date_format(gmt_create,?3) = date_format(?2,?3)", nativeQuery = true)
     List<Map<String, Object>> findByOrgNameDdcCount(String orgName, String createDate, String format);
 
-    @Query(value = "select helper_scname as orgName, count(*) as ddcCount from help_record where date_format(gmt_create,?2) = date_format(?1,?2) group by helper_scname", nativeQuery = true)
+    @Query(value = "select org_name as orgName, count(*) as ddcCount from help_record where date_format(gmt_create,?2) = date_format(?1,?2) group by org_name", nativeQuery = true)
     List<Map<String, Object>> findAllDdcCount(String createDate, String format);
 
 

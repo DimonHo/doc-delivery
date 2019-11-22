@@ -18,7 +18,7 @@
 -- INSERT INTO audit_msg (msg)
 -- VALUES ("文不对题"), ("文档无法打开"), ("文档错误");
 -- insert into literature (doc_title,doc_href) select title,url FROM spischolar.t_delivery GROUP BY title,url,path;
--- INSERT INTO help_record ( literature_id, helper_email, help_channel, helper_scname, helper_id ) SELECT t2.id, t1.email, t1.product_id, t1.org_name, t1.member_id FROM spischolar.t_delivery t1, literature t2 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href;
+-- INSERT INTO help_record ( literature_id, helper_email, help_channel, org_name, helper_id ) SELECT t2.id, t1.email, t1.product_id, t1.org_name, t1.member_id FROM spischolar.t_delivery t1, literature t2 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href;
 -- INSERT INTO give_record ( help_record_id, auditor_id, auditor_name, giver_type ) SELECT t3.id, t1.procesor_id, t1.procesor_name, t1.process_type FROM spischolar.t_delivery t1, literature t2, help_record t3 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href AND t2.id = t3.literature_id;
 
 
@@ -46,8 +46,6 @@
 -- 		`helper_email`,
 -- 		`helper_ip`,
 -- 		`helper_name`,
--- 		`helper_scid`,
--- 		`helper_scname`,
 -- 		`org_flag`,
 -- 		`org_name`,
 -- 		`help_channel`,
@@ -76,8 +74,6 @@
 -- 		`t1`.`helper_email` AS `helper_email`,
 -- 		`t1`.`helper_ip` AS `helper_ip`,
 -- 		`t1`.`helper_name` AS `helper_name`,
--- 		`t1`.`helper_scid` as `helper_scid`,
--- 		`t1`.`helper_scname` as `helper_scname`,
 -- 		`t1`.`org_flag` AS `org_flag`,
 -- 		`t1`.`org_name` AS `org_name`,
 -- 		`t1`.`help_channel` AS `help_channel`,
