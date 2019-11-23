@@ -51,7 +51,7 @@ public class AsyncServiceImpl implements AsyncService {
     /**
      * 指定渠道状态直接为成功
      */
-    private static final List<Long> CHANNEL_SEND = CollectionUtil.newArrayList(1L,5L,7L);
+    private static final List<Long> CHANNEL_SEND = CollectionUtil.newArrayList(1L,7L);
 
     /**
      * 执行自动应助
