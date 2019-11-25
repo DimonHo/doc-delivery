@@ -201,7 +201,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      * @param status
      * @return
      */
-    long countByHelperEmailAndHelpChannelAndStatus(String helperEmail, Integer status);
+    long countByHelperEmailAndStatus(String helperEmail, Integer status);
 
 
     /**
