@@ -53,9 +53,10 @@ public interface TjService {
      * 我的统计
      *
      * @param username
+     * @param channel
      * @return
      */
-    MyTjDTO tjUser(String username);
+    MyTjDTO tjUser(String username, Long channel);
 
 
     /**
@@ -63,11 +64,20 @@ public interface TjService {
      *
      * @param email
      * @param ip
+     * @param channel
      * @return
      */
-    MyTjDTO tjEmail(String email, String ip);
+    MyTjDTO tjEmail(String email, String ip, Long channel);
 
 
+    /**
+     *
+     * @param orgFlag
+     * @param type
+     * @param begin
+     * @param end
+     * @return
+     */
     List<Map<String, Object>> orgTj(String orgFlag, Integer type, Date begin, Date end);
 
 }

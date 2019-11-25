@@ -141,16 +141,18 @@ public interface FrontService {
      * 求助权限
      * @param orgFlag
      * @param level
+     * @param channel
      * @return
      */
-    Permission getPermission(String orgFlag, Integer level);
+    Permission getPermission(String orgFlag, Integer level, Long channel);
 
     /**
      * 下一级求助权限
      * @param orgFlag
      * @param level
+     * @param channel
      * @return
      */
-    Permission nextPermission(String orgFlag, Integer level);
+    Permission nextPermission(String orgFlag, Integer level, Long channel);
 
 }

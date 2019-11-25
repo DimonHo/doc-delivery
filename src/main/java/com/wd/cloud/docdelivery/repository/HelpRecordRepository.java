@@ -135,6 +135,14 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
     long countByHelperNameToday(String helperName);
 
     /**
+     * @param helperName
+     * @param channel
+     * @return
+     */
+    @Query(value = "select count(*) from help_record where helper_name = ?1 and help_channel = ?2 and TO_DAYS(gmt_create) = TO_DAYS(NOW())", nativeQuery = true)
+    long countByHelperNameToday(String helperName, Long channel);
+
+    /**
      * 今日邮箱求助量
      *
      * @param email
@@ -142,6 +150,16 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      */
     @Query(value = "select count(*) from help_record where helper_email = ?1 and TO_DAYS(gmt_create) = TO_DAYS(NOW())", nativeQuery = true)
     long countByHelperEmailToday(String email);
+
+    /**
+     * 今日邮箱求助量
+     *
+     * @param email
+     * @param channel
+     * @return
+     */
+    @Query(value = "select count(*) from help_record where helper_email = ?1 and help_channel = ?2 and TO_DAYS(gmt_create) = TO_DAYS(NOW())", nativeQuery = true)
+    long countByHelperEmailToday(String email, Long channel);
 
     /**
      * 用户求助总量
@@ -152,6 +170,15 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
     long countByHelperName(String helperName);
 
     /**
+     * 用户求助总量
+     *
+     * @param helperName
+     * @param channel
+     * @return
+     */
+    long countByHelperNameAndHelpChannel(String helperName, Long channel);
+
+    /**
      * 邮箱求助总量
      *
      * @param helperEmail
@@ -160,14 +187,32 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
     long countByHelperEmail(String helperEmail);
 
     /**
+     * 邮箱求助总量
+     *
+     * @param helperEmail
+     * @param channel
+     * @return
+     */
+    long countByHelperEmailAndHelpChannel(String helperEmail, Long channel);
+    /**
      * 统计某邮箱求助状态的数量
      *
      * @param helperEmail
      * @param status
      * @return
      */
-    long countByHelperEmailAndStatus(String helperEmail, Integer status);
+    long countByHelperEmailAndHelpChannelAndStatus(String helperEmail, Integer status);
 
+
+    /**
+     * 统计某邮箱求助状态的数量
+     *
+     * @param helperEmail
+     * @param channel
+     * @param status
+     * @return
+     */
+    long countByHelperEmailAndHelpChannelAndStatus(String helperEmail, Long channel, Integer status);
     /**
      * 统计某用户求助状态的数量
      *
@@ -177,10 +222,34 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      */
     long countByHelperNameAndStatus(String helperName, Integer status);
 
+    /**
+     * 统计某用户求助状态的数量
+     *
+     * @param helperName
+     * @param status
+     * @param channel
+     * @return
+     */
+    long countByHelperNameAndHelpChannelAndStatus(String helperName, Long channel, Integer status);
+
+    /**
+     * @param literatureId
+     * @return
+     */
     List<HelpRecord> findByLiteratureId(Long literatureId);
 
+    /**
+     *
+     * @param ids
+     * @return
+     */
     List<HelpRecord> findByLiteratureIdIn(List ids);
 
+    /**
+     *
+     * @param helperName
+     * @return
+     */
     HelpRecord findByHelperName(String helperName);
 
     @Query(value = "select avg(TIMESTAMPDIFF(HOUR,t1.gmt_create,t2.gmt_create)) from help_record t1,give_record t2 where t1.id = t2.help_record_id and t1.gmt_create >= ?1", nativeQuery = true)

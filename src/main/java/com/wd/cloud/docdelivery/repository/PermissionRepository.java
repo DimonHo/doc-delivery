@@ -11,12 +11,21 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface PermissionRepository extends JpaRepository<Permission, Long>, JpaSpecificationExecutor<Permission> {
 
-    Permission findByOrgFlagAndLevel(String orgFlag, Integer level);
+    /**
+     * 查询指定机构
+     * @param orgFlag 机构
+     * @param level 等级
+     * @param channel 渠道
+     * @return
+     */
+    Permission findByOrgFlagAndLevelAndChannel(String orgFlag, Integer level,Long channel);
 
-    Permission findByOrgFlagIsNullAndLevel(Integer level);
+    /**
+     * 查询默认
+     * @param level 等级
+     * @param channel 渠道
+     * @return
+     */
+    Permission findByOrgFlagIsNullAndLevelAndChannel(Integer level,Long channel);
 
-    @Query(value = "select * from permission where org_flag = ?1 and level = ?2", nativeQuery = true)
-    Permission getOrgFlagAndLevel(String orgFlag, int level);
-
-    Permission getByLevelAndOrgFlag(int level, String orgFlag);
 }

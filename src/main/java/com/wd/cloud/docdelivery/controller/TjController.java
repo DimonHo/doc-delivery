@@ -43,9 +43,9 @@ public class TjController {
     @ApiOperation(value = "邮箱统计")
     @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query")
     @GetMapping("/tj")
-    public ResponseModel getEmailHelpCountToDay(@RequestParam String email) {
+    public ResponseModel getEmailHelpCountToDay(@RequestParam String email, @RequestParam(required = false) Long channel) {
         try {
-            MyTjDTO myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request));
+            MyTjDTO myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request), channel);
             return ResponseModel.ok().setBody(myTotalModel);
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,11 +56,11 @@ public class TjController {
     @ApiOperation(value = "我的统计")
     @ValidateLogin
     @GetMapping("/tj/my")
-    public ResponseModel getUserHelpCountToDay() {
+    public ResponseModel getUserHelpCountToDay(@RequestParam(required = false) Long channel) {
         try {
             JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
             String username = loginUser != null ? loginUser.getStr("username") : null;
-            MyTjDTO myTotalModel = tjService.tjUser(username);
+            MyTjDTO myTotalModel = tjService.tjUser(username, channel);
             return ResponseModel.ok().setBody(myTotalModel);
         } catch (Exception e) {
             e.printStackTrace();

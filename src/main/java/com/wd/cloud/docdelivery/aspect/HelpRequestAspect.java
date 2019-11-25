@@ -62,6 +62,7 @@ public class HelpRequestAspect {
 
         long helpTotal;
         long helpTotalToday;
+
         if (StrUtil.isNotBlank(username)) {
             //用户总求助量
             helpTotal = helpRecordRepository.countByHelperName(username);
@@ -75,10 +76,10 @@ public class HelpRequestAspect {
         }
         Permission permission = null;
         if (org != null) {
-            permission = permissionRepository.findByOrgFlagAndLevel(org.getStr("flag"), level);
+            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(org.getStr("flag"), level, helpRequestModel.getHelpChannel());
         }
         if (permission == null) {
-            permission = permissionRepository.findByOrgFlagIsNullAndLevel(level);
+            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, helpRequestModel.getHelpChannel());
         }
         if (permission != null) {
             if (permission.getTotal() != null && permission.getTotal() <= helpTotal) {

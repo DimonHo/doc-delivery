@@ -329,19 +329,19 @@ public class FrontServiceImpl implements FrontService {
 
 
     @Override
-    public Permission nextPermission(String orgFlag, Integer level) {
+    public Permission nextPermission(String orgFlag, Integer level, Long channel) {
         int nextLevel = nexLevel(level);
-        return getPermission(orgFlag, nextLevel);
+        return getPermission(orgFlag, nextLevel, channel);
     }
 
     @Override
-    public Permission getPermission(String orgFlag, Integer level) {
+    public Permission getPermission(String orgFlag, Integer level, Long channel) {
         Permission permission = null;
         if (orgFlag != null) {
-            permission = permissionRepository.getOrgFlagAndLevel(orgFlag, level);
+            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgFlag, level, channel);
         }
         if (permission == null) {
-            permission = permissionRepository.findByOrgFlagIsNullAndLevel(level);
+            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel);
         }
         return permission;
     }

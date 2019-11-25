@@ -326,11 +326,11 @@ public class FrontendController {
 
     @ApiOperation(value = "下一个级别的求助上限")
     @GetMapping("/level/next")
-    public ResponseModel nextLevel() {
+    public ResponseModel nextLevel(@RequestParam Long channel) {
         Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null ? org.getStr("flag") : null;
-        Permission permission = frontService.nextPermission(orgFlag, level);
+        Permission permission = frontService.nextPermission(orgFlag, level, channel);
         Map<String, Long> resp = new HashMap<>();
         if (permission == null) {
             resp.put("todayTotal", 10L);

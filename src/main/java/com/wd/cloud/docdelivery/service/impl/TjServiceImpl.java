@@ -98,14 +98,14 @@ public class TjServiceImpl implements TjService {
     }
 
     @Override
-    public MyTjDTO tjUser(String username) {
-        Permission permission = getPermission();
+    public MyTjDTO tjUser(String username, Long channel) {
+        Permission permission = getPermission(channel);
         //今日已求助数量
-        long myTodayHelpCount = helpRecordRepository.countByHelperNameToday(username);
+        long myTodayHelpCount = helpRecordRepository.countByHelperNameToday(username, channel);
         //我的总求助数量
-        long myHelpCount = helpRecordRepository.countByHelperName(username);
+        long myHelpCount = helpRecordRepository.countByHelperNameAndHelpChannel(username, channel);
         //我的求助成功数量
-        long successHelpCount = helpRecordRepository.countByHelperNameAndStatus(username, HelpStatusEnum.HELP_SUCCESSED.value());
+        long successHelpCount = helpRecordRepository.countByHelperNameAndHelpChannelAndStatus(username, channel, HelpStatusEnum.HELP_SUCCESSED.value());
 
         long giveCount = giveRecordRepository.countByGiverName(username);
         //总上限
@@ -136,29 +136,29 @@ public class TjServiceImpl implements TjService {
         return myTjDTO;
     }
 
-    private Permission getPermission() {
+    private Permission getPermission(Long channel) {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         HttpSession session = request.getSession();
         Integer level = (Integer) session.getAttribute(SessionConstant.LEVEL);
         JSONObject org = (JSONObject) session.getAttribute(SessionConstant.ORG);
         //如果用户信息中没有机构信息则去IP_ORG中取，都没有则为0（公共配置）
         String orgFlag = org != null ? org.getStr("flag") : null;
-        Permission permission = frontService.getPermission(orgFlag, level);
+        Permission permission = frontService.getPermission(orgFlag, level, channel);
         if (permission == null) {
-            throw new NotFoundException("未找到匹配orgFlag=" + orgFlag + ",level=" + level + "的配置");
+            throw new NotFoundException("未找到匹配orgFlag=" + orgFlag + ",level=" + level + ",channel=" + channel + "的配置");
         }
         return permission;
     }
 
 
     @Override
-    public MyTjDTO tjEmail(String email, String ip) {
-        Permission permission = getPermission();
+    public MyTjDTO tjEmail(String email, String ip, Long channel) {
+        Permission permission = getPermission(channel);
         //今日已求助数量
-        long myTodayHelpCount = helpRecordRepository.countByHelperEmailToday(email);
+        long myTodayHelpCount = helpRecordRepository.countByHelperEmailToday(email,channel);
         //我的总求助数量
-        long myHelpCount = helpRecordRepository.countByHelperEmail(email);
-        long successHelpCount = helpRecordRepository.countByHelperEmailAndStatus(email, HelpStatusEnum.HELP_SUCCESSED.value());
+        long myHelpCount = helpRecordRepository.countByHelperEmailAndHelpChannel(email,channel);
+        long successHelpCount = helpRecordRepository.countByHelperEmailAndHelpChannelAndStatus(email, channel, HelpStatusEnum.HELP_SUCCESSED.value());
         //总上限
         Long total = permission.getTotal();
         //每日上限
