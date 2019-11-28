@@ -41,7 +41,10 @@ public class TjController {
 
 
     @ApiOperation(value = "邮箱统计")
-    @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "求助渠道", dataType = "Long", paramType = "query")
+    })
     @GetMapping("/tj")
     public ResponseModel getEmailHelpCountToDay(@RequestParam String email, @RequestParam(required = false) Long channel) {
         try {
@@ -54,6 +57,7 @@ public class TjController {
     }
 
     @ApiOperation(value = "我的统计")
+    @ApiImplicitParam(name = "channel", value = "求助渠道", dataType = "Long", paramType = "query")
     @ValidateLogin
     @GetMapping("/tj/my")
     public ResponseModel getUserHelpCountToDay(@RequestParam(required = false) Long channel) {

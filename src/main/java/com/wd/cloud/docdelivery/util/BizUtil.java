@@ -77,4 +77,24 @@ public class BizUtil {
             }
         });
     }
+
+    public static int level(boolean isInside, boolean isLogin, boolean isVilified, boolean isTeacher, boolean isBuy){
+        int level = 0;
+        if (isInside){
+            level += 1;
+        }
+        if (isLogin){
+            level += 2;
+        }
+        if (isVilified){
+            level += 4;
+        }
+        if (isTeacher){
+            level += 8;
+        }
+        if (isBuy){
+            level += 16;
+        }
+        return level;
+    }
 }

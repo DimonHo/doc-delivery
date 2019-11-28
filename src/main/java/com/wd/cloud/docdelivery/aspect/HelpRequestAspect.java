@@ -1,6 +1,8 @@
 package com.wd.cloud.docdelivery.aspect;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.exception.AuthException;
@@ -20,6 +22,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author He Zhigang
@@ -41,6 +46,10 @@ public class HelpRequestAspect {
     @Autowired
     HttpServletRequest request;
 
+    private static final List<Integer> PROD_IDS = CollectionUtil.newArrayList(5);
+
+    private static final Long PAPER_CHANNEL = 5L;
+
     @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord*(..))")
     public void helpRequest() {
     }
@@ -50,16 +59,21 @@ public class HelpRequestAspect {
         // 接收到请求，记录请求内容
         JSONObject sessionUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = sessionUser != null ? sessionUser.getStr("username") : null;
-        JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
+        JSONObject sessionOrg = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
+        Object[] args = joinPoint.getArgs();
+        HelpRequestModel helpRequestModel = (HelpRequestModel) args[0];
+        Long channel = helpRequestModel.getHelpChannel();
+
+        if (PAPER_CHANNEL.equals(channel)) {
+            level = buildLevel(sessionUser, sessionOrg, level);
+        }
+
         log.info("当前等级：[{}]", level);
         //如果是校外，且未登錄
         if (level < 1) {
             throw new AuthException("校外必须先登录才能求助");
         }
-        Object[] args = joinPoint.getArgs();
-        HelpRequestModel helpRequestModel = (HelpRequestModel) args[0];
-
         long helpTotal;
         long helpTotalToday;
 
@@ -75,8 +89,8 @@ public class HelpRequestAspect {
             log.info("邮箱【{}】正在求助", email);
         }
         Permission permission = null;
-        if (org != null) {
-            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(org.getStr("flag"), level, helpRequestModel.getHelpChannel());
+        if (sessionOrg != null) {
+            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(sessionOrg.getStr("flag"), level, helpRequestModel.getHelpChannel());
         }
         if (permission == null) {
             permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, helpRequestModel.getHelpChannel());
@@ -88,5 +102,34 @@ public class HelpRequestAspect {
                 throw new AppException(ExceptionEnum.HELP_TOTAL_TODAY_CEILING);
             }
         }
+    }
+
+    private Integer buildLevel(JSONObject sessionUser, JSONObject sessionOrg, Integer level) {
+        if (sessionUser == null || sessionUser.isEmpty()) {
+            throw new AuthException();
+        } else {
+            String identityType = sessionUser.getStr("identityType");
+            level = "教师".equals(identityType) ? level + 8 : level;
+        }
+
+        if (sessionOrg != null && !sessionOrg.isEmpty()) {
+            JSONArray prodList = sessionOrg.getJSONArray("prodList");
+            if (!prodList.isEmpty()) {
+                Optional<JSONObject> prodOptional = prodList.toList(JSONObject.class)
+                        .stream()
+                        .filter(prod -> PROD_IDS.contains(prod.getInt("id")))
+                        .findAny();
+
+                if (prodOptional.isPresent()) {
+                    JSONObject prod = prodOptional.get();
+                    String prodStatus = prod.getStr("status");
+                    Date expDate = prod.getDate("expDate");
+                    if ("购买".equals(prodStatus) && new Date().before(expDate)) {
+                        level = level + 16;
+                    }
+                }
+            }
+        }
+        return level;
     }
 }

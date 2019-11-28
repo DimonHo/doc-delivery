@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.event.internal.DefaultLoadEventListener;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.PostCommitUpdateEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
-import org.hibernate.event.spi.PostUpdateEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class HelpStatusListners extends DefaultLoadEventListener implements PostUpdateEventListener {
+public class HelpStatusListners extends DefaultLoadEventListener implements PostCommitUpdateEventListener {
 
     /**
      * 3:求助第三方，4：求助成功，5：疑难文献
@@ -55,29 +54,23 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
         log.info("register listeners ******");
         SessionFactoryImpl sessionFactoryImpl = entityManagerFactory.unwrap(SessionFactoryImpl.class);
         EventListenerRegistry eventListenerRegistry = sessionFactoryImpl.getServiceRegistry().getService(EventListenerRegistry.class);
-        eventListenerRegistry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
+        eventListenerRegistry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(this);
     }
 
+    @Override
+    public void onPostUpdateCommitFailed(PostUpdateEvent postUpdateEvent) {
+        log.warn("[" + postUpdateEvent.getPersister().getEntityName() + "] commit 失败");
+    }
 
-    /**
-     * 更新后，发送给用户应助结果邮件
-     *
-     * @param postUpdateEvent
-     */
     @Override
     public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
         log.info("update start***********");
         if (postUpdateEvent.getEntity() instanceof HelpRecord) {
             HelpRecord helpRecord = (HelpRecord) postUpdateEvent.getEntity();
-            Date gmtCreate = new Date();
             boolean statusChangeSend = false;
             boolean difficultChangeSend = false;
             for (int i = 0; i < postUpdateEvent.getPersister().getPropertyNames().length; i++) {
-                boolean isCloumnEqGmtCreate = "gmtCreate".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
-                if (isCloumnEqGmtCreate){
-                    gmtCreate = (Date)postUpdateEvent.getState()[i];
-                    continue;
-                }
+
                 // 是否是status字段
                 boolean isColumnEqStatus = "status".equals(postUpdateEvent.getPersister().getPropertyNames()[i]);
                 if (isColumnEqStatus){
@@ -104,18 +97,18 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
                     difficultChangeSend = BooleanUtil.isFalse((boolean)postUpdateEvent.getOldState()[i])
                             && BooleanUtil.isTrue((boolean)postUpdateEvent.getState()[i]);
                 }
-
             }
-            // 求助时间在2分钟前的才发邮件
-            //if (DateUtil.offsetMinute(gmtCreate,5).before(new Date())){
-                if (statusChangeSend || difficultChangeSend) {
-                    Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecord.getId());
-                    optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
-                }
-            //}
+            if (statusChangeSend || difficultChangeSend) {
+                Optional<VHelpRecord> optionalVHelpRecord = vHelpRecordRepository.findById(helpRecord.getId());
+                optionalVHelpRecord.ifPresent(vHelpRecord -> mailService.sendMail(vHelpRecord));
+            }
         }
     }
 
+    /**
+     * @param entityPersister
+     * @deprecated
+     */
     @Override
     public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
         return false;

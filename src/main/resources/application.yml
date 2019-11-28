@@ -1,5 +1,5 @@
 server:
-  port: ${serverPort:8080}
+  port: ${serverPort:8083}
   tomcat:
     basedir: ${serverTomcatBasedir:spring-tomcat/${spring.application.name}}
 
@@ -14,11 +14,6 @@ management:
         include: "*"
 
 feign:
-  client:
-    config:
-      default:
-        read-timeout: 120000
-        logger-level: ${feignClientConfigFsServerLoggerLevel:FULL}
   url:
     mail-server: ${feignUrlMaiServer:http://cloud.hnlat.local/mail-server}
     fs-server: ${feignUrlFsServer:http://cloud.hnlat.local/fs-server}
@@ -38,13 +33,11 @@ spring:
     time-zone: GMT+8
   jpa:
     database: MYSQL
+    open-in-view: true
     show-sql: ${springJpaShowSql:true}
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: ${springJpaHibernateDDLAuto:update}
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL57Dialect
   datasource:
     url: jdbc:mysql://${dbUrl:mysql-dev.database:3306}/${dbName:${spring.application.name}}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: ${dbUser:root}
@@ -93,9 +86,9 @@ cas:
   server-login-url: ${casServerLoginUrl:http://sso.hnlat.local/login}
   server-validation-url: ${casServerValidationUrl:http://sso.hnlat.local}
   client-host-url: ${casClientHostUrl:http://localhost.hnlat.local:${server.port}}
-  authentication-url-patterns: /*
-  logout-url-patterns: /*
-  validation-url-patterns: /*
-  request-wrapper-url-patterns: /*
-  filter:
-    authentication-enable: false
+  redirect-after-validation: false
+  ticket-filter:
+    enable: true
+    url-patterns: /*
+  authentication-filter:
+    enable: false

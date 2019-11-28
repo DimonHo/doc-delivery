@@ -92,7 +92,7 @@ public class FrontendController {
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "invalid", value =  "是否有效", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "过滤状态", allowMultiple = true, allowableValues = "1,2,3,4",dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "invalidStatus", value =  "有效值状态", dataType = "String", paramType = "query"),
     })
     @GetMapping(value = "/help/raw")
@@ -147,8 +147,8 @@ public class FrontendController {
 
     @ApiOperation(value = "查询求助记录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "List", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "过滤状态，0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）", dataType = "List", paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "求助渠道", allowMultiple = true, dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "过滤状态", allowMultiple = true, allowableValues = "1,2,3,4",dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "模糊查询", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "email", value = "邮箱过滤", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
@@ -176,7 +176,7 @@ public class FrontendController {
 
     @ApiOperation(value = "待应助列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "求助渠道", allowMultiple = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "isDifficult", value = "是否是疑难文献", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一个月）", dataType = "Date", paramType = "query"),
@@ -200,7 +200,7 @@ public class FrontendController {
 
     @ApiOperation(value = "求助成功列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "求助渠道", allowMultiple = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
@@ -220,7 +220,7 @@ public class FrontendController {
 
     @ApiOperation(value = "疑难文献列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "channel", value = "求助渠道，0:paper平台，1：QQ,2:SPIS,3:智汇云，4：CRS", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "求助渠道", allowMultiple = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "isOrg", value = "只显示本校(默认false,查询所有)", dataType = "Boolean", paramType = "query"),
             @ApiImplicitParam(name = "beginTime", value = "起始时间（默认最近一周）", dataType = "Date", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "Date", paramType = "query")
