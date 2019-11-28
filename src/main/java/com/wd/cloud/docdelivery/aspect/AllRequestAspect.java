@@ -44,6 +44,7 @@ public class AllRequestAspect {
     @Before("pointcut()")
     public void doBefore(JoinPoint joinPoint) throws Throwable {
         Assertion principal = (Assertion) request.getSession().getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION);
+        int paperLevel = 0;
         // 如果用户已登录
         if (principal != null) {
             String casUsername = principal.getPrincipal().getName();
@@ -58,6 +59,7 @@ public class AllRequestAspect {
             ResponseModel<JSONObject> userResponse = uoServerApi.user(casUsername);
             log.info("调用uo-server获取用户信息【{}】", userResponse);
             if (!userResponse.isError()) {
+                paperLevel += 8;
                 sessionUser = userResponse.getBody();
                 String orgFlag = sessionUser.getStr("orgFlag");
                 String loginIp = sessionUser.getStr("lastLoginIp");
@@ -69,6 +71,7 @@ public class AllRequestAspect {
                     ResponseModel<JSONObject> orgFlagResponse = uoServerApi.org(null, orgFlag, null);
                     log.info("调用uo-server获取【{}】用户的机构信息【{}】", casUsername, orgFlagResponse);
                     if (!orgFlagResponse.isError()) {
+                        paperLevel += 1;
                         request.getSession().setAttribute(SessionConstant.ORG, orgFlagResponse.getBody());
                     }
                 }
@@ -109,6 +112,7 @@ public class AllRequestAspect {
                 }
             }
         }
+        request.getSession().setAttribute("paperLevel", paperLevel);
     }
 
     private void cleanSession(HttpServletRequest request) {

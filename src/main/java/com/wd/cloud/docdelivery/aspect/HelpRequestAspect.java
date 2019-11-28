@@ -66,7 +66,7 @@ public class HelpRequestAspect {
         Long channel = helpRequestModel.getHelpChannel();
 
         if (PAPER_CHANNEL.equals(channel)) {
-            level = buildLevel(sessionUser, sessionOrg, level);
+            level = buildLevel(sessionUser, sessionOrg);
         }
 
         log.info("当前等级：[{}]", level);
@@ -104,12 +104,19 @@ public class HelpRequestAspect {
         }
     }
 
-    private Integer buildLevel(JSONObject sessionUser, JSONObject sessionOrg, Integer level) {
+    private Integer buildLevel(JSONObject sessionUser, JSONObject sessionOrg) {
+        int paperLevel = (int) request.getSession().getAttribute("paperLevel");
         if (sessionUser == null || sessionUser.isEmpty()) {
             throw new AuthException();
         } else {
             String identityType = sessionUser.getStr("identityType");
-            level = "教师".equals(identityType) ? level + 8 : level;
+            String validStatus = sessionUser.getStr("validStatus");
+            if ("已认证".equals(validStatus)){
+                paperLevel += 2;
+                if ("教师".equals(identityType)){
+                    paperLevel+=4;
+                }
+            }
         }
 
         if (sessionOrg != null && !sessionOrg.isEmpty()) {
@@ -125,11 +132,11 @@ public class HelpRequestAspect {
                     String prodStatus = prod.getStr("status");
                     Date expDate = prod.getDate("expDate");
                     if ("购买".equals(prodStatus) && new Date().before(expDate)) {
-                        level = level + 16;
+                        paperLevel += 8;
                     }
                 }
             }
         }
-        return level;
+        return paperLevel;
     }
 }
