@@ -64,7 +64,7 @@ public class AllRequestAspect {
                 String orgFlag = sessionUser.getStr("orgFlag");
                 String loginIp = sessionUser.getStr("lastLoginIp");
                 // 证件照验证状态 2为已验证
-                String validStatus = sessionUser.getStr("validStatus");
+                int validStatus = sessionUser.getInt("validStatus");
                 // 如果用户所属某个机构，则以该机构作为访问机构
                 if (StrUtil.isNotBlank(orgFlag)) {
                     // 获取用户的机构信息
@@ -81,10 +81,10 @@ public class AllRequestAspect {
                 // 用户最后登陆IP未找到对应机构信息，表示校外登陆
                 if (orgIpResponse.isError() && orgIpResponse.getStatus() == 404) {
                     request.getSession().setAttribute(SessionConstant.IS_OUT, true);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, "已认证".equals(validStatus) ? 6 : 2);
+                    request.getSession().setAttribute(SessionConstant.LEVEL, 2 == validStatus ? 6 : 2);
                 } else {
                     request.getSession().setAttribute(SessionConstant.IS_OUT, false);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, "已认证".equals(validStatus) ? 7 : 3);
+                    request.getSession().setAttribute(SessionConstant.LEVEL, 2 == validStatus ? 7 : 3);
                     request.getSession().setAttribute(SessionConstant.IP_ORG, orgIpResponse.getBody());
                 }
                 request.getSession().setAttribute(SessionConstant.LOGIN_USER, sessionUser);

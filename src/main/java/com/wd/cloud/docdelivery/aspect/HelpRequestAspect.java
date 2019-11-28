@@ -109,11 +109,11 @@ public class HelpRequestAspect {
         if (sessionUser == null || sessionUser.isEmpty()) {
             throw new AuthException();
         } else {
-            String identityType = sessionUser.getStr("identityType");
-            String validStatus = sessionUser.getStr("validStatus");
-            if ("已认证".equals(validStatus)){
+            int identityType = sessionUser.getInt("identityType");
+            int validStatus = sessionUser.getInt("validStatus");
+            if (2 == validStatus){
                 paperLevel += 2;
-                if ("教师".equals(identityType)){
+                if (2 == identityType){
                     paperLevel+=4;
                 }
             }
@@ -129,9 +129,9 @@ public class HelpRequestAspect {
 
                 if (prodOptional.isPresent()) {
                     JSONObject prod = prodOptional.get();
-                    String prodStatus = prod.getStr("status");
+                    int prodStatus = prod.getInt("status");
                     Date expDate = prod.getDate("expDate");
-                    if ("购买".equals(prodStatus) && new Date().before(expDate)) {
+                    if (1 == prodStatus && new Date().before(expDate)) {
                         paperLevel += 8;
                     }
                 }

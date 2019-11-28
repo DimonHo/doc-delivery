@@ -349,13 +349,17 @@ public class FrontServiceImpl implements FrontService {
     private int nexLevel(int level) {
         switch (level) {
             case 0:
-                return 2;
-            case 1:
-                return 3;
-            case 2:
-                return 6;
-            case 3:
-                return 7;
+                return 8;
+            case 8:
+                return 9;
+            case 9:
+                return 11;
+            case 11:
+                return 15;
+            case 15:
+                return 19;
+            case 19:
+                return 23;
             default:
                 return 0;
         }
