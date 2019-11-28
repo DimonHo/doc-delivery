@@ -37,7 +37,8 @@ public class AllRequestAspect {
     @Autowired
     UoServerApi uoServerApi;
 
-    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.*.*(..))")
+    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.*.*(..)) " +
+            "&& !execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRaw(..))")
     public void pointcut() {
     }
 
@@ -57,7 +58,7 @@ public class AllRequestAspect {
             }
             // 获取用户信息
             ResponseModel<JSONObject> userResponse = uoServerApi.user(casUsername);
-            log.info("调用uo-server获取用户信息【{}】", userResponse);
+            log.debug("调用uo-server获取用户信息【{}】", userResponse);
             if (!userResponse.isError()) {
                 paperLevel += 8;
                 sessionUser = userResponse.getBody();
@@ -69,15 +70,15 @@ public class AllRequestAspect {
                 if (StrUtil.isNotBlank(orgFlag)) {
                     // 获取用户的机构信息
                     ResponseModel<JSONObject> orgFlagResponse = uoServerApi.org(null, orgFlag, null);
-                    log.info("调用uo-server获取【{}】用户的机构信息【{}】", casUsername, orgFlagResponse);
+                    log.debug("调用uo-server获取【{}】用户的机构信息【{}】", casUsername, orgFlagResponse);
                     if (!orgFlagResponse.isError()) {
-                        paperLevel += 1;
+                        paperLevel += 4;
                         request.getSession().setAttribute(SessionConstant.ORG, orgFlagResponse.getBody());
                     }
                 }
                 // 获取最后用户最后登陆IP的机构信息
                 ResponseModel<JSONObject> orgIpResponse = uoServerApi.org(null, null, loginIp);
-                log.info("调用uo-server获取用户【{}】登陆IP【{}】的机构信息【{}】", casUsername, loginIp, orgIpResponse);
+                log.debug("调用uo-server获取用户【{}】登陆IP【{}】的机构信息【{}】", casUsername, loginIp, orgIpResponse);
                 // 用户最后登陆IP未找到对应机构信息，表示校外登陆
                 if (orgIpResponse.isError() && orgIpResponse.getStatus() == 404) {
                     request.getSession().setAttribute(SessionConstant.IS_OUT, true);
@@ -98,7 +99,7 @@ public class AllRequestAspect {
             Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
             if (sessionOrg.isEmpty() || isOut == null || level == null) {
                 String clientIp = ServletUtil.getClientIP(request);
-                log.info("客户端访问IP = {}", clientIp);
+                log.debug("客户端访问IP = {}", clientIp);
                 ResponseModel<JSONObject> orgResponse = uoServerApi.org(null, null, clientIp);
                 if (orgResponse.isError()) {
                     //校外访问

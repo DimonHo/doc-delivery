@@ -49,16 +49,6 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
 
     Optional<HelpRecord> findByIdAndGiverNameAndStatus(Long id,String giverName,Integer status);
 
-    @Modifying
-    @Transactional
-    @Query(value = "update help_record set watch_name = ?2 where id = ?1" ,nativeQuery = true)
-    int updateWatchName(Long id,String watchName);
-
-
-    @Modifying
-    @Transactional
-    @Query(value = "update help_record set status = ?2 where id = ?1" ,nativeQuery = true)
-    int updateStatus(Long id,Integer status);
 
 
     HelpRecord findByIdAndStatusIn(long id, int[] status);

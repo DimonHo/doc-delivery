@@ -17,7 +17,7 @@ import java.util.List;
  * @Description:
  */
 public interface HelpRawService {
-    void addHelpRaw(HelpRawModel helpRawModel);
+    void addHelpRaw(HelpRaw helpRaw);
 
     VHelpRaw findByIdHelpRaw(Long id);
 

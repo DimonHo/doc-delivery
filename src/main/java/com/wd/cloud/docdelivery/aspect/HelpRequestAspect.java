@@ -46,9 +46,11 @@ public class HelpRequestAspect {
     @Autowired
     HttpServletRequest request;
 
-    private static final List<Integer> PROD_IDS = CollectionUtil.newArrayList(5);
+    private static final List<Integer> PROD_IDS = CollectionUtil.newArrayList(5, 7);
 
-    private static final Long PAPER_CHANNEL = 5L;
+    private static final List<Long> PAPER_CHANNEL = CollectionUtil.newArrayList(5L, 7L);
+
+    private static final Integer VERIFIED = 2, TEACHER = 2, BUY = 1;
 
     @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord*(..))")
     public void helpRequest() {
@@ -65,7 +67,7 @@ public class HelpRequestAspect {
         HelpRequestModel helpRequestModel = (HelpRequestModel) args[0];
         Long channel = helpRequestModel.getHelpChannel();
 
-        if (PAPER_CHANNEL.equals(channel)) {
+        if (PAPER_CHANNEL.contains(channel)) {
             level = buildLevel(sessionUser, sessionOrg);
         }
 
@@ -79,21 +81,21 @@ public class HelpRequestAspect {
 
         if (StrUtil.isNotBlank(username)) {
             //用户总求助量
-            helpTotal = helpRecordRepository.countByHelperName(username);
-            helpTotalToday = helpRecordRepository.countByHelperNameToday(username);
+            helpTotal = helpRecordRepository.countByHelperNameAndHelpChannel(username, channel);
+            helpTotalToday = helpRecordRepository.countByHelperNameToday(username, channel);
             log.info("登陆用户【{}】正在求助", username);
         } else {
             String email = helpRequestModel.getHelperEmail();
-            helpTotal = helpRecordRepository.countByHelperEmail(email);
-            helpTotalToday = helpRecordRepository.countByHelperEmailToday(email);
+            helpTotal = helpRecordRepository.countByHelperEmailAndHelpChannel(email, channel);
+            helpTotalToday = helpRecordRepository.countByHelperEmailToday(email, channel);
             log.info("邮箱【{}】正在求助", email);
         }
         Permission permission = null;
         if (sessionOrg != null) {
-            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(sessionOrg.getStr("flag"), level, helpRequestModel.getHelpChannel());
+            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(sessionOrg.getStr("flag"), level, channel);
         }
         if (permission == null) {
-            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, helpRequestModel.getHelpChannel());
+            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel);
         }
         if (permission != null) {
             if (permission.getTotal() != null && permission.getTotal() <= helpTotal) {
@@ -109,12 +111,12 @@ public class HelpRequestAspect {
         if (sessionUser == null || sessionUser.isEmpty()) {
             throw new AuthException();
         } else {
-            int identityType = sessionUser.getInt("identityType");
-            int validStatus = sessionUser.getInt("validStatus");
-            if (2 == validStatus){
-                paperLevel += 2;
-                if (2 == identityType){
-                    paperLevel+=4;
+            Integer validStatus = sessionUser.getInt("validStatus");
+            Integer identityType = sessionUser.getInt("identityType");
+            if (VERIFIED.equals(validStatus)){
+                paperLevel += 1;
+                if (TEACHER.equals(identityType)){
+                    paperLevel += 2;
                 }
             }
         }
@@ -129,9 +131,9 @@ public class HelpRequestAspect {
 
                 if (prodOptional.isPresent()) {
                     JSONObject prod = prodOptional.get();
-                    int prodStatus = prod.getInt("status");
+                    Integer prodStatus = prod.getInt("status");
                     Date expDate = prod.getDate("expDate");
-                    if (1 == prodStatus && new Date().before(expDate)) {
+                    if (BUY.equals(prodStatus) && new Date().before(expDate)) {
                         paperLevel += 8;
                     }
                 }

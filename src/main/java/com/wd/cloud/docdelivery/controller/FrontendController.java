@@ -79,8 +79,9 @@ public class FrontendController {
     @ApiOperation(value = "Json录入原始求助信息")
     @PostMapping("/help/raw")
     public ResponseModel addHelpRaw(@Valid @RequestBody HelpRawModel helpRawModel){
-        helpRawModel.setHelperIp(ServletUtil.getClientIP(request));
-        helpRawService.addHelpRaw(helpRawModel);
+        HelpRaw helpRaw = BeanUtil.toBean(helpRawModel, HelpRaw.class);
+        helpRaw.setHelperIp(ServletUtil.getClientIP(request));
+        helpRawService.addHelpRaw(helpRaw);
         return ResponseModel.ok().setMessage("求助成功");
     }
 

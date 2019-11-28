@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.pojo.entity;
 
+import cn.hutool.crypto.SecureUtil;
+import com.wd.cloud.commons.util.DateUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -7,6 +9,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 /**
@@ -22,6 +25,8 @@ import javax.persistence.Table;
 @Table(name = "help_raw")
 public class HelpRaw extends AbstractEntity{
 
+    @Column(unique = true)
+    private String unid;
     /**
      *是否匿名求助
      */
@@ -89,7 +94,12 @@ public class HelpRaw extends AbstractEntity{
      * 1：无效
      * 2：有效
      */
-    @Column(name = "invalid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '是否有效：0待处理，1：无效；2：有效'")
+    @Column(name = "invalid", nullable = false, columnDefinition = "tinyint(1) default 0 COMMENT '是否有效：0待处理，1：无效；2：有效'")
     private Integer invalid;
+
+    @PrePersist
+    public void createUnid() {
+        this.unid = SecureUtil.md5(this.helperEmail + this.info + DateUtil.formatDate(this.gmtCreate));
+    }
 
 }

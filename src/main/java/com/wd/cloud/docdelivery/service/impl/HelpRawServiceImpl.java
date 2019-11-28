@@ -2,6 +2,7 @@ package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.wd.cloud.commons.exception.NotFoundException;
+import com.wd.cloud.docdelivery.exception.RepeatHelpRequestException;
 import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
@@ -12,6 +13,7 @@ import com.wd.cloud.docdelivery.service.HelpRawService;
 import com.wd.cloud.docdelivery.util.BizUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,9 +46,12 @@ public class HelpRawServiceImpl implements HelpRawService {
     HttpServletRequest request;
 
     @Override
-    public void addHelpRaw(HelpRawModel helpRawModel) {
-        HelpRaw helpRaw = BeanUtil.toBean(helpRawModel, HelpRaw.class);
-        helpRawRepository.save(helpRaw);
+    public void addHelpRaw(HelpRaw helpRaw) {
+        try{
+            helpRawRepository.save(helpRaw);
+        }catch (DuplicateKeyException e){
+            throw new RepeatHelpRequestException();
+        }
     }
 
     @Override

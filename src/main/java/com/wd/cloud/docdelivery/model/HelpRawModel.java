@@ -26,32 +26,20 @@ public class HelpRawModel {
     @ApiModelProperty(value = "是否匿名,默认0", example = "0")
     private Boolean anonymous;
 
-    @ApiModelProperty(value = "求助渠道,默认0", example = "0")
     @NotNull
+    @ApiModelProperty(value = "求助渠道,默认0", example = "0")
     private Long helpChannel;
 
+    @NotNull
     @ApiModelProperty(value = "求助的邮箱", example = "hulangshi@qq.com")
     private String helperEmail;
 
-    @ApiModelProperty(value = "求助者IP")
-    private String helperIp;
-
+    @NotNull
     @ApiModelProperty(value = "求助者用户名")
     private String helperName;
 
-    @ApiModelProperty(value = "求助的学校ID")
-    private String orgFlag;
-
-    @ApiModelProperty(value = "求助的学校名称")
-    private String orgName;
-
-    @ApiModelProperty(value = "求助的信息", example = "doi:01923959101,xxx:102030104")
     @NotBlank
+    @ApiModelProperty(value = "求助的信息", example = "doi:01923959101,xxx:102030104")
     private String info;
 
-    @ApiModelProperty(value = "求助记录ID,默认0")
-    private Long helpRecordId;
-
-    @ApiModelProperty(value = "是否有效：0:待处理,1:无效,2:有效，默认0")
-    private Long invalid;
 }
