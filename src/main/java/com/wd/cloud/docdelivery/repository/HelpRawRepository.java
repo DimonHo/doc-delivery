@@ -38,6 +38,14 @@ public interface HelpRawRepository extends JpaRepository<HelpRaw,Long>, JpaSpeci
     long countByHelperNameAndHelpChannel(String helperName, Long channel);
 
     /**
+     * 渠道用户求助总量
+     * @param helperEmail
+     * @param channel
+     * @return
+     */
+    long countByHelperEmailAndHelpChannel(String helperEmail, Long channel);
+
+    /**
      * 渠道用户今日求助总量
      * @param helperName
      * @param channel
@@ -45,4 +53,13 @@ public interface HelpRawRepository extends JpaRepository<HelpRaw,Long>, JpaSpeci
      */
     @Query(value = "select count(*) from help_raw where helper_name = ?1 and help_channel = ?2 and TO_DAYS(gmt_create) = TO_DAYS(NOW())", nativeQuery = true)
     long countByHelperNameToday(String helperName, Long channel);
+
+    /**
+     * 渠道用户今日求助总量
+     * @param helperEmail
+     * @param channel
+     * @return
+     */
+    @Query(value = "select count(*) from help_raw where helper_email = ?1 and help_channel = ?2 and TO_DAYS(gmt_create) = TO_DAYS(NOW())", nativeQuery = true)
+    long countByHelperEmailToday(String helperEmail, Long channel);
 }

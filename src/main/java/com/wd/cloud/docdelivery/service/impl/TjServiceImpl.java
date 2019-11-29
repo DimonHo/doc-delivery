@@ -158,9 +158,9 @@ public class TjServiceImpl implements TjService {
         long myHelpCount = 0;
         if (channel == 7){
             //今日已求助数量
-             myTodayHelpCount = helpRawRepository.countByHelperNameToday(email, channel);
+             myTodayHelpCount = helpRawRepository.countByHelperEmailToday(email, channel);
             //我的总求助数量
-             myHelpCount = helpRawRepository.countByHelperNameAndHelpChannel(email, channel);
+             myHelpCount = helpRawRepository.countByHelperEmailAndHelpChannel(email, channel);
         }else{
             //今日已求助数量
             myTodayHelpCount = helpRecordRepository.countByHelperEmailToday(email,channel);
