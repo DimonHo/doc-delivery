@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +40,12 @@ public class TjController {
     @Autowired
     HttpServletRequest request;
 
+    @ApiOperation(value = "用户原始求助统计")
+    @GetMapping("/tj/raw")
+    public ResponseModel getRawHelpCount(@RequestParam String username, @RequestParam Long channel){
+        MyTjDTO myTjDTO = tjService.rawTjUser(username,channel);
+        return ResponseModel.ok().setBody(myTjDTO);
+    }
 
     @ApiOperation(value = "邮箱统计")
     @ApiImplicitParams({
