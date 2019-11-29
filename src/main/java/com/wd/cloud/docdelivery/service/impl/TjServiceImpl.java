@@ -136,46 +136,6 @@ public class TjServiceImpl implements TjService {
         return myTjDTO;
     }
 
-    /**
-     * 原始求助统计
-     *
-     * @param username
-     * @param channel
-     * @return
-     */
-    @Override
-    public MyTjDTO rawTjUser(String username, Long channel) {
-        Permission permission = getPermission(channel);
-        //今日已求助数量
-        long myTodayHelpCount = helpRawRepository.countByHelperNameToday(username, channel);
-        //我的总求助数量
-        long myHelpCount = helpRawRepository.countByHelperNameAndHelpChannel(username, channel);
-        //总上限
-        Long total = permission.getTotal();
-        //每日上限
-        Long todayTotal = permission.getTodayTotal();
-        //总剩余
-        Long restTotal = total == null ? null : total - myHelpCount;
-        if (restTotal != null && restTotal < 0) {
-            restTotal = 0L;
-        }
-        // 今日剩余
-        Long todayRestTotal = todayTotal == null ? null : todayTotal - myTodayHelpCount;
-        //如果今日剩余量大于总剩余量，则今日最多还能求助总剩余数量个
-        if (todayRestTotal != null && todayRestTotal < 0) {
-            todayRestTotal = 0L;
-        }
-        todayRestTotal = (todayRestTotal != null && restTotal != null && todayRestTotal > restTotal) ? restTotal : todayRestTotal;
-        MyTjDTO myTjDTO = new MyTjDTO();
-        myTjDTO.setTotal(total)
-                .setTodayTotal(todayTotal)
-                .setHelpCount(myHelpCount)
-                .setTodayHelpCount(myTodayHelpCount)
-                .setRestTotal(restTotal)
-                .setTodayRestTotal(todayRestTotal);
-        return myTjDTO;
-    }
-
     private Permission getPermission(Long channel) {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         HttpSession session = request.getSession();
@@ -194,10 +154,20 @@ public class TjServiceImpl implements TjService {
     @Override
     public MyTjDTO tjEmail(String email, String ip, Long channel) {
         Permission permission = getPermission(channel);
-        //今日已求助数量
-        long myTodayHelpCount = helpRecordRepository.countByHelperEmailToday(email,channel);
-        //我的总求助数量
-        long myHelpCount = helpRecordRepository.countByHelperEmailAndHelpChannel(email,channel);
+        long myTodayHelpCount = 0;
+        long myHelpCount = 0;
+        if (channel == 7){
+            //今日已求助数量
+             myTodayHelpCount = helpRawRepository.countByHelperNameToday(email, channel);
+            //我的总求助数量
+             myHelpCount = helpRawRepository.countByHelperNameAndHelpChannel(email, channel);
+        }else{
+            //今日已求助数量
+            myTodayHelpCount = helpRecordRepository.countByHelperEmailToday(email,channel);
+            //我的总求助数量
+            myHelpCount = helpRecordRepository.countByHelperEmailAndHelpChannel(email,channel);
+        }
+
         long successHelpCount = helpRecordRepository.countByHelperEmailAndHelpChannelAndStatus(email, channel, HelpStatusEnum.HELP_SUCCESSED.value());
         //总上限
         Long total = permission.getTotal();

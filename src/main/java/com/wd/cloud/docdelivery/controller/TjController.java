@@ -40,13 +40,6 @@ public class TjController {
     @Autowired
     HttpServletRequest request;
 
-    @ApiOperation(value = "用户原始求助统计")
-    @GetMapping("/tj/raw")
-    public ResponseModel getRawHelpCount(@RequestParam String username, @RequestParam Long channel){
-        MyTjDTO myTjDTO = tjService.rawTjUser(username,channel);
-        return ResponseModel.ok().setBody(myTjDTO);
-    }
-
     @ApiOperation(value = "邮箱统计")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query"),

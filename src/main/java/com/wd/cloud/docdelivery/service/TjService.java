@@ -59,15 +59,6 @@ public interface TjService {
     MyTjDTO tjUser(String username, Long channel);
 
     /**
-     * 原始求助统计
-     * @param username
-     * @param channel
-     * @return
-     */
-    MyTjDTO rawTjUser(String username, Long channel);
-
-
-    /**
      * 邮箱的统计
      *
      * @param email
