@@ -11,6 +11,7 @@ import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.util.FileUtil;
 import com.wd.cloud.commons.util.StrUtil;
 import com.wd.cloud.docdelivery.config.Global;
+import com.wd.cloud.docdelivery.config.GlobalConstants;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
@@ -330,7 +331,12 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Permission nextPermission(String orgFlag, Integer level, Long channel) {
-        int nextLevel = nexLevel(level);
+        int nextLevel = 0;
+        if (GlobalConstants.SECOND_CHANNELS.contains(channel)){
+            nextLevel = nextSecondLevel(level);
+        }else{
+            nextLevel = nextFirstLevel(level);
+        }
         return getPermission(orgFlag, nextLevel, channel);
     }
 
@@ -346,7 +352,7 @@ public class FrontServiceImpl implements FrontService {
         return permission;
     }
 
-    private int nexLevel(int level) {
+    private int nextSecondLevel(int level) {
         switch (level) {
             case 0:
                 return 8;
@@ -355,13 +361,22 @@ public class FrontServiceImpl implements FrontService {
             case 9:
                 return 11;
             case 11:
-                return 15;
-            case 15:
                 return 19;
-            case 19:
-                return 23;
             default:
-                return 0;
+                return 23;
+        }
+    }
+
+    private int nextFirstLevel(int level) {
+        switch (level) {
+            case 0:
+                return 2;
+            case 1:
+                return 3;
+            case 2:
+                return 6;
+            default:
+                return 7;
         }
     }
 

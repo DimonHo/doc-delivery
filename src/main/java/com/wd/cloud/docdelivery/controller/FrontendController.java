@@ -17,13 +17,9 @@ import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.*;
-import com.wd.cloud.docdelivery.service.FrontService;
-import com.wd.cloud.docdelivery.service.HelpRawService;
-import com.wd.cloud.docdelivery.service.HelpRequestService;
-import com.wd.cloud.docdelivery.service.MailService;
+import com.wd.cloud.docdelivery.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -41,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -76,9 +73,12 @@ public class FrontendController {
     @Autowired
     HelpRawService helpRawService;
 
+    @Autowired
+    BuildLevelService buildLevelService;
+
     @ApiOperation(value = "Json录入原始求助信息")
     @PostMapping("/help/raw")
-    public ResponseModel addHelpRaw(@Valid @RequestBody HelpRawModel helpRawModel){
+    public ResponseModel addHelpRecord3(@Valid @RequestBody HelpRawModel helpRawModel) {
         HelpRaw helpRaw = BeanUtil.toBean(helpRawModel, HelpRaw.class);
         helpRaw.setHelperIp(ServletUtil.getClientIP(request));
         helpRawService.addHelpRaw(helpRaw);
@@ -327,15 +327,23 @@ public class FrontendController {
 
     @ApiOperation(value = "下一个级别的求助上限")
     @GetMapping("/level/next")
-    public ResponseModel nextLevel(@RequestParam Long channel) {
-        Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
+    public ResponseModel nextLevel(@RequestParam Long channel,
+                                   @RequestParam(required = false) String username) {
+        HttpSession session = request.getSession();
+        if (username == null) {
+            JSONObject userSession = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
+            if (!userSession.isEmpty()) {
+                username = userSession.getStr("username");
+            }
+        }
+        Integer level = buildLevelService.buildLevel(session, username, channel);
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null ? org.getStr("flag") : null;
         Permission permission = frontService.nextPermission(orgFlag, level, channel);
-        Map<String, Long> resp = new HashMap<>();
+        Map<String, Long> resp = new HashMap<>(2);
         if (permission == null) {
-            resp.put("todayTotal", 10L);
-            resp.put("total", 20L);
+            resp.put("todayTotal", 2L);
+            resp.put("total", 5L);
         } else {
             resp.put("todayTotal", permission.getTodayTotal());
             resp.put("total", permission.getTotal());

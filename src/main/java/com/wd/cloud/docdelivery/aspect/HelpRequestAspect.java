@@ -1,17 +1,16 @@
 package com.wd.cloud.docdelivery.aspect;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.exception.AuthException;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
-import com.wd.cloud.docdelivery.model.HelpRequestModel;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.PermissionRepository;
+import com.wd.cloud.docdelivery.service.BuildLevelService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,9 +21,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author He Zhigang
@@ -44,13 +41,10 @@ public class HelpRequestAspect {
     PermissionRepository permissionRepository;
 
     @Autowired
+    BuildLevelService buildLevelService;
+
+    @Autowired
     HttpServletRequest request;
-
-    private static final List<Integer> PROD_IDS = CollectionUtil.newArrayList(5, 7);
-
-    private static final List<Long> PAPER_CHANNEL = CollectionUtil.newArrayList(5L, 7L);
-
-    private static final Integer VERIFIED = 2, TEACHER = 2, BUY = 1;
 
     @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRecord*(..))")
     public void helpRequest() {
@@ -59,22 +53,21 @@ public class HelpRequestAspect {
     @Before("helpRequest()")
     public void doBefore(JoinPoint joinPoint) throws Throwable {
         // 接收到请求，记录请求内容
-        JSONObject sessionUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
-        String username = sessionUser != null ? sessionUser.getStr("username") : null;
-        JSONObject sessionOrg = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
-        Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
+        HttpSession session = request.getSession();
         Object[] args = joinPoint.getArgs();
-        HelpRequestModel helpRequestModel = (HelpRequestModel) args[0];
-        Long channel = helpRequestModel.getHelpChannel();
-
-        if (PAPER_CHANNEL.contains(channel)) {
-            level = buildLevel(sessionUser, sessionOrg);
+        JSONObject helpParams = (JSONObject) args[0];
+        String username = helpParams.getStr("username");
+        JSONObject userSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.LOGIN_USER));
+        if (username == null && !userSession.isEmpty()) {
+            username = userSession.getStr("username");
         }
+        Long channel = helpParams.getLong("helperChannel");
+        String helperEmail = helpParams.getStr("helperEmail");
+        int level = buildLevelService.buildLevel(session, username, channel);
 
-        log.info("当前等级：[{}]", level);
-        //如果是校外，且未登錄
+        log.info("当前渠道[{}]等级：[{}]", channel, level);
         if (level < 1) {
-            throw new AuthException("校外必须先登录才能求助");
+            throw new AuthException("未登录");
         }
         long helpTotal;
         long helpTotalToday;
@@ -85,14 +78,14 @@ public class HelpRequestAspect {
             helpTotalToday = helpRecordRepository.countByHelperNameToday(username, channel);
             log.info("登陆用户【{}】正在求助", username);
         } else {
-            String email = helpRequestModel.getHelperEmail();
-            helpTotal = helpRecordRepository.countByHelperEmailAndHelpChannel(email, channel);
-            helpTotalToday = helpRecordRepository.countByHelperEmailToday(email, channel);
-            log.info("邮箱【{}】正在求助", email);
+            helpTotal = helpRecordRepository.countByHelperEmailAndHelpChannel(helperEmail, channel);
+            helpTotalToday = helpRecordRepository.countByHelperEmailToday(helperEmail, channel);
+            log.info("邮箱【{}】正在求助", helperEmail);
         }
         Permission permission = null;
-        if (sessionOrg != null) {
-            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(sessionOrg.getStr("flag"), level, channel);
+        JSONObject orgSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.ORG));
+        if (!orgSession.isEmpty()) {
+            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgSession.getStr("flag"), level, channel);
         }
         if (permission == null) {
             permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel);
@@ -106,39 +99,4 @@ public class HelpRequestAspect {
         }
     }
 
-    private Integer buildLevel(JSONObject sessionUser, JSONObject sessionOrg) {
-        int paperLevel = (int) request.getSession().getAttribute("paperLevel");
-        if (sessionUser == null || sessionUser.isEmpty()) {
-            throw new AuthException();
-        } else {
-            Integer validStatus = sessionUser.getInt("validStatus");
-            Integer identityType = sessionUser.getInt("identityType");
-            if (VERIFIED.equals(validStatus)){
-                paperLevel += 1;
-                if (TEACHER.equals(identityType)){
-                    paperLevel += 2;
-                }
-            }
-        }
-
-        if (sessionOrg != null && !sessionOrg.isEmpty()) {
-            JSONArray prodList = sessionOrg.getJSONArray("prodList");
-            if (!prodList.isEmpty()) {
-                Optional<JSONObject> prodOptional = prodList.toList(JSONObject.class)
-                        .stream()
-                        .filter(prod -> PROD_IDS.contains(prod.getInt("id")))
-                        .findAny();
-
-                if (prodOptional.isPresent()) {
-                    JSONObject prod = prodOptional.get();
-                    Integer prodStatus = prod.getInt("status");
-                    Date expDate = prod.getDate("expDate");
-                    if (BUY.equals(prodStatus) && new Date().before(expDate)) {
-                        paperLevel += 8;
-                    }
-                }
-            }
-        }
-        return paperLevel;
-    }
 }

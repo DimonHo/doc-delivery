@@ -1,11 +1,11 @@
 package com.wd.cloud.docdelivery.aspect;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.commons.util.StrUtil;
 import com.wd.cloud.docdelivery.feign.UoServerApi;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -19,6 +19,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Author: He Zhigang
@@ -37,92 +38,103 @@ public class AllRequestAspect {
     @Autowired
     UoServerApi uoServerApi;
 
-    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.*.*(..)) " +
-            "&& !execution(public * com.wd.cloud.docdelivery.controller.FrontendController.addHelpRaw(..))")
+    @Pointcut("execution(public * com.wd.cloud.docdelivery.controller.*.*(..))")
     public void pointcut() {
     }
 
     @Before("pointcut()")
     public void doBefore(JoinPoint joinPoint) throws Throwable {
-        Assertion principal = (Assertion) request.getSession().getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION);
-        int paperLevel = 0;
+        HttpSession session = request.getSession();
+        Assertion principal = (Assertion) session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION);
         // 如果用户已登录
         if (principal != null) {
             String casUsername = principal.getPrincipal().getName();
-            JSONObject sessionUser = JSONUtil.parseObj(request.getSession().getAttribute(SessionConstant.LOGIN_USER));
+            JSONObject sessionUser = JSONUtil.parseObj(session.getAttribute(SessionConstant.LOGIN_USER));
             String sessionUsername = sessionUser.isEmpty() ? null : sessionUser.getStr("username");
-            JSONObject sessionOrg = JSONUtil.parseObj(request.getSession().getAttribute(SessionConstant.ORG));
+            JSONObject sessionOrg = JSONUtil.parseObj(session.getAttribute(SessionConstant.ORG));
             // session中已存在用户信息，则跳过
             if (casUsername.equals(sessionUsername) && !sessionOrg.isEmpty()) {
                 return;
             }
-            // 获取用户信息
-            ResponseModel<JSONObject> userResponse = uoServerApi.user(casUsername);
-            log.debug("调用uo-server获取用户信息【{}】", userResponse);
-            if (!userResponse.isError()) {
-                paperLevel += 8;
-                sessionUser = userResponse.getBody();
-                String orgFlag = sessionUser.getStr("orgFlag");
-                String loginIp = sessionUser.getStr("lastLoginIp");
-                // 证件照验证状态 2为已验证
-                int validStatus = sessionUser.getInt("validStatus");
-                // 如果用户所属某个机构，则以该机构作为访问机构
-                if (StrUtil.isNotBlank(orgFlag)) {
-                    // 获取用户的机构信息
-                    ResponseModel<JSONObject> orgFlagResponse = uoServerApi.org(null, orgFlag, null);
-                    log.debug("调用uo-server获取【{}】用户的机构信息【{}】", casUsername, orgFlagResponse);
-                    if (!orgFlagResponse.isError()) {
-                        paperLevel += 4;
-                        request.getSession().setAttribute(SessionConstant.ORG, orgFlagResponse.getBody());
-                    }
-                }
-                // 获取最后用户最后登陆IP的机构信息
-                ResponseModel<JSONObject> orgIpResponse = uoServerApi.org(null, null, loginIp);
-                log.debug("调用uo-server获取用户【{}】登陆IP【{}】的机构信息【{}】", casUsername, loginIp, orgIpResponse);
-                // 用户最后登陆IP未找到对应机构信息，表示校外登陆
-                if (orgIpResponse.isError() && orgIpResponse.getStatus() == 404) {
-                    request.getSession().setAttribute(SessionConstant.IS_OUT, true);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, 2 == validStatus ? 6 : 2);
-                } else {
-                    request.getSession().setAttribute(SessionConstant.IS_OUT, false);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, 2 == validStatus ? 7 : 3);
-                    request.getSession().setAttribute(SessionConstant.IP_ORG, orgIpResponse.getBody());
-                }
-                request.getSession().setAttribute(SessionConstant.LOGIN_USER, sessionUser);
-            }
-
+            buildLoginSession(session, casUsername);
         } else {
             // 如果sso退出登陆，清空session中的用户信息
             cleanSession(request);
-            JSONObject sessionOrg = JSONUtil.parseObj(request.getSession().getAttribute(SessionConstant.ORG));
-            Boolean isOut = (Boolean) request.getSession().getAttribute(SessionConstant.IS_OUT);
-            Integer level = (Integer) request.getSession().getAttribute(SessionConstant.LEVEL);
-            if (sessionOrg.isEmpty() || isOut == null || level == null) {
+            JSONObject sessionOrg = JSONUtil.parseObj(session.getAttribute(SessionConstant.ORG));
+            Boolean isInside = (Boolean) session.getAttribute(SessionConstant.IS_INSIDE);
+            if (sessionOrg.isEmpty() || isInside == null) {
                 String clientIp = ServletUtil.getClientIP(request);
-                log.debug("客户端访问IP = {}", clientIp);
-                ResponseModel<JSONObject> orgResponse = uoServerApi.org(null, null, clientIp);
-                if (orgResponse.isError()) {
-                    //校外访问
-                    request.getSession().setAttribute(SessionConstant.IS_OUT, true);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, 0);
-                } else {
-                    //非校外访问
-                    request.getSession().setAttribute(SessionConstant.IS_OUT, false);
-                    request.getSession().setAttribute(SessionConstant.LEVEL, 1);
-                    request.getSession().setAttribute(SessionConstant.ORG, orgResponse.getBody());
-                }
+                buildNotLoginSession(session, clientIp);
             }
         }
-        request.getSession().setAttribute("paperLevel", paperLevel);
     }
 
+    /**
+     * set登陆用户session
+     * @param session
+     * @param username
+     */
+    private void buildLoginSession(HttpSession session, String username) {
+        // 获取用户信息
+        ResponseModel<JSONObject> userResponse = uoServerApi.user(username);
+        log.debug("调用uo-server获取用户信息【{}】", userResponse);
+        if (!userResponse.isError()) {
+            JSONObject sessionUser = userResponse.getBody();
+            String orgFlag = sessionUser.getStr("orgFlag");
+            String loginIp = sessionUser.getStr("lastLoginIp");
+            // 如果用户所属某个机构，则以该机构作为访问机构
+            if (StrUtil.isNotBlank(orgFlag)) {
+                // 获取用户的机构信息
+                ResponseModel<JSONObject> orgFlagResponse = uoServerApi.org(null, orgFlag, null);
+                log.debug("调用uo-server获取【{}】用户的机构信息【{}】", username, orgFlagResponse);
+                if (!orgFlagResponse.isError()) {
+                    session.setAttribute(SessionConstant.ORG, orgFlagResponse.getBody());
+                }
+            }
+            // 获取最后用户最后登陆IP的机构信息
+            ResponseModel<JSONObject> orgIpResponse = uoServerApi.org(null, null, loginIp);
+            log.debug("调用uo-server获取用户【{}】登陆IP【{}】的机构信息【{}】", username, loginIp, orgIpResponse);
+            // 用户最后登陆IP未找到对应机构信息，表示校外登陆
+            if (orgIpResponse.isError() || orgIpResponse.getStatus() == 404) {
+                session.setAttribute(SessionConstant.IS_INSIDE, false);
+            } else {
+                session.setAttribute(SessionConstant.IS_INSIDE, true);
+                session.setAttribute(SessionConstant.IP_ORG, orgIpResponse.getBody());
+            }
+            session.setAttribute(SessionConstant.LOGIN_USER, sessionUser);
+        }
+    }
+
+    /**
+     * set未登录用户session
+     * @param session
+     * @param clientIp
+     */
+    private void buildNotLoginSession(HttpSession session, String clientIp) {
+        ResponseModel<JSONObject> orgResponse = uoServerApi.org(null, null, clientIp);
+        if (orgResponse.isError()) {
+            //校外访问
+            session.setAttribute(SessionConstant.IS_INSIDE, false);
+        } else {
+            //非校外访问
+            session.setAttribute(SessionConstant.IS_INSIDE, true);
+            session.setAttribute(SessionConstant.ORG, orgResponse.getBody());
+            session.setAttribute(SessionConstant.IP_ORG, orgResponse.getBody());
+        }
+    }
+
+
+    /**
+     * 清除session
+     * @param request
+     */
     private void cleanSession(HttpServletRequest request) {
         if (request.getSession().getAttribute(SessionConstant.LOGIN_USER) != null) {
             request.getSession().removeAttribute(SessionConstant.LOGIN_USER);
             request.getSession().removeAttribute(SessionConstant.ORG);
-            request.getSession().removeAttribute(SessionConstant.IS_OUT);
-            request.getSession().removeAttribute(SessionConstant.LEVEL);
+            request.getSession().removeAttribute(SessionConstant.IS_INSIDE);
         }
     }
+
 
 }

@@ -12,6 +12,7 @@ import com.wd.cloud.docdelivery.pojo.dto.MyTjDTO;
 import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import com.wd.cloud.docdelivery.repository.*;
+import com.wd.cloud.docdelivery.service.BuildLevelService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.TjService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,9 @@ public class TjServiceImpl implements TjService {
     @Autowired
     FrontService frontService;
 
+    @Autowired
+    BuildLevelService buildLevelService;
+
     @Override
     public Map<String, BigInteger> ddcCount(String orgName, String date, int type) {
         String format = DateUtil.formatMysqlStr2(type);
@@ -99,7 +103,7 @@ public class TjServiceImpl implements TjService {
 
     @Override
     public MyTjDTO tjUser(String username, Long channel) {
-        Permission permission = getPermission(channel);
+        Permission permission = getPermission(username, channel);
         //今日已求助数量
         long myTodayHelpCount = helpRecordRepository.countByHelperNameToday(username, channel);
         //我的总求助数量
@@ -136,10 +140,10 @@ public class TjServiceImpl implements TjService {
         return myTjDTO;
     }
 
-    private Permission getPermission(Long channel) {
+    private Permission getPermission(String username, Long channel) {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         HttpSession session = request.getSession();
-        Integer level = (Integer) session.getAttribute(SessionConstant.LEVEL);
+        Integer level = buildLevelService.buildLevel(session, username, channel);
         JSONObject org = (JSONObject) session.getAttribute(SessionConstant.ORG);
         //如果用户信息中没有机构信息则去IP_ORG中取，都没有则为0（公共配置）
         String orgFlag = org != null ? org.getStr("flag") : null;
@@ -153,7 +157,7 @@ public class TjServiceImpl implements TjService {
 
     @Override
     public MyTjDTO tjEmail(String email, String ip, Long channel) {
-        Permission permission = getPermission(channel);
+        Permission permission = getPermission(email, channel);
         long myTodayHelpCount = 0;
         long myHelpCount = 0;
         if (channel == 7){
