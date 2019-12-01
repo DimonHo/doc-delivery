@@ -342,16 +342,24 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Permission getPermission(String orgFlag, Integer level, Long channel) {
-        Permission permission = null;
-        if (orgFlag != null) {
-            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgFlag, level, channel);
-        }
-        if (permission == null) {
-            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel);
-        }
+        Permission permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgFlag, level, channel)
+                .orElse(permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel));
         return permission;
     }
 
+    /**
+     * 登陆+8；有机构+1； 老师+2；实名认证+4；产品购买+8
+     * 9=8+1
+     * 11=8+1+2
+     * 13=8+1+4
+     * 15=8+1+2+4
+     * 17=8+1+8
+     * 19=8+1+2+8
+     * 21=8+1+4+8
+     * 23=8+1+2+4+8
+     * @param level
+     * @return
+     */
     private int nextSecondLevel(int level) {
         switch (level) {
             case 0:
@@ -359,14 +367,29 @@ public class FrontServiceImpl implements FrontService {
             case 8:
                 return 9;
             case 9:
-                return 11;
+                return 13;
             case 11:
-                return 19;
+                return 15;
+            case 13:
+            case 17:
+                return 21;
+            case 15:
+            case 19:
             default:
                 return 23;
         }
     }
 
+    /**
+     * 校内+1； 登陆+2；实名认证+4；
+     * 1=1  校内访问
+     * 2 =2 校外登陆
+     * 3=1+2 校内登陆
+     * 6=2+4 校外登陆已实名认证
+     * 7=1+2+4 校内登陆已实名认证
+     * @param level
+     * @return
+     */
     private int nextFirstLevel(int level) {
         switch (level) {
             case 0:

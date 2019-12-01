@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,13 +46,8 @@ public class TjController {
     })
     @GetMapping("/tj")
     public ResponseModel getEmailHelpCountToDay(@RequestParam String email, @RequestParam(required = false) Long channel) {
-        try {
-            MyTjDTO myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request), channel);
-            return ResponseModel.ok().setBody(myTotalModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+        MyTjDTO myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request), channel);
+        return ResponseModel.ok().setBody(myTotalModel);
     }
 
     @ApiOperation(value = "我的统计")
@@ -61,15 +55,12 @@ public class TjController {
     @ValidateLogin
     @GetMapping("/tj/my")
     public ResponseModel getUserHelpCountToDay(@RequestParam(required = false) Long channel) {
-        try {
-            JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
-            String username = loginUser != null ? loginUser.getStr("username") : null;
-            MyTjDTO myTotalModel = tjService.tjUser(username, channel);
-            return ResponseModel.ok().setBody(myTotalModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+
+        JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
+        String username = loginUser != null ? loginUser.getStr("username") : null;
+        MyTjDTO myTotalModel = tjService.tjUser(username, channel);
+        return ResponseModel.ok().setBody(myTotalModel);
+
     }
 
     @ApiOperation(value = "文献传递量统计")

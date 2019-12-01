@@ -3,7 +3,8 @@ package com.wd.cloud.docdelivery.repository;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 /**
  * @author Wu Qilong
@@ -18,7 +19,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long>, J
      * @param channel 渠道
      * @return
      */
-    Permission findByOrgFlagAndLevelAndChannel(String orgFlag, Integer level,Long channel);
+    Optional<Permission> findByOrgFlagAndLevelAndChannel(String orgFlag, Integer level, Long channel);
 
     /**
      * 查询默认

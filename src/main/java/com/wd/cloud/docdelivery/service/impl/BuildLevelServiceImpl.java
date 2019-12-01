@@ -71,7 +71,9 @@ public class BuildLevelServiceImpl implements BuildLevelService {
         int level = 0;
         if (StrUtil.isNotBlank(username)) {
             JSONObject userSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.LOGIN_USER));
-            if (userSession.isEmpty() || !username.equals(userSession.getStr("username"))) {
+            boolean userIdChange = !username.equals(userSession.getStr("username"))
+                    && !username.equals(userSession.getStr("email"));
+            if (userSession.isEmpty() || userIdChange) {
                 ResponseModel<JSONObject> userResponse = uoServerApi.user(username);
                 if (userResponse.isError()) {
                     throw new AppException(userResponse.getStatus(), userResponse.getMessage());
@@ -80,16 +82,6 @@ public class BuildLevelServiceImpl implements BuildLevelService {
                 session.setAttribute(SessionConstant.LOGIN_USER, userSession);
             }
             level += 8;
-            // 证件照验证状态 2为已验证
-            Integer validStatus = userSession.getInt("validStatus");
-            // 身份：教师 or 学生
-            Integer identityType = userSession.getInt("identityType");
-            if (GlobalConstants.VERIFIED.equals(validStatus)) {
-                level += 1;
-                if (GlobalConstants.TEACHER.equals(identityType)) {
-                    level += 2;
-                }
-            }
             String orgFlag = userSession.getStr("orgFlag");
             // 如果用户所属某个机构，则以该机构作为访问机构
             if (StrUtil.isNotBlank(orgFlag)) {
@@ -104,7 +96,17 @@ public class BuildLevelServiceImpl implements BuildLevelService {
                 }
                 // 获取用户的机构信息
                 if (!orgSession.isEmpty()) {
-                    level += 4;
+                    level += 1;
+                    // 身份：教师 or 学生
+                    Integer identityType = userSession.getInt("identityType");
+                    if (GlobalConstants.TEACHER.equals(identityType)) {
+                        level += 2;
+                    }
+                    // 证件照验证状态 2为已验证
+                    Integer validStatus = userSession.getInt("validStatus");
+                    if (GlobalConstants.VERIFIED.equals(validStatus)) {
+                        level += 4;
+                    }
                     JSONArray prodList = orgSession.getJSONArray("prodList");
                     if (!prodList.isEmpty()) {
                         Optional<JSONObject> prodOptional = prodList.toList(JSONObject.class)

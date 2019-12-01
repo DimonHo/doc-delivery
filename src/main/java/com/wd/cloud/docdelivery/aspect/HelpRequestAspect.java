@@ -55,7 +55,7 @@ public class HelpRequestAspect {
         // 接收到请求，记录请求内容
         HttpSession session = request.getSession();
         Object[] args = joinPoint.getArgs();
-        JSONObject helpParams = (JSONObject) args[0];
+        JSONObject helpParams = JSONUtil.parseObj(args[0]);
         String username = helpParams.getStr("username");
         JSONObject userSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.LOGIN_USER));
         if (username == null && !userSession.isEmpty()) {
@@ -84,12 +84,10 @@ public class HelpRequestAspect {
         }
         Permission permission = null;
         JSONObject orgSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.ORG));
-        if (!orgSession.isEmpty()) {
-            permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgSession.getStr("flag"), level, channel);
-        }
-        if (permission == null) {
-            permission = permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel);
-        }
+
+        permission = permissionRepository.findByOrgFlagAndLevelAndChannel(orgSession.getStr("flag"), level, channel)
+                .orElse(permissionRepository.findByOrgFlagIsNullAndLevelAndChannel(level, channel));
+
         if (permission != null) {
             if (permission.getTotal() != null && permission.getTotal() <= helpTotal) {
                 throw new AppException(ExceptionEnum.HELP_TOTAL_CEILING);
