@@ -61,7 +61,7 @@ public class HelpRequestAspect {
         if (username == null && !userSession.isEmpty()) {
             username = userSession.getStr("username");
         }
-        Long channel = helpParams.getLong("helperChannel");
+        Long channel = helpParams.getLong("helpChannel");
         String helperEmail = helpParams.getStr("helperEmail");
         int level = buildLevelService.buildLevel(session, username, channel);
 
