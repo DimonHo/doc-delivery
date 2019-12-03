@@ -56,11 +56,8 @@ public class HelpRequestAspect {
         HttpSession session = request.getSession();
         Object[] args = joinPoint.getArgs();
         JSONObject helpParams = JSONUtil.parseObj(args[0]);
-        String username = helpParams.getStr("username");
         JSONObject userSession = JSONUtil.parseObj(session.getAttribute(SessionConstant.LOGIN_USER));
-        if (username == null && !userSession.isEmpty()) {
-            username = userSession.getStr("username");
-        }
+        String username = userSession.isEmpty() ? helpParams.getStr("helperName") : userSession.getStr("username");
         Long channel = helpParams.getLong("helpChannel");
         String helperEmail = helpParams.getStr("helperEmail");
         int level = buildLevelService.buildLevel(session, username, channel);
