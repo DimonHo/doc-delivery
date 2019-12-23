@@ -106,23 +106,24 @@ public class BuildLevelServiceImpl implements BuildLevelService {
                     Integer validStatus = userSession.getInt("validStatus");
                     if (GlobalConstants.VERIFIED.equals(validStatus)) {
                         level += 4;
-                    }
-                    JSONArray prodList = orgSession.getJSONArray("prodList");
-                    if (!prodList.isEmpty()) {
-                        Optional<JSONObject> prodOptional = prodList.toList(JSONObject.class)
-                                .stream()
-                                .filter(prod -> GlobalConstants.CHANNEL_TO_PROD.get(channel).equals(prod.getInt("id")))
-                                .findAny();
+                        JSONArray prodList = orgSession.getJSONArray("prodList");
+                        if (!prodList.isEmpty()) {
+                            Optional<JSONObject> prodOptional = prodList.toList(JSONObject.class)
+                                    .stream()
+                                    .filter(prod -> GlobalConstants.CHANNEL_TO_PROD.get(channel).equals(prod.getInt("id")))
+                                    .findAny();
 
-                        if (prodOptional.isPresent()) {
-                            JSONObject prod = prodOptional.get();
-                            int prodStatus = prod.getInt("status");
-                            Date expDate = prod.getDate("expDate");
-                            if (GlobalConstants.BUY == prodStatus && new Date().before(expDate)) {
-                                level += 8;
+                            if (prodOptional.isPresent()) {
+                                JSONObject prod = prodOptional.get();
+                                int prodStatus = prod.getInt("status");
+                                Date expDate = prod.getDate("expDate");
+                                if (GlobalConstants.BUY == prodStatus && new Date().before(expDate)) {
+                                    level += 8;
+                                }
                             }
                         }
                     }
+
                 }
             }
         }
