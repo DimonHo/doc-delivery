@@ -14,6 +14,7 @@ import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.event.spi.PostCommitUpdateEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
+import org.hibernate.event.spi.PostUpdateEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class HelpStatusListners extends DefaultLoadEventListener implements PostCommitUpdateEventListener {
+public class HelpStatusListners extends DefaultLoadEventListener implements PostUpdateEventListener {
 
     /**
      * 3:求助第三方，4：求助成功，5：疑难文献
@@ -54,12 +55,7 @@ public class HelpStatusListners extends DefaultLoadEventListener implements Post
         log.info("register listeners ******");
         SessionFactoryImpl sessionFactoryImpl = entityManagerFactory.unwrap(SessionFactoryImpl.class);
         EventListenerRegistry eventListenerRegistry = sessionFactoryImpl.getServiceRegistry().getService(EventListenerRegistry.class);
-        eventListenerRegistry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(this);
-    }
-
-    @Override
-    public void onPostUpdateCommitFailed(PostUpdateEvent postUpdateEvent) {
-        log.warn("[" + postUpdateEvent.getPersister().getEntityName() + "] commit 失败");
+        eventListenerRegistry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
     }
 
     @Override
