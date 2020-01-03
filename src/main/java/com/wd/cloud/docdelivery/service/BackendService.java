@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.service;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
 import com.wd.cloud.docdelivery.pojo.entity.DocFile;
 import com.wd.cloud.docdelivery.pojo.entity.Literature;
+import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,4 +82,6 @@ public interface BackendService {
      */
     void reusing(Long literatureId, Long docFileId, Boolean reusing, String handlerName);
 
+
+    List<VHelpRecord> helpList(List<Long> channel, List<Integer> status, Boolean difficult, String orgFlag, String orgName, String date);
 }

@@ -1,17 +1,21 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
+import com.wd.cloud.docdelivery.pojo.dto.ExcelRowDto;
 import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
+import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
 import com.wd.cloud.docdelivery.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +25,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author He Zhigang
@@ -311,5 +318,55 @@ public class BackendController {
     public ResponseModel delPlan(@PathVariable Long id){
         literaturePlanService.delPlan(id);
         return ResponseModel.ok().setMessage("删除成功");
+    }
+
+    @ApiOperation(value = "导出excel报表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "channel", value = "渠道ID", allowMultiple = true, allowableValues = "1,2,3,4,5,6,7",dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "status", value = "状态", allowMultiple = true, allowableValues = "1,2,3,4",dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "difficult", value = "疑难文献", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "orgFlag", value = "机构标识，与orgName不能同时传参", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "orgName", value = "机构名称，与orgFlag不能同时传参", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "date", value = "月份",example = "2020-01", dataType = "String", paramType = "query")
+    })
+    @SneakyThrows
+    @GetMapping("/export/excel")
+    public void exportRes(@RequestParam(required = false) List<Long> channel,
+                          @RequestParam(required = false) List<Integer> status,
+                          @RequestParam(required = false) Boolean difficult,
+                          @RequestParam(required = false) String orgFlag,
+                          @RequestParam(required = false) String orgName,
+                          @RequestParam(required = false) String date,
+                          HttpServletResponse response) {
+        List<VHelpRecord> vHelpRecords = backendService.helpList(channel, status, difficult, orgFlag, orgName, date);
+        List<ExcelRowDto> excelRowDtos = vHelpRecords.stream().map(vHelpRecord -> {
+            ExcelRowDto excelRowDto = BeanUtil.toBean(vHelpRecord, ExcelRowDto.class);
+            if (vHelpRecord.getStatus() == 4) {
+                excelRowDto.setStatus("成功");
+            } else if (vHelpRecord.getStatus() == 3) {
+                excelRowDto.setStatus("求助第三方");
+            } else if (vHelpRecord.getDifficult()) {
+                excelRowDto.setStatus("失败");
+            } else {
+                excelRowDto.setStatus("待应助");
+            }
+            return excelRowDto;
+        }).collect(Collectors.toList());
+
+        try (ExcelWriter writer = ExcelUtil.getBigWriter(); ServletOutputStream out = response.getOutputStream()) {
+            writer.addHeaderAlias("gmtCreate", "求助时间");
+            writer.addHeaderAlias("docTitle", "标题");
+            writer.addHeaderAlias("docHref", "url");
+            writer.addHeaderAlias("orgName", "机构");
+            writer.addHeaderAlias("helperName", "求助用户");
+            writer.addHeaderAlias("helperEmail", "邮箱");
+            writer.addHeaderAlias("handlerName", "处理人");
+            writer.addHeaderAlias("status", "状态");
+            writer.write(excelRowDtos);
+            String fileName = "help-" + date + ".xlsx";
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+            writer.flush(out, true);
+        }
     }
 }

@@ -42,12 +42,12 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
 
     class SpecBuilder {
 
-        public static Specification<VHelpRecord> buildBackendList(String orgFlag, List<Integer> status,Boolean isDifficult, String keyword, List<Integer> giveType, Date beginTime, Date endTime, String watchName) {
+        public static Specification<VHelpRecord> buildBackendList(String orgFlag, List<Integer> status,Boolean difficult, String keyword, List<Integer> giveType, Date beginTime, Date endTime, String watchName) {
             return (Specification<VHelpRecord>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
 
-                if (isDifficult != null){
-                    list.add(cb.equal(root.get("difficult"),isDifficult));
+                if (difficult != null){
+                    list.add(cb.equal(root.get("difficult"),difficult));
                 }
                 if (StrUtil.isNotBlank(orgFlag)) {
                     list.add(cb.equal(root.get("orgFlag"), orgFlag));
@@ -89,7 +89,7 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
         }
 
 
-        public static Specification<VHelpRecord> buildVhelpRecord(List<Long> channel, List<Integer> status, String email, String helperName, String keyword, Boolean isDifficult, String orgFlag, Date beginDate, Date endDate) {
+        public static Specification<VHelpRecord> buildVhelpRecord(List<Long> channel, List<Integer> status, String email, String helperName, String keyword, Boolean difficult, String orgFlag, Date beginDate, Date endDate) {
             return (Specification<VHelpRecord>) (root, query, cb) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StrUtil.isNotBlank(orgFlag)) {
@@ -115,8 +115,8 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
                             cb.like(root.get("helperEmail").as(String.class), "%" + keyword.trim() + "%")));
                 }
                 // 是否是疑难文献
-                if (isDifficult != null) {
-                    list.add(cb.equal(root.get("difficult").as(Boolean.class), isDifficult));
+                if (difficult != null) {
+                    list.add(cb.equal(root.get("difficult").as(Boolean.class), difficult));
                 }
                 if (beginDate != null || endDate != null) {
                     Date end = endDate == null ? new Date() : endDate;
@@ -129,6 +129,36 @@ public interface VHelpRecordRepository extends JpaRepository<VHelpRecord, Long>,
             };
         }
 
+
+        public static Specification<VHelpRecord> buildVhelpRecord(List<Long> channel, List<Integer> status, Boolean difficult, String orgFlag,String orgName, String date) {
+            return (Specification<VHelpRecord>) (root, query, cb) -> {
+                List<Predicate> list = new ArrayList<>();
+                if (StrUtil.isNotBlank(orgFlag)) {
+                    list.add(cb.equal(root.get("orgFlag"), orgFlag));
+                }
+                if (StrUtil.isNotBlank(orgName)) {
+                    list.add(cb.equal(root.get("orgName"), orgName));
+                }
+                // 渠道过滤
+                if (CollectionUtil.isNotEmpty(channel)) {
+                    list.add(cb.in(root.get("helpChannel")).value(channel));
+                }
+                // 状态过滤
+                if (CollectionUtil.isNotEmpty(status)) {
+                    list.add(cb.in(root.get("status")).value(status));
+                }
+                // 是否是疑难文献
+                if (difficult != null) {
+                    list.add(cb.equal(root.get("difficult").as(Boolean.class), difficult));
+                }
+                if (StrUtil.isNotBlank(date)) {
+                    list.add(cb.equal(cb.function("DATE_FORMAT", Date.class, root.get("gmtCreate"), cb.literal("%Y-%m")),date));
+                }
+
+                Predicate[] p = new Predicate[list.size()];
+                return cb.and(list.toArray(p));
+            };
+        }
     }
 
 }

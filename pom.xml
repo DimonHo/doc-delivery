@@ -23,6 +23,8 @@
         <wd.swagger.version>3.0.0-SNAPSHOT</wd.swagger.version>
         <wd.cas.version>4.0.0-SNAPSHOT</wd.cas.version>
         <cloud.commons.version>2.0.0-SNAPSHOT</cloud.commons.version>
+        <poi.version>4.1.1</poi.version>
+        <xerces.version>2.12.0</xerces.version>
     </properties>
 
     <dependencies>
@@ -83,6 +85,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
         </dependency>
 
         <dependency>

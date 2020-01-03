@@ -1,10 +1,12 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.exception.FeignException;
 import com.wd.cloud.commons.exception.NotFoundException;
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.commons.util.DateUtil;
 import com.wd.cloud.commons.util.FileUtil;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
@@ -221,6 +223,13 @@ public class BackendServiceImpl implements BackendService {
             }
         });
         literature.setReusing(reusing).setLastHandlerName(handlerName);
+    }
+
+    @Override
+    public List<VHelpRecord> helpList(List<Long> channel, List<Integer> status, Boolean difficult, String orgFlag, String orgName, String date) {
+        // 默认取上一个月的
+        date = StrUtil.isBlank(date) ? DateUtil.format(DateUtil.offsetMonth(new Date(), -1), "yyyy-MM") : date;
+        return vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(channel, status, difficult, orgFlag, orgName, date));
     }
 
 
