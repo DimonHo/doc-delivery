@@ -4,8 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.wd.cloud.commons.util.StrUtil;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
@@ -37,9 +37,9 @@ public class BizUtil {
         return vHelpRecord;
     }
 
-    public static Page<HelpRecordDTO> coversHelpRecordDTO(Page<VHelpRecord> helpRecordPage) {
+    public static Page<HelpRecordDto> coversHelpRecordDTO(Page<VHelpRecord> helpRecordPage) {
         return helpRecordPage.map(vHelpRecord -> {
-            HelpRecordDTO helpRecordDTO = BeanUtil.toBean(anonymous(vHelpRecord), HelpRecordDTO.class);
+            HelpRecordDto helpRecordDTO = BeanUtil.toBean(anonymous(vHelpRecord), HelpRecordDto.class);
             helpRecordDTO.setDocTitle(vHelpRecord.getDocTitle()).setDocHref(vHelpRecord.getDocHref());
             if (helpRecordDTO.getStatus() == HelpStatusEnum.HELP_SUCCESSING.value()){
                 helpRecordDTO.setStatus(HelpStatusEnum.HELPING.value());
@@ -48,9 +48,9 @@ public class BizUtil {
         });
     }
 
-    public static Page<GiveRecordDTO> coversGiveRecordDTO(Page<GiveRecord> giveRecordPage, LiteratureRepository literatureRepository, HelpRecordRepository helpRecordRepository) {
+    public static Page<GiveRecordDto> coversGiveRecordDTO(Page<GiveRecord> giveRecordPage, LiteratureRepository literatureRepository, HelpRecordRepository helpRecordRepository) {
         return giveRecordPage.map(giveRecord -> {
-            GiveRecordDTO giveRecordDTO = BeanUtil.toBean(giveRecord, GiveRecordDTO.class);
+            GiveRecordDto giveRecordDTO = BeanUtil.toBean(giveRecord, GiveRecordDto.class);
             Optional<HelpRecord> optionalHelpRecord = helpRecordRepository.findById(giveRecord.getHelpRecordId());
             optionalHelpRecord.ifPresent(helpRecord -> {
                 giveRecordDTO.setHelperEmail(BooleanUtil.isTrue(helpRecord.getAnonymous()) ? "匿名" : StrUtil.hideMailAddr(helpRecord.getHelperEmail()))

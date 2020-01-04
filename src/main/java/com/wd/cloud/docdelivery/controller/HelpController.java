@@ -2,15 +2,13 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.extra.servlet.ServletUtil;
-import com.wd.cloud.commons.exception.ParamException;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Literature;
-import com.wd.cloud.docdelivery.pojo.vo.HelpRequestVO;
+import com.wd.cloud.docdelivery.pojo.vo.HelpRequestVo;
 import com.wd.cloud.docdelivery.service.HelpRequestService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +33,7 @@ public class HelpController {
     HelpRequestService helpRequestService;
 
     @PostMapping("/help")
-    public ResponseModel helpRequest(@Valid @RequestBody HelpRequestVO helpRequestVO) {
+    public ResponseModel helpRequest(@Valid @RequestBody HelpRequestVo helpRequestVO) {
         Literature literature = BeanUtil.toBean(helpRequestVO.getLiterature(), Literature.class);
         HelpRecord helpRecord = BeanUtil.toBean(helpRequestVO.getHelper(), HelpRecord.class);
         String ip = ServletUtil.getClientIP(request);

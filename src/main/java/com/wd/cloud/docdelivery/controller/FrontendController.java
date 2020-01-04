@@ -16,8 +16,8 @@ import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.model.HelpRawModel;
 import com.wd.cloud.docdelivery.model.HelpRequestModel;
-import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.service.*;
 import io.swagger.annotations.Api;
@@ -169,7 +169,7 @@ public class FrontendController {
                                      @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, beginTime, endTime, pageable);
+        Page<HelpRecordDto> helpRecordDTOS = frontService.getHelpRecords(channel, status, email, keyword, isDifficult, orgFlag, beginTime, endTime, pageable);
         helpRecordDTOS.filter(h -> h.getStatus() == HelpStatusEnum.HELP_SUCCESSED.value())
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(helpRecordDTOS);
@@ -194,7 +194,7 @@ public class FrontendController {
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         endTime = endTime == null ? new Date() : endTime;
         beginTime = beginTime == null ? DateUtil.offsetMonth(endTime, -1).toJdkDate() : beginTime;
-        Page<HelpRecordDTO> waitHelpRecords = frontService.getWaitHelpRecords(channel, isDifficult, orgFlag, beginTime, endTime, pageable);
+        Page<HelpRecordDto> waitHelpRecords = frontService.getWaitHelpRecords(channel, isDifficult, orgFlag, beginTime, endTime, pageable);
         return ResponseModel.ok().setBody(waitHelpRecords);
     }
 
@@ -214,7 +214,7 @@ public class FrontendController {
                                          @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject org = (JSONObject) request.getSession().getAttribute(SessionConstant.ORG);
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
-        Page<HelpRecordDTO> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
+        Page<HelpRecordDto> successHelpRecords = frontService.getSuccessHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
         successHelpRecords.forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(successHelpRecords);
     }
@@ -236,7 +236,7 @@ public class FrontendController {
         String orgFlag = org != null && isOrg ? org.getStr("flag") : null;
         endTime = endTime == null ? new Date() : endTime;
         beginTime = beginTime == null ? DateUtil.offsetWeek(endTime, -1).toJdkDate() : beginTime;
-        Page<HelpRecordDTO> finishHelpRecords = frontService.getDifficultHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
+        Page<HelpRecordDto> finishHelpRecords = frontService.getDifficultHelpRecords(channel, orgFlag, beginTime, endTime, pageable);
 
         return ResponseModel.ok().setBody(finishHelpRecords);
     }
@@ -251,7 +251,7 @@ public class FrontendController {
                                        @ApiIgnore @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        Page<HelpRecordDTO> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
+        Page<HelpRecordDto> myHelpRecords = frontService.myHelpRecords(username, status, isDifficult, helpChannel, pageable);
         myHelpRecords.filter(h -> h.getStatus() == 4)
                 .forEach(helpRecordDTO -> helpRecordDTO.setDownloadUrl(global.getCloudHost() + "/doc-delivery/file/download/"+helpRecordDTO.getId()));
         return ResponseModel.ok().setBody(myHelpRecords);
@@ -265,7 +265,7 @@ public class FrontendController {
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        Page<GiveRecordDTO> myGiveRecords = frontService.myGiveRecords(username, status, pageable);
+        Page<GiveRecordDto> myGiveRecords = frontService.myGiveRecords(username, status, pageable);
         return ResponseModel.ok().setBody(myGiveRecords);
     }
 

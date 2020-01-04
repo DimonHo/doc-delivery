@@ -19,8 +19,8 @@ import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
 import com.wd.cloud.docdelivery.feign.SdolServerApi;
-import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
@@ -218,7 +218,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable) {
+    public Page<HelpRecordDto> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable) {
         Page<VHelpRecord> vHelpRecords = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildVhelpRecord(helpChannel, status, null, helperName, null, isDifficult, null, null, null), pageable);
         return BizUtil.coversHelpRecordDTO(vHelpRecords);
     }
@@ -232,7 +232,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<GiveRecordDTO> myGiveRecords(String giverName, List<Integer> status, Pageable pageable) {
+    public Page<GiveRecordDto> myGiveRecords(String giverName, List<Integer> status, Pageable pageable) {
         Page<GiveRecord> giveRecords = giveRecordRepository.findAll(GiveRecordRepository.SpecBuilder.buildGiveRecord(status, giverName), pageable);
         return BizUtil.coversGiveRecordDTO(giveRecords, literatureRepository, helpRecordRepository);
     }
@@ -253,7 +253,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDto> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         Date end = endTime == null ? new Date() : endTime;
         // 默认只返回最近一个星期的数据
         Date begin = beginTime == null ? DateUtil.offsetWeek(end, -1).toJdkDate() : beginTime;
@@ -273,7 +273,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDto> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         // 待应助记录包含三种状态，-1,0,1,3
         List<Integer> status = CollectionUtil.newArrayList(
                 HelpStatusEnum.HELP_SUCCESSING.value(),
@@ -298,7 +298,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDto> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         List<Integer> status = CollectionUtil.newArrayList(HelpStatusEnum.HELP_SUCCESSED.value());
         Date end = endTime == null ? new Date() : endTime;
         // 默认只返回最近一个星期的数据
@@ -317,7 +317,7 @@ public class FrontServiceImpl implements FrontService {
      * @return
      */
     @Override
-    public Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> channel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDto> getDifficultHelpRecords(List<Long> channel, String orgFlag, Date beginTime, Date endTime, Pageable pageable) {
         // start 需求(【互助大厅-疑难文献取值范围修改】
         //https://www.tapd.cn/47850539/prong/stories/view/1147850539001000859)
         Date endDate = endTime != null ? endTime : new Date();

@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.LiteratureDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.LiteratureDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,15 +40,15 @@ public interface ProcessService {
      */
     void markDifficult(Long helpRecordId, String giverName);
 
-    Page<HelpRecordDTO> waitHelpRecordList(Pageable pageable);
+    Page<HelpRecordDto> waitHelpRecordList(Pageable pageable);
 
-    Page<HelpRecordDTO> successHelpRecordList(Pageable pageable);
+    Page<HelpRecordDto> successHelpRecordList(Pageable pageable);
 
-    Page<HelpRecordDTO> waitAuditHelpRecordList(Pageable pageable);
+    Page<HelpRecordDto> waitAuditHelpRecordList(Pageable pageable);
 
-    Page<HelpRecordDTO> helpingHelpRecordList(Pageable pageable);
+    Page<HelpRecordDto> helpingHelpRecordList(Pageable pageable);
 
-    Page<HelpRecordDTO> helpRecordList(Map<String, Object> query, Pageable pageable);
+    Page<HelpRecordDto> helpRecordList(Map<String, Object> query, Pageable pageable);
 
-    Page<LiteratureDTO> literatureList(Map<String, Object> query, Pageable pageable);
+    Page<LiteratureDto> literatureList(Map<String, Object> query, Pageable pageable);
 }

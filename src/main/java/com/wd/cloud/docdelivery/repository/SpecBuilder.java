@@ -3,7 +3,7 @@ package com.wd.cloud.docdelivery.repository;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.commons.util.DateUtil;
-import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
+import com.wd.cloud.docdelivery.pojo.dto.TjDto;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +26,10 @@ public class SpecBuilder {
     @PersistenceContext
     EntityManager entityManager;
 
-    public TjDTO tj(String orgFlag, String helperEmail, String helperName, String beginDate, String endDate, String format) {
+    public TjDto tj(String orgFlag, String helperEmail, String helperName, String beginDate, String endDate, String format) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<TjDTO> query = cb.createQuery(TjDTO.class);
+        CriteriaQuery<TjDto> query = cb.createQuery(TjDto.class);
         Root<VHelpRecord> root = query.from(VHelpRecord.class);
         Path<String> orgFlagPath = root.get("orgFlag");
         Path<String> helperEmailPath = root.get("helperEmail");
@@ -70,7 +70,7 @@ public class SpecBuilder {
         Selection<Long> successCount = cb.sum(cb.<Long>selectCase().when(cb.equal(statusPath, 4), 1L).otherwise(0L)).alias("successCount");
         query.multiselect(sumCount, successCount);
 
-        TypedQuery<TjDTO> typedQuery = entityManager.createQuery(query);
+        TypedQuery<TjDto> typedQuery = entityManager.createQuery(query);
         return typedQuery.getSingleResult();
     }
 }

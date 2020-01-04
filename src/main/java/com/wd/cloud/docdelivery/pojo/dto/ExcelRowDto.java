@@ -17,6 +17,7 @@ public class ExcelRowDto {
     private String helperName;
     private String docTitle;
     private String docHref;
+    private String watchName;
     private String handlerName;
     private String status;
 }

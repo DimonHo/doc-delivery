@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Accessors(chain = true)
 @ApiModel(value = "求助者")
-public class HelperVO {
+public class HelperVo {
 
     @ApiModelProperty(value = "机构flag", example = "wdkj")
     @NotBlank

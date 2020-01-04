@@ -3,7 +3,7 @@ package com.wd.cloud.docdelivery.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
-import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVo;
 import com.wd.cloud.docdelivery.repository.LiteraturePlanRepository;
 import com.wd.cloud.docdelivery.service.LiteraturePlanService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class LiteraturePlanServiceImpl implements LiteraturePlanService {
     private static List<LiteraturePlan> oldNowPlans = new ArrayList<>();
 
     @Override
-    public void addPlan(List<PlanVO> PlanVOs) {
+    public void addPlan(List<PlanVo> PlanVOs) {
         List<LiteraturePlan> literaturePlans = new ArrayList<>();
         PlanVOs.forEach(p -> literaturePlans.add(BeanUtil.toBean(p, LiteraturePlan.class)));
         literaturePlanRepository.saveAll(literaturePlans);

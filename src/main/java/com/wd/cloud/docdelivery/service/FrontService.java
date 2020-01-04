@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
-import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.GiveRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import org.springframework.data.domain.Page;
@@ -76,7 +76,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable);
+    Page<HelpRecordDto> myHelpRecords(String helperName, List<Integer> status, Boolean isDifficult, List<Long> helpChannel, Pageable pageable);
 
     /**
      * 我的应助记录
@@ -85,7 +85,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<GiveRecordDTO> myGiveRecords(String giverName, List<Integer> status, Pageable pageable);
+    Page<GiveRecordDto> myGiveRecords(String giverName, List<Integer> status, Pageable pageable);
 
 
     /**
@@ -101,7 +101,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDto> getHelpRecords(List<Long> channel, List<Integer> status, String email, String keyword, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 待应助列表
@@ -113,7 +113,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDto> getWaitHelpRecords(List<Long> channel, Boolean isDifficult, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 求助成功列表
@@ -124,7 +124,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDto> getSuccessHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 疑难文献列表
@@ -135,7 +135,7 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecordDTO> getDifficultHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDto> getDifficultHelpRecords(List<Long> helpChannel, String orgFlag, Date beginTime, Date endTime, Pageable pageable);
 
     /**
      * 求助权限

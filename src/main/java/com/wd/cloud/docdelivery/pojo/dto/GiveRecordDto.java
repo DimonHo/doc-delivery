@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class GiveRecordDTO {
+public class GiveRecordDto {
 
     Date gmtModified;
     Date gmtCreate;

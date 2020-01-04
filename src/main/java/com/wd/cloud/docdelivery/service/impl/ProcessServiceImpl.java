@@ -18,8 +18,8 @@ import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.exception.AppException;
 import com.wd.cloud.docdelivery.exception.ExceptionEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
-import com.wd.cloud.docdelivery.pojo.dto.LiteratureDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
+import com.wd.cloud.docdelivery.pojo.dto.LiteratureDto;
 import com.wd.cloud.docdelivery.pojo.entity.DocFile;
 import com.wd.cloud.docdelivery.pojo.entity.GiveRecord;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRecord;
@@ -152,35 +152,35 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public Page<HelpRecordDTO> waitHelpRecordList(Pageable pageable) {
+    public Page<HelpRecordDto> waitHelpRecordList(Pageable pageable) {
         List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.WAIT_HELP.value(), HelpStatusEnum.HELP_THIRD.value());
         Map<String, Object> param = MapUtil.of("status", waitStatusList);
         return helpRecordList(param, pageable);
     }
 
     @Override
-    public Page<HelpRecordDTO> successHelpRecordList(Pageable pageable) {
+    public Page<HelpRecordDto> successHelpRecordList(Pageable pageable) {
         List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.HELP_SUCCESSED.value());
         Map<String, Object> param = MapUtil.of("status", waitStatusList);
         return helpRecordList(param, pageable);
     }
 
     @Override
-    public Page<HelpRecordDTO> waitAuditHelpRecordList(Pageable pageable) {
+    public Page<HelpRecordDto> waitAuditHelpRecordList(Pageable pageable) {
         List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.WAIT_AUDIT.value());
         Map<String, Object> param = MapUtil.of("status", waitStatusList);
         return helpRecordList(param, pageable);
     }
 
     @Override
-    public Page<HelpRecordDTO> helpingHelpRecordList(Pageable pageable) {
+    public Page<HelpRecordDto> helpingHelpRecordList(Pageable pageable) {
         List<Integer> waitStatusList = CollectionUtil.newArrayList(HelpStatusEnum.HELPING.value());
         Map<String, Object> param = MapUtil.of("status", waitStatusList);
         return helpRecordList(param, pageable);
     }
 
     @Override
-    public Page<HelpRecordDTO> helpRecordList(Map<String, Object> param, Pageable pageable) {
+    public Page<HelpRecordDto> helpRecordList(Map<String, Object> param, Pageable pageable) {
         String orgFlag = MapUtil.getStr(param, "orgFlag");
         List<Integer> statusList = MapUtil.get(param, "status", List.class);
         String keyword = MapUtil.getStr(param, "keyword") == null ? null : MapUtil.getStr(param, "keyword").replaceAll("\\\\", "\\\\\\\\");
@@ -218,11 +218,11 @@ public class ProcessServiceImpl implements ProcessService {
             }
         }, pageable);
 
-        return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class));
+        return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDto.class));
     }
 
     @Override
-    public Page<LiteratureDTO> literatureList(Map<String, Object> query, Pageable pageable) {
+    public Page<LiteratureDto> literatureList(Map<String, Object> query, Pageable pageable) {
         return null;
     }
 

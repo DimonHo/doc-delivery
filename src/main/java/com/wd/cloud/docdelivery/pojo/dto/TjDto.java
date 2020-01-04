@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class TjDTO {
+public class TjDto {
 
     /**
      * 求助总量

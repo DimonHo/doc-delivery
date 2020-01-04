@@ -12,8 +12,8 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class LiteratureDTO {
-    List<DocFileDTO> docFiles;
+public class LiteratureDto {
+    List<DocFileDto> docFiles;
     private Long id;
     private String docHref;
     private String docTitle;

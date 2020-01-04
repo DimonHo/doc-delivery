@@ -16,7 +16,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Accessors(chain = true)
 @ApiModel(value = "文献信息")
-public class LiteratureVO {
+public class LiteratureVo {
 
     @ApiModelProperty(value = "求助文献标题", example = "关于xxx可行性研究")
     @NotBlank

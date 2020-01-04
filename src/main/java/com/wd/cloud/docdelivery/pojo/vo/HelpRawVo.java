@@ -5,5 +5,5 @@ package com.wd.cloud.docdelivery.pojo.vo;
  * @date 2019/10/22
  * @Description:
  */
-public class HelpRawVO {
+public class HelpRawVo {
 }

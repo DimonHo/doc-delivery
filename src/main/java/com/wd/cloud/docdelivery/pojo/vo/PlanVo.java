@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Data
 @ApiModel(value = "排班计划")
-public class PlanVO {
+public class PlanVo {
 
     /**
      * 被排班人

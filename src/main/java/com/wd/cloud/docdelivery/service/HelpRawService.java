@@ -1,7 +1,5 @@
 package com.wd.cloud.docdelivery.service;
 
-import com.wd.cloud.docdelivery.model.HelpRawModel;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRawDTO;
 import com.wd.cloud.docdelivery.pojo.entity.HelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
 import org.springframework.data.domain.Page;

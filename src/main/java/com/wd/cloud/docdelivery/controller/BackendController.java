@@ -6,10 +6,10 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.Global;
 import com.wd.cloud.docdelivery.pojo.dto.ExcelRowDto;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRaw;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
-import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVo;
 import com.wd.cloud.docdelivery.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -138,7 +138,7 @@ public class BackendController {
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime,
                                   @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<HelpRecordDTO> helpRecordDTOPage = backendService.getHelpList(status, isDifficult, orgFlag, keyword,watchName,giveType,beginTime,endTime,pageable);
+        Page<HelpRecordDto> helpRecordDTOPage = backendService.getHelpList(status, isDifficult, orgFlag, keyword,watchName,giveType,beginTime,endTime,pageable);
         return ResponseModel.ok().setBody(helpRecordDTOPage);
     }
 
@@ -309,7 +309,7 @@ public class BackendController {
 
     @ApiOperation(value = "添加排班计划")
     @PostMapping("/plan")
-    public ResponseModel addPlan(@RequestBody List<PlanVO> PlanVOs) {
+    public ResponseModel addPlan(@RequestBody List<PlanVo> PlanVOs) {
         literaturePlanService.addPlan(PlanVOs);
         return ResponseModel.ok().setMessage("添加成功");
     }
@@ -360,6 +360,7 @@ public class BackendController {
             writer.addHeaderAlias("orgName", "机构");
             writer.addHeaderAlias("helperName", "求助用户");
             writer.addHeaderAlias("helperEmail", "邮箱");
+            writer.addHeaderAlias("watchName","排班人");
             writer.addHeaderAlias("handlerName", "处理人");
             writer.addHeaderAlias("status", "状态");
             writer.write(excelRowDtos);

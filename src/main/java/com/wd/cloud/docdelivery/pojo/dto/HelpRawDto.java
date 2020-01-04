@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class HelpRawDTO {
+public class HelpRawDto {
 
     private Long id;
 

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @ApiModel(value = "个人统计数据")
-public class MyTjDTO {
+public class MyTjDto {
 
     /**
      * 可求助总数量

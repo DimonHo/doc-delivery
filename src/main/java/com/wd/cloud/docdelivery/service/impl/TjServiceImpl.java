@@ -8,8 +8,8 @@ import com.wd.cloud.commons.util.DateUtil;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.feign.UoServerApi;
 import com.wd.cloud.docdelivery.model.AvgResponseTimeModel;
-import com.wd.cloud.docdelivery.pojo.dto.MyTjDTO;
-import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
+import com.wd.cloud.docdelivery.pojo.dto.MyTjDto;
+import com.wd.cloud.docdelivery.pojo.dto.TjDto;
 import com.wd.cloud.docdelivery.pojo.entity.Permission;
 import com.wd.cloud.docdelivery.repository.*;
 import com.wd.cloud.docdelivery.service.BuildLevelService;
@@ -95,14 +95,14 @@ public class TjServiceImpl implements TjService {
     }
 
     @Override
-    public TjDTO tjForHelp() {
+    public TjDto tjForHelp() {
         Map<String, Long> tjResult = helpRecordRepository.tj();
-        TjDTO tjDTO = BeanUtil.mapToBean(tjResult, TjDTO.class, true);
+        TjDto tjDTO = BeanUtil.mapToBean(tjResult, TjDto.class, true);
         return tjDTO;
     }
 
     @Override
-    public MyTjDTO tjUser(String username, Long channel) {
+    public MyTjDto tjUser(String username, Long channel) {
         Permission permission = getPermission(username, channel);
         //今日已求助数量
         long myTodayHelpCount = helpRecordRepository.countByHelperNameToday(username, channel);
@@ -128,7 +128,7 @@ public class TjServiceImpl implements TjService {
             todayRestTotal = 0L;
         }
         todayRestTotal = (todayRestTotal != null && restTotal != null && todayRestTotal > restTotal) ? restTotal : todayRestTotal;
-        MyTjDTO myTjDTO = new MyTjDTO();
+        MyTjDto myTjDTO = new MyTjDto();
         myTjDTO.setTotal(total)
                 .setTodayTotal(todayTotal)
                 .setHelpCount(myHelpCount)
@@ -156,7 +156,7 @@ public class TjServiceImpl implements TjService {
 
 
     @Override
-    public MyTjDTO tjEmail(String email, String ip, Long channel) {
+    public MyTjDto tjEmail(String email, String ip, Long channel) {
         Permission permission = getPermission(email, channel);
         long myTodayHelpCount = 0;
         long myHelpCount = 0;
@@ -189,7 +189,7 @@ public class TjServiceImpl implements TjService {
             todayRestTotal = 0L;
         }
         todayRestTotal = (todayRestTotal != null && restTotal != null && todayRestTotal > restTotal) ? restTotal : todayRestTotal;
-        MyTjDTO myTjDTO = new MyTjDTO();
+        MyTjDto myTjDTO = new MyTjDto();
         myTjDTO.setTotal(total)
                 .setTodayTotal(todayTotal)
                 .setHelpCount(myHelpCount)

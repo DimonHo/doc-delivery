@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
-import com.wd.cloud.docdelivery.pojo.dto.MyTjDTO;
-import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
+import com.wd.cloud.docdelivery.pojo.dto.MyTjDto;
+import com.wd.cloud.docdelivery.pojo.dto.TjDto;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -30,7 +30,7 @@ public interface TjService {
      *
      * @return
      */
-    TjDTO tjForHelp();
+    TjDto tjForHelp();
 
 
     /**
@@ -56,7 +56,7 @@ public interface TjService {
      * @param channel
      * @return
      */
-    MyTjDTO tjUser(String username, Long channel);
+    MyTjDto tjUser(String username, Long channel);
 
     /**
      * 邮箱的统计
@@ -66,7 +66,7 @@ public interface TjService {
      * @param channel
      * @return
      */
-    MyTjDTO tjEmail(String email, String ip, Long channel);
+    MyTjDto tjEmail(String email, String ip, Long channel);
 
 
     /**

@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.pojo.entity.LiteraturePlan;
-import com.wd.cloud.docdelivery.pojo.vo.PlanVO;
+import com.wd.cloud.docdelivery.pojo.vo.PlanVo;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface LiteraturePlanService {
 
-    void addPlan(List<PlanVO> PlanVOs);
+    void addPlan(List<PlanVo> PlanVOs);
 
     void delPlan(Long id);
 

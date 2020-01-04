@@ -1,6 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.DocFile;
 import com.wd.cloud.docdelivery.pojo.entity.Literature;
 import com.wd.cloud.docdelivery.pojo.entity.VHelpRecord;
@@ -25,7 +25,7 @@ public interface BackendService {
      *
      * @return
      */
-    Page<HelpRecordDTO> getHelpList(List<Integer> status, Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable);
+    Page<HelpRecordDto> getHelpList(List<Integer> status, Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable);
 
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
 

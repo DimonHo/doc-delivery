@@ -6,8 +6,8 @@ import com.wd.cloud.commons.annotation.ValidateLogin;
 import com.wd.cloud.commons.constant.SessionConstant;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.util.DateUtil;
-import com.wd.cloud.docdelivery.pojo.dto.MyTjDTO;
-import com.wd.cloud.docdelivery.pojo.dto.TjDTO;
+import com.wd.cloud.docdelivery.pojo.dto.MyTjDto;
+import com.wd.cloud.docdelivery.pojo.dto.TjDto;
 import com.wd.cloud.docdelivery.service.TjService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -46,7 +46,7 @@ public class TjController {
     })
     @GetMapping("/tj")
     public ResponseModel getEmailHelpCountToDay(@RequestParam String email, @RequestParam(required = false) Long channel) {
-        MyTjDTO myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request), channel);
+        MyTjDto myTotalModel = tjService.tjEmail(email, ServletUtil.getClientIP(request), channel);
         return ResponseModel.ok().setBody(myTotalModel);
     }
 
@@ -58,7 +58,7 @@ public class TjController {
 
         JSONObject loginUser = (JSONObject) request.getSession().getAttribute(SessionConstant.LOGIN_USER);
         String username = loginUser != null ? loginUser.getStr("username") : null;
-        MyTjDTO myTotalModel = tjService.tjUser(username, channel);
+        MyTjDto myTotalModel = tjService.tjUser(username, channel);
         return ResponseModel.ok().setBody(myTotalModel);
 
     }
@@ -82,7 +82,7 @@ public class TjController {
     @ApiOperation(value = "获取平台总求助量、成功量、成功率、今日求助量")
     @GetMapping("/tj/total")
     public ResponseModel getHeadTotalFor() {
-        TjDTO body = tjService.tjForHelp();
+        TjDto body = tjService.tjForHelp();
         return ResponseModel.ok().setBody(body);
     }
 

@@ -14,11 +14,11 @@ import javax.validation.Valid;
 @Data
 @Accessors(chain = true)
 @ApiModel(value = "文献求助免验证post对象")
-public class HelpRequestVO {
+public class HelpRequestVo {
 
     @Valid
-    HelperVO helper;
+    HelperVo helper;
 
     @Valid
-    LiteratureVO literature;
+    LiteratureVo literature;
 }

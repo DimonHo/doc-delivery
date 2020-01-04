@@ -13,7 +13,7 @@ import com.wd.cloud.docdelivery.enums.GiveStatusEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.feign.FsServerApi;
-import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDTO;
+import com.wd.cloud.docdelivery.pojo.dto.HelpRecordDto;
 import com.wd.cloud.docdelivery.pojo.entity.*;
 import com.wd.cloud.docdelivery.repository.*;
 import com.wd.cloud.docdelivery.service.BackendService;
@@ -76,7 +76,7 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public Page<HelpRecordDTO> getHelpList(List<Integer> status,Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
+    public Page<HelpRecordDto> getHelpList(List<Integer> status, Boolean isDifficult, String orgFlag, String keyword, String watchName, List<Integer> giveType, Date beginTime, Date endTime, Pageable pageable) {
 
         //  https://www.tapd.cn/33969136/bugtrace/bugs/view?bug_id=1133969136001000485
         keyword = keyword != null ? keyword.replaceAll("\\\\", "\\\\\\\\") : null;
@@ -84,7 +84,7 @@ public class BackendServiceImpl implements BackendService {
         //根据条件查询视图
         Page<VHelpRecord> result = vHelpRecordRepository.findAll(VHelpRecordRepository.SpecBuilder.buildBackendList(orgFlag, status, isDifficult, keyword,giveType, beginTime, endTime, watchName), pageable);
 
-        return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDTO.class));
+        return result.map(vHelpRecord -> BeanUtil.toBean(vHelpRecord, HelpRecordDto.class));
     }
 
     @Override

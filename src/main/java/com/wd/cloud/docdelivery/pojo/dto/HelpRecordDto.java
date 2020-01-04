@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class HelpRecordDTO {
+public class HelpRecordDto {
 
     private Long id;
 
