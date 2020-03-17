@@ -15,8 +15,12 @@ public class JunitTest {
 
     @Test
     public void test1(){
-        Page<String> ps = Page.empty();
-        Page<String> pss = ps.map(s-> s+"1");
-        Console.log(pss);
+        int x = 12;
+        int y = 23;
+        x ^= y;
+        y = x ^ y;
+        x = x^ y;
+        System.out.println(x);
+        System.out.println(y);
     }
 }

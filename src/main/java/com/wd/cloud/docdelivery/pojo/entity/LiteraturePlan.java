@@ -41,4 +41,7 @@ public class LiteraturePlan extends AbstractEntity {
 
     @Column(name = "order_list")
     private Integer orderList;
+
+    @Column(name = "weight", columnDefinition = "double(4,2) default 1.00 COMMENT '权重'")
+    private Integer weight;
 }
